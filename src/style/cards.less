@@ -1,0 +1,140 @@
+@import "base";
+@import "color";
+
+.scroll-header {
+  font-weight: bold;
+  height: 5%;
+  min-height: 30px;
+}
+
+.scroll-header.artifact-header {
+  margin-left: 10px;
+}
+
+.scroll-container {
+  height: 95%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 0px 10px;
+}
+
+#affordance-scroller {
+  height:100%;
+}
+
+
+.artifact-color{
+  color: @c_interactions_accent_one;
+}
+
+.artifact-color-reverse{
+  background-color: @c_interactions_accent_one;
+  color: @c_interactions_snow;
+}
+
+
+.property-color{
+  color: @c_interactions_accent_three;
+}
+
+.property-color-reverse{
+  background-color: @c_interactions_accent_three;
+  color: @c_interactions_snow;
+}
+
+.action-color{
+  color: @c_interactions_accent_two;
+}
+
+.action-color-reverse{
+  background-color: @c_interactions_accent_two;
+  color: @c_interactions_snow;
+}
+
+.event-color{
+  color: @c_interactions_accent_four;
+}
+
+.event-color-reverse{
+  background-color: @c_interactions_accent_four;
+  color: @c_interactions_snow;
+}
+
+.dashcard {
+  color:black;
+  border:none;
+  background-color: @c_interactions_snow;
+  visibility: hidden;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  &:hover{
+      box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  &.selected{
+    background-color: #f5d5dd;
+  }
+
+  .card-header {
+    font-weight: bold;
+    padding: 5px;
+    display:flex; 
+    flex-direction: row;
+    justify-content: space-between;
+
+    .rounded-pill{
+      flex-shrink: 2;
+      border: none;
+      background-color: #eeeeee;
+      color: #777777;
+      margin: 2px;
+      height: 20px;
+      &:hover{
+        background-color: @c_interactions_gray_light;
+      }
+    }
+  }
+
+  .card-body{
+    padding: 5px;
+  }
+
+  .card-text {
+    margin:0px;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.input-schema {
+  width: 95%;
+  margin: 5px;
+}
+
+.card-title {
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  max-height: 30px;
+  margin:0;
+}
+
+
+.empty-message {
+  font-size: 11pt;
+  margin-left:1px;
+}
+
+
+.object-schema {
+  >p{
+    font-size: 10pt;
+    margin-bottom: 3px;
+  }
+  >.props{
+    margin-left:3px;
+  }
+}

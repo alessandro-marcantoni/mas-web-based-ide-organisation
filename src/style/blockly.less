@@ -1,0 +1,160 @@
+@import "color";
+
+#blockly-relative{
+  height:88%;
+  width:100%;
+  position:relative;
+}
+
+#blockly-injection{
+  position:absolute;
+  box-sizing: content-box;
+  border-right: 1px solid @c_interactions_gray_light;
+  border-bottom: 1px solid @c_interactions_gray_light;
+}
+
+.blocklyToolboxDiv {
+  width: 190px;
+}
+
+.blocklyTreeRow {
+  margin: 5px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.blocklyMainBackground{
+  stroke: none;
+}
+
+#blockly-controls {
+  height: 12%;
+  min-height: 60px;
+  width:100%;
+  display: flex;
+  flex-direction: row;
+  box-sizing: content-box;
+  background-color: @c_interactions_gray_light;
+  border-right: 2px solid @c_interactions_gray_light;
+  .btn-light{
+    font-weight: bold;
+    color: @c_interactions_gray_dark;
+    border: none;
+    background-color: white;
+    &:hover{
+      background-color: @c_interactions_gray_lighter;
+    }
+  }
+}
+
+.toolbox-title {
+  background-color: @c_interactions_blue_dark;
+  display: flex;
+  align-items: center; 
+  color: white;
+  font-weight: bold;
+  padding-left: 20px;
+  min-width: 190px;
+  max-width: 190px;
+  height: 100%;
+  font-size: 20pt;
+}
+
+.toolbox-tabs {
+  flex-grow:1;
+  height:50%;
+  display: flex;
+  align-items:flex-end;
+  font-size: 10pt;
+  overflow-x: auto;
+  #tabs{
+    flex-grow:1;
+    flex-wrap: nowrap;
+  }
+  li{
+    min-width: 15%;
+    max-width: 15%;
+    margin: 0px 5px;
+    margin-bottom: -1px;
+  }
+  .nav-link {
+    padding:3px 6px;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: row;
+    flex-grow:1;
+    position:relative;
+    span{
+      height:20px;
+      width:80%;
+      margin-right:15px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    input {
+      height:20px;
+      max-width:80%;
+    }
+    .btn-close {
+      position:absolute;
+      right:5px;
+      width:3px;
+      height: 3px;
+    }
+  }
+  .nav-link.inactive {
+    color: @c_interactions_gray_dark;
+    background-color: @c_interactions_gray_lighter;
+  }
+}
+
+div.toolbox-tabs{
+  &::-webkit-scrollbar{
+  width: 7px;
+  height: 7px;
+  }
+  &::-webkit-scrollbar-thumb{
+  background: @c_interactions_gray_dark;
+  border-radius: 30px;
+  }
+  &::-webkit-scrollbar-track{
+  background: #F5F5F5;
+  border-radius: 16px;
+  box-shadow: inset -10px -10px 0px -30px #FFFFFF;
+  }
+}
+
+#add-new-tab{
+  margin: 4px;
+  border-radius: 5px;
+}  
+
+.blockly-buttons{  
+  height:50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  button {
+    font-size: 10pt;
+    margin:5px;
+    max-height: 80%;
+  }
+}
+
+#run-mas{
+  color:white;
+  font-weight: bold;
+  background-color: @c_interactions_blue_dark;
+  &:hover{
+    background-color: @c_interactions_blue;
+  }
+}
+
+.toolbox-tools {
+  width: 100%;
+  overflow-x: hidden;
+}
