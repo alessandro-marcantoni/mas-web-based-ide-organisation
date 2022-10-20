@@ -1,15 +1,14 @@
-import Loader from './components/Loader.tsx';
 import Navbar from './components/Navbar.tsx';
+import {BrowserRouter} from "react-router-dom";
 
 function App() {
-  return (
-    <div className="App">
-      <Navbar></Navbar>
-      {false &&
-        <Loader></Loader>
-      }
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <Navbar></Navbar>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
