@@ -1,6 +1,6 @@
 import './App.css';
-import Loader from './components/Loader';
-import Navbar from './components/Navbar';
+import Loader from './components/Loader.tsx';
+import Navbar from './components/Navbar.tsx';
 
 function App() {
   return (
