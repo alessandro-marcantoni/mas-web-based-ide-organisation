@@ -10,6 +10,12 @@ $header_height: 80;
 $impressum_height: 40px;
 $logo-area-height: 80px;
 
+.body {
+  position: absolute;
+  margin-top: $header_height * 1px;
+  width: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -139,7 +145,7 @@ code {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-end;
-  
+
 }
 
 #loading {

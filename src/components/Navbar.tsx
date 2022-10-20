@@ -1,4 +1,5 @@
 import '../style/main.scss';
+import React from "react";
 
 function Navbar() {
     return (
@@ -16,7 +17,7 @@ function Navbar() {
                     <a id="explore-button" target="_blank" className="btn" href="/">Explore</a>
                 </div>
             </div>
-            
+
         </div>
     );
 }
