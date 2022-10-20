@@ -1,4 +1,3 @@
-import './App.css';
 import Loader from './components/Loader.tsx';
 import Navbar from './components/Navbar.tsx';
 
