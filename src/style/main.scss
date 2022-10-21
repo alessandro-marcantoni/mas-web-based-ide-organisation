@@ -10,10 +10,32 @@ $header_height: 80;
 $impressum_height: 40px;
 $logo-area-height: 80px;
 
-.body {
+@mixin bodyHeight {
   position: absolute;
   margin-top: $header_height * 1px;
+  height: calc(100vh - #{$header_height} * 1px);
+}
+
+.body {
   width: 100%;
+}
+
+.sidebar {
+  @include bodyHeight();
+  width: 20%;
+  max-width: 1000px;
+  background-color: $c_interactions_gray_lighter;
+}
+
+.diagram {
+  @include bodyHeight();
+  width: 80%;
+  margin-left: 20%;
+}
+
+.diagram-component {
+  width: 100%;
+  height: 100%;
 }
 
 body {
