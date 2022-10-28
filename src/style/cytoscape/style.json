@@ -1,0 +1,47 @@
+[{
+  "selector": "node[role]",
+  "style": {
+    "width": 25,
+    "height": 25,
+    "background-color": "lightblue",
+    "z-index": 1
+  }
+}, {
+  "selector": "node[group]",
+  "style": {
+    "shape": "round-rectangle",
+    "width": 100,
+    "height": 50,
+    "background-color": "lightgray",
+    "background-opacity": 0.5,
+    "z-index": 0
+  }
+}, {
+  "selector": "node[id]",
+  "style": {
+    "label": "data(id)"
+  }
+}, {
+  "selector": "edge",
+  "style": {
+    "width": 2,
+    "curve-style": "straight",
+    "line-color": "black",
+    "label": "data(label)",
+    "text-rotation": "autorotate",
+    "text-valign": "bottom",
+    "text-background-color": "white",
+    "text-background-opacity": 1
+  }
+}, {
+  "selector": "edge[arrow]",
+  "style": {
+    "target-arrow-shape": "data(arrow)",
+    "target-arrow-color": "black"
+  }
+}, {
+  "selector": "edge.hollow",
+  "style": {
+    "target-arrow-fill": "hollow"
+  }
+}]
