@@ -1,13 +1,15 @@
-import Navbar from "./components/Navbar";
+import Header from "./components/Header";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Structural from "./components/Structural";
 import * as React from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import "./style/main.scss"
 
 function App() {
     return (
         <div className="App">
             <BrowserRouter>
-                <Navbar/>
+                <Header/>
                 <Routes>
                     <Route path="/" element={<Structural/>}/>
                 </Routes>
@@ -16,4 +18,4 @@ function App() {
     );
 }
 
-export default App;
+export default App
