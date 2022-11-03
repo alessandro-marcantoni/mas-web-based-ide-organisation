@@ -17,9 +17,9 @@
     "z-index": 0
   }
 }, {
-  "selector": "node[id]",
+  "selector": "node[label]",
   "style": {
-    "label": "data(id)"
+    "label": "data(label)"
   }
 }, {
   "selector": "edge",

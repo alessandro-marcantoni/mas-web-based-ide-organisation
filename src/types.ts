@@ -73,5 +73,9 @@ export type RoleInGroup = Role & {
 
 export const getAllRoles: (components: Array<Component>) => Array<Role> = components =>
     components.filter(c => c).filter(c => c.type === "role")
-        .map(c => (c as Role))
+        .map(c => c as Role)
         .concat(components.filter(c => c).filter(c => c.type === "group").flatMap(c => Array.from((c as Group).roles)))
+
+export const getGroups: (components: Array<Component>) => Array<Group> = components =>
+    components.filter(c => c).filter(c => c.type === "group")
+        .map(c => c as Group)

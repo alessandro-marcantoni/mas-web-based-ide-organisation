@@ -32,7 +32,7 @@ class Diagram extends React.Component<DiagramProps, {}> {
         switch(c.type) {
             case "role":
                 const r = c as Role
-                return [{ data: { id: r.name, label: r.name, role: true, parent: group } }]
+                return [{ data: { id: r.name, label: r.name.replace(/_+/, ""), role: true, parent: group } }]
             case "group":
                 const g = c as Group
                 return [{ data: { id: g.name, label: g.name, group: true } }, ...Array.from(g.roles).flatMap(e => this.presentation(e, g.name))]
@@ -89,9 +89,9 @@ class Diagram extends React.Component<DiagramProps, {}> {
 
     render() {
         return (
-            <div id="cy" className="diagram">
+            <div id="cy" className="diagram h-100">
                 <CytoscapeComponent
-                    className="diagram-component"
+                    className="diagram-component h-100"
                     layout={ { name: "random", zoom: 1 } }
                     cy={(cy) => { this.cy = cy }}
                     elements={this.props.elements.flatMap(e => this.presentation(e))}
@@ -103,4 +103,4 @@ class Diagram extends React.Component<DiagramProps, {}> {
     }
 }
 
-export default Diagram;
+export default Diagram
