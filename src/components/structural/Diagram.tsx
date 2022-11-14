@@ -7,7 +7,7 @@ import edgehandles from 'cytoscape-edgehandles';
 import noOverlap from 'cytoscape-no-overlap';
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
 import * as nodesStyle from "../../style/cytoscape/style.json";
-import {getAllRoles, getAllGroups, separatorRegex} from "../../utils/utils";
+import {separatorRegex} from "../../utils/utils";
 
 type DiagramProps = {
     elements: Array<Component>
