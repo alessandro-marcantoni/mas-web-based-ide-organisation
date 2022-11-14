@@ -25,7 +25,7 @@
   "selector": "edge",
   "style": {
     "width": 2,
-    "curve-style": "straight",
+    "curve-style": "bezier",
     "line-color": "black",
     "label": "data(label)",
     "text-rotation": "autorotate",
