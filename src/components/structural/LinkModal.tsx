@@ -19,6 +19,8 @@ const LinkModal = (p: LinkModalProps) =>
                 <option value="">Choose a link type</option>
                 <option value="authority">Authority</option>
                 <option value="communication">Communication</option>
+                <option value="acquaintance">Acquaintance</option>
+                <option value="compatibility">Compatibility</option>
             </Form.Select>
         </Modal.Body>
     </Modal>
