@@ -1,7 +1,10 @@
+/**
+ * A generic structural component.
+ */
 export abstract class Component {
     type: string;
 
-    constructor(type: string) {
+    protected constructor(type: string) {
         this.type = type;
     }
 }
@@ -9,43 +12,116 @@ export abstract class Component {
 export class Role extends Component {
     name: string;
     extends: Role | undefined;
+    min: number;
+    max: number;
 
-    constructor(name: string, extension: Role | undefined) {
+    constructor(name: string, extension: Role | undefined, min: number = 0, max: number = Number.MAX_VALUE) {
         super("role");
         this.name = name;
-        this.extends = extension
+        this.extends = extension;
+        this.min = min;
+        this.max = max;
+    }
+
+    /**
+     * Perform a side effect and continue the computation.
+     * @param f A side effect function that can be applied on the component.
+     * @returns The component
+     */
+    also(f: ((o: Role) => void)): Role {
+        f(this)
+        return this
     }
 }
 
-export type LinkLabel = "communication" | "authority" | "acquaintance"
-
 export class Link extends Component {
     label: string;
-    from: Role;
-    to: Role;
+    from: string;
+    to: string;
+    scope: string;
+    extendsSubgroups: boolean;
+    biDir: boolean;
 
-    constructor(label: string, from: Role, to: Role) {
+    constructor(label: string, from: string, to: string, scope: string = "intra-group", extendsSubgroups: boolean = false, biDir: boolean = false) {
         super("link");
         this.label = label;
         this.from = from;
         this.to = to;
+        this.scope = scope;
+        this.extendsSubgroups = extendsSubgroups;
+        this.biDir = biDir;
     }
 }
 
-export type Constraint = Component & {}
+export abstract class Constraint extends Component {
+    constraint: string;
+
+    protected constructor(constraint: string) {
+        super("constraint");
+        this.constraint = constraint;
+    }
+}
+
+export class Cardinality extends Constraint {
+    min: number;
+    max: number;
+    object: string;
+    id: string;
+
+    constructor(id: string, object: string, min: number = 0, max: number = Number.MAX_VALUE) {
+        super("cardinality");
+        this.min = min;
+        this.max = max;
+        this.object = object;
+        this.id = id;
+    }
+}
+
+export class Compatibility extends Constraint {
+    from: string;
+    to: string;
+    scope: string;
+    extendsSubgroups: boolean;
+    biDir: boolean;
+
+    constructor(from: string, to: string, scope: string = "intra-group", extendsSubgroups: boolean = false, biDir: boolean = false) {
+        super("compatibility");
+        this.from = from;
+        this.to = to;
+        this.scope = scope;
+        this.extendsSubgroups = extendsSubgroups;
+        this.biDir = biDir;
+    }
+}
 
 export class Group extends Component {
     name: string;
+    min: number;
+    max: number;
+    subgroups: Set<Group>
     roles: Set<Role>;
     links: Set<Link>;
     constraints: Set<Constraint>;
 
-    constructor(name: string) {
+    constructor(name: string, min: number = 0, max: number = Number.MAX_VALUE) {
         super("group");
         this.name = name;
+        this.min = min;
+        this.max = max;
+        this.subgroups = new Set<Group>()
         this.roles = new Set<Role>()
         this.links = new Set<Link>()
         this.constraints = new Set<Constraint>()
+    }
+
+    /**
+     * Perform a side effect and continue the computation.
+     * @param f A side effect function that can be applied on the component.
+     * @returns The component
+     */
+    also(f: ((o: Group) => void)): Group {
+        f(this)
+        return this
     }
 
     addRole(r: Role) {
@@ -63,19 +139,12 @@ export class Group extends Component {
     addConstraint(c: Constraint) {
         this.constraints.add(c)
     }
+
+    addSubgroup(g: Group) {
+        this.subgroups.add(g)
+    }
+
+    removeSubgroup(g: Group) {
+        this.subgroups.delete(g)
+    }
 }
-
-export type RoleInGroup = Role & {
-    group: Group;
-    min: number;
-    max: number;
-}
-
-export const getAllRoles: (components: Array<Component>) => Array<Role> = components =>
-    components.filter(c => c).filter(c => c.type === "role")
-        .map(c => c as Role)
-        .concat(components.filter(c => c).filter(c => c.type === "group").flatMap(c => Array.from((c as Group).roles)))
-
-export const getGroups: (components: Array<Component>) => Array<Group> = components =>
-    components.filter(c => c).filter(c => c.type === "group")
-        .map(c => c as Group)
