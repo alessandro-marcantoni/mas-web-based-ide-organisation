@@ -1,6 +1,5 @@
 import {Cardinality, Compatibility, Component, Group, Link, Role} from "./types";
 import convert from 'xml-js';
-import {none, Option, some} from "scala-types/dist/option/option";
 import {getAllGroups, getLinks, option, separator, separatorRegex} from "./utils";
 
 export const loadSpec: (path: string) => Promise<Array<Array<Component>>> = async (path) => {
@@ -81,7 +80,7 @@ const formationConstraints = (element: any, g: Group) => {
         .forEach(c => g.addConstraint(c))
 }
 
-const cardinality = (element: any, g: Group) =>
+const cardinality = (element: any, _: Group) =>
     new Cardinality(
         element.attributes.id,
         element.attributes.object,
