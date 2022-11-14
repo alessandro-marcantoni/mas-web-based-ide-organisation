@@ -1,6 +1,6 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import React from "react";
-import {Role} from "../../types";
+import {Role} from "../../utils/types";
 
 type RoleModalProps = {
     show: boolean
