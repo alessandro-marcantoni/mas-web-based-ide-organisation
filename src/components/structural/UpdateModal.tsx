@@ -1,8 +1,8 @@
 import React from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {Component, Group} from "../../utils/types";
+import {Component, Group} from "../../utils/structural/types";
 import {Option} from "scala-types/dist/option/option";
-import {getGlobalGroups} from "../../utils/utils";
+import {getGlobalGroups} from "../../utils/structural/utils";
 
 type UpdateModalProps = {
     show: boolean
