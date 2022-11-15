@@ -1,5 +1,5 @@
 import React from "react";
-import {Group, Role} from "../../utils/types";
+import {Group, Role} from "../../utils/structural/types";
 import {Button, Card, Form, InputGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 
 type SidebarProps = {

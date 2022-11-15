@@ -1,5 +1,5 @@
 import {Component, Group, Link, Role} from "./types";
-import {StructuralState} from "../components/Structural";
+import {StructuralState} from "../../components/Structural";
 import {Option, none, some} from "scala-types/dist/option/option";
 
 /**
