@@ -1,13 +1,13 @@
 import React from "react";
 import CytoscapeComponent from "react-cytoscapejs";
-import {Compatibility, Component, Constraint, Group, Link, Role} from "../../utils/types";
+import {Compatibility, Component, Constraint, Group, Link, Role} from "../../utils/structural/types";
 import {Core, ElementDefinition} from "cytoscape";
 import cytoscape from "cytoscape";
 import edgehandles from 'cytoscape-edgehandles';
 import noOverlap from 'cytoscape-no-overlap';
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
 import * as nodesStyle from "../../style/cytoscape/style.json";
-import {separatorRegex} from "../../utils/utils";
+import {separatorRegex} from "../../utils/structural/utils";
 
 type DiagramProps = {
     elements: Array<Component>

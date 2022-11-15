@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "./structural/Sidebar";
 import Diagram from "./structural/Diagram";
-import {Component, Group, Role} from "../utils/types";
+import {Component, Group, Role} from "../utils/structural/types";
 import {
     createComponent,
     getAllRoles,
@@ -10,13 +10,13 @@ import {
     separatorRegex,
     getGlobalGroups,
     separator
-} from "../utils/utils";
+} from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
 import GroupModal from "./structural/GroupModal";
 import UpdateModal from "./structural/UpdateModal";
 import {none, Option, some} from "scala-types/dist/option/option";
-import {loadSpec} from "../utils/loader";
+import {loadSpec} from "../utils/structural/loader";
 
 export type StructuralState = {
     components: Array<Component>
