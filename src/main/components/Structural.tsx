@@ -14,13 +14,14 @@ import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
 import GroupModal from "./structural/GroupModal";
 import UpdateModal from "./structural/UpdateModal";
-import {none, Option, some} from "scala-types/dist/option/option";
+import {Option, some, none} from "scala-types/dist/option/option";
+import {list, List} from "scala-types/dist/list/list"
 import {loadSpec} from "../utils/structural/loader";
 import {serialize} from "../utils/structural/serializer";
 
 export type StructuralState = {
-    components: Array<Component>
-    added: Array<Component>
+    components: List<Component>
+    added: List<Component>
     showRoleModal: boolean
     showGroupModal: boolean
     role: string
@@ -38,7 +39,7 @@ class Structural extends React.Component<{}, StructuralState> {
     constructor(props) {
         super(props);
         this.state = {
-            components: [], added: [],
+            components: list<Component>(), added: list<Component>(),
             showRoleModal: false, showGroupModal: false,
             role: "", roleExtension: "", subgroupOf: "", group: "",
             link: { from: "", to: "" },
@@ -108,12 +109,12 @@ class Structural extends React.Component<{}, StructuralState> {
     onSelectedComponent(componentType: string, component: string): void {
         this.setState((state) => {
             return {
-                toUpdate: some(componentType === "group" ?
+                toUpdate: componentType === "group" ?
                     getAllGroups(state.added).find(c => c.name === component) :
-                    getAllRoles(state.added).find(c => c.name === component)),
+                    getAllRoles(state.added).find(c => c.name === component),
                 subgroupOf: componentType === "group" ?
-                    option(getGlobalGroups(this.state.added)
-                        .find(g => Array.from(g.subgroups).map(s => s.name).includes(component))).map(o => o.name).getOrElse("") :
+                    getGlobalGroups(this.state.added)
+                        .find(g => Array.from(g.subgroups).map(s => s.name).includes(component)).map(o => o.name).getOrElse("") :
                     state.subgroupOf
             }
         })
@@ -153,12 +154,11 @@ class Structural extends React.Component<{}, StructuralState> {
                             <button onClick={() => console.log(this.state.added)}>SHOW STATE</button>
                             <button onClick={() => console.log(this.state.components)}>DISTINCT ROLES</button>
                             <button onClick={() => loadSpec("http://localhost:8080/spec.xml").then(elems => {
-                                // @ts-ignore
                                 this.setState({
-                                    added: elems[0],
-                                    components: elems[1],
-                                    role: getAllRoles(elems[1]).length > 0 ? getAllRoles(elems[1])[0].name : "",
-                                    group: getAllGroups(elems[1]).length > 0 ? getAllGroups(elems[1])[0].name : "" })
+                                    added: elems.get(0),
+                                    components: elems.get(1),
+                                    role: getAllRoles(elems.get(1)).size() > 0 ? getAllRoles(elems.get(1)).get(0).name : "",
+                                    group: getAllGroups(elems.get(1)).size() > 0 ? getAllGroups(elems.get(1)).get(0).name : "" })
                             })}>LOAD</button>
                             <button onClick={() => console.log(serialize(this.state.components, this.state.added))}>SERIALIZE</button>
                             <Sidebar

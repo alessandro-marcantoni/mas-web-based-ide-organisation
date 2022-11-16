@@ -7,10 +7,11 @@ import edgehandles from 'cytoscape-edgehandles';
 import noOverlap from 'cytoscape-no-overlap';
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
 import * as nodesStyle from "../../style/cytoscape/style.json";
-import {separatorRegex} from "../../utils/structural/utils";
+import {defined, fromSet, separatorRegex} from "../../utils/structural/utils";
+import {list, List, toArray} from "scala-types/dist/list/list";
 
 type DiagramProps = {
-    elements: Array<Component>
+    elements: List<Component>
     link: {
         from: string,
         to: string,
@@ -30,35 +31,33 @@ class Diagram extends React.Component<DiagramProps, {}> {
         this.presentation = this.presentation.bind(this)
     }
 
-    presentation(c: Component, group: string | undefined = undefined): ElementDefinition[] {
-        if (!c) return []
+    presentation(c: Component, group: string | undefined = undefined): List<ElementDefinition> {
+        if (!c) return list()
         switch(c.type) {
             case "role":
                 const r = c as Role
-                return [{ data: { id: r.name, label: r.name.replace(separatorRegex, ""), role: true, parent: group } }]
+                return list({ data: { id: r.name, label: r.name.replace(separatorRegex, ""), role: true, parent: group } })
             case "group":
                 const g = c as Group
-                return [
-                    { data: { id: g.name, label: g.name.replace(separatorRegex, ""), group: true, parent: group } },
-                    ...Array.from(g.roles).flatMap(e => this.presentation(e, g.name)),
-                    ...Array.from(g.subgroups).filter(s => s && s.name !== g.name).flatMap(e => this.presentation(e, g.name)),
-                    ...Array.from(g.links).flatMap(l => this.presentation(l)),
-                    ...Array.from(g.constraints).flatMap(con => this.presentation(con))
-                ]
+                return list<ElementDefinition>({ data: { id: g.name, label: g.name.replace(separatorRegex, ""), group: true, parent: group } })
+                    .appendedAll(fromSet(g.roles).flatMap(e => this.presentation(e, g.name)))
+                    .appendedAll(fromSet(g.subgroups).filter(s => s && s.name !== g.name).flatMap(e => this.presentation(e, g.name)))
+                    .appendedAll(fromSet(g.links).flatMap(l => this.presentation(l)))
+                    .appendedAll(fromSet(g.constraints).flatMap(con => this.presentation(con)))
             case "link":
                 const l = c as Link
-                return [{ data: { id: `${l.from}${l.to}${l.label}`, source: l.from, target: l.to, label: l.label, link: true, arrow: "triangle" } }]
+                return list({ data: { id: `${l.from}${l.to}${l.label}`, source: l.from, target: l.to, label: l.label, link: true, arrow: "triangle" } })
             case "constraint":
                 const con = c as Constraint
                 switch (con.constraint) {
                     case "compatibility":
                         const com = con  as Compatibility
-                        return [{ data: { id: `${com.from}${com.to}${com.constraint}`, source: com.from, target: com.to, label: com.constraint, link: true, arrow: "triangle" } }]
+                        return list({ data: { id: `${com.from}${com.to}${com.constraint}`, source: com.from, target: com.to, label: com.constraint, link: true, arrow: "triangle" } })
                     default:
-                        return []
+                        return list()
                 }
             default:
-                return []
+                return list()
         }
     }
 
@@ -73,13 +72,11 @@ class Diagram extends React.Component<DiagramProps, {}> {
         };
         const options = {
             grabbedNode: node =>
-                !this.props.elements
-                    .filter(e => e)
-                    .filter(e => e.type === "group")
-                    .map(e => e as Group)
-                    .flatMap(g => Array.from(g.subgroups))
+                !defined(this.props.elements)
+                    .collect(list(e => e.type === "group"), list(e => e as Group))
+                    .flatMap(g => fromSet(g.subgroups))
                     .map(g => g.name)
-                    .includes(node._private.data.parent),
+                    .contains(node._private.data.parent),
             dropTarget: node => node._private.data.group,
             dropSibling: () => true,
             newParentNode: (grabbedNode, dropSibling) => dropSibling,
@@ -130,7 +127,7 @@ class Diagram extends React.Component<DiagramProps, {}> {
                     className="diagram-component h-100"
                     layout={ { name: "cose", zoom: 1 } }
                     cy={(cy) => { this.cy = cy }}
-                    elements={this.props.elements.flatMap(e => this.presentation(e))}
+                    elements={toArray(this.props.elements.flatMap(e => this.presentation(e)))}
                     // @ts-ignore
                     stylesheet={nodesStyle}
                 />

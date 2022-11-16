@@ -1,20 +1,23 @@
 import {Cardinality, Compatibility, Component, Group, Link, Role} from "./types";
 import convert from 'xml-js';
 import {getAllGroups, getLinks, option, separator, separatorRegex} from "./utils";
+import {fromArray, List, list} from "scala-types/dist/list/list";
 
-export const loadSpec: (path: string) => Promise<Array<Array<Component>>> = async (path) => {
+export const loadSpec: (path: string) => Promise<List<List<Component>>> = async (path) => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
-    return [[elems[1]].concat(
-        (elems[0] as unknown as Array<Role>)
-            .filter(e =>
-                getLinks([elems[1]])
+    return list(
+        list(elems[1]).appendedAll(
+            fromArray<Role>(elems[0]).filter(e =>
+                getLinks(list(elems[1]))
                     .map(c => c.from)
-                    .includes(e.name.replace(separatorRegex, "")) ||
-                getLinks([elems[1]])
+                    .contains(e.name.replace(separatorRegex, "")) ||
+                getLinks(list(elems[1]))
                     .map(c => c.to)
-                    .includes(e.name.replace(separatorRegex, "")))),
-        elems[0].concat(getAllGroups([elems[1]]).map(g => new Group(g.name, g.min, g.max)))]
+                    .contains(e.name.replace(separatorRegex, "")))
+        ),
+        fromArray<Component>(elems[0]).appendedAll(getAllGroups(list(elems[1])).map(g => new Group(g.name, g.min, g.max)))
+    )
 }
 
 const structuralSpecification = (element: any) =>

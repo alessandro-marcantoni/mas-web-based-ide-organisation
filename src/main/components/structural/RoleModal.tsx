@@ -1,12 +1,13 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import React from "react";
 import {Role} from "../../utils/structural/types";
+import {List, toArray} from "scala-types/dist/list/list";
 
 type RoleModalProps = {
     show: boolean
     onHide: () => void
     value: string
-    roles: Array<Role>
+    roles: List<Role>
     propertyChanged: (p: string, v: any) => void
     addRole: () => void
 }
@@ -24,7 +25,7 @@ const RoleModal = (p: RoleModalProps) =>
             <Form.Select className="mb-3"
                          onChange={e => p.propertyChanged("roleExtension", e.target.value)}>
                 <option value={""}>None</option>
-                {p.roles.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
+                {toArray(p.roles.map(r => <option key={r.name} value={r.name}>{r.name}</option>))}
             </Form.Select>
             <Button variant="success" className="w-100"
                     onClick={() => {
