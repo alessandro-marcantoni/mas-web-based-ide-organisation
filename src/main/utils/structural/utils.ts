@@ -34,6 +34,60 @@ export const createComponent:
         }
     }
 
+export const add: (state: StructuralState, comp: Component, toAdd: boolean) => StructuralState = (state, comp, toAdd) => {
+    return {
+        components: !toAdd ? state.components.concat([comp]) : state.components,
+        added: toAdd ? state.added.concat([comp]) : state.added,
+        showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
+        group: getAllGroups(state.components).length === 0 ? state.group : getAllGroups(state.components)[0].name,
+        role: getAllRoles(state.components).length === 0 ? state.role : getAllRoles(state.components)[0].name,
+        roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
+        link: { to: "", from: "" }, toUpdate: state.toUpdate
+    }
+}
+
+export const addToGroup:
+    (state: StructuralState, component: string, type: string, group: string) => Array<Component> = (state, component, type, group) => {
+        const g: Group = getAllGroups(state.added).find(c => c.name === group)
+        if (type === "role") {
+            option(getAllRoles(state.added).find(c => c.name === component))
+                .map(o => o.also(r => { r.name = `${group}${separator}${r.name.replace(separatorRegex, "")}` }))
+                .apply(o => g.addRole(o))
+        }
+        if (type === "group") {
+            option(getAllGroups(state.added).find(c => c.name === component))
+                .map(o => o.also(g => { g.name = `${group}${separator}${g.name.replace(separatorRegex, "")}` }))
+                .apply(o => g.addSubgroup(o))
+        }
+        return type === "role" ?
+            state.added.filter(c => c)
+                .filter(c => c.type !== "role" || (c as Role).name.replace(separatorRegex, "") !== component)
+                .map(c => c.type === "group" && (c as Group).name === g.name ? g : c):
+            state.added.filter(c => c)
+                .filter(c => c.type !== "group" || (c as Group).name.replace(separatorRegex, "") !== component)
+                .map(c => c.type === "group" && (c as Group).name === g.name ? g : c)
+    }
+
+export const removeFromGroup:
+    (state: StructuralState, component: string, type: string, group: string) => Array<Component> = (state, component, type, group) => {
+        const g: Group = getAllGroups(state.added).find(c => c.name === group)
+        let comp: Option<Component>
+        if (type === "role") {
+            comp = option(Array.from(g.roles).find(r => r && r.name === component))
+            comp.apply(c => g.removeRole(c as Role))
+        }
+        if (type === "group") {
+            comp = option(Array.from(g.subgroups).find(g => g && g.name === component))
+            comp.apply(c => g.removeSubgroup(c as Group))
+        }
+        return comp.map(c => g.roles.size === 0 && g.subgroups.size === 0 ?
+            state.added
+                .filter(c => c)
+                .filter(c => c.type !== "group" || (c as Group).name !== g.name)
+                .concat(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
+            state.added.concat(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") }))).getOrElse(state.added)
+    }
+
 /**
  * Retrieve all the {@link Role}s among the {@link Component}s recursively.
  * @param components The array containing all the {@link Component}s.
