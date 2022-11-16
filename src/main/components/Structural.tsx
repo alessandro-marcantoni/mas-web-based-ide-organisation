@@ -1,15 +1,14 @@
 import React from "react";
 import Sidebar from "./structural/Sidebar";
 import Diagram from "./structural/Diagram";
-import {Component, Group, Role} from "../utils/structural/types";
+import {Component} from "../utils/structural/types";
 import {
     createComponent,
     getAllRoles,
     getAllGroups,
     option,
-    separatorRegex,
     getGlobalGroups,
-    separator
+    addToGroup, removeFromGroup, add
 } from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
@@ -55,15 +54,7 @@ class Structural extends React.Component<{}, StructuralState> {
     }
 
     addComponent(c: string, l: string = "", toAdd: boolean = false) {
-        createComponent(this.state, c, l, toAdd).apply(comp => this.setState((state) => {
-            return {
-                components: !toAdd ? state.components.concat([comp]) : state.components,
-                added: toAdd ? state.added.concat([comp]) : state.added,
-                group: getAllGroups(state.components).length === 0 ? state.group : getAllGroups(state.components)[0].name,
-                role: getAllRoles(state.components).length === 0 ? state.role : getAllRoles(state.components)[0].name,
-                link: { to: "", from: "" },
-            }
-        }))
+        createComponent(this.state, c, l, toAdd).apply(comp => this.setState((state) => add(state, comp, toAdd)))
     }
 
     onPropertyChange(property: string, value: string): void {
@@ -85,46 +76,16 @@ class Structural extends React.Component<{}, StructuralState> {
 
     onAdditionToGroup(component: string, type: string, group: string): void {
         this.setState((state) => {
-            const g: Group = getAllGroups(state.added).find(c => c.name === group)
-            if (type === "role") {
-                option(getAllRoles(this.state.added).find(c => c.name === component))
-                    .map(o => o.also(r => { r.name = `${group}${separator}${r.name.replace(separatorRegex, "")}` }))
-                    .apply(o => g.addRole(o))
-            }
-            if (type === "group") {
-                option(getAllGroups(this.state.added).find(c => c.name === component))
-                    .map(o => o.also(g => { g.name = `${group}${separator}${g.name.replace(separatorRegex, "")}` }))
-                    .apply(o => g.addSubgroup(o))
-            }
             return {
-                added: type === "role" ?
-                    state.added.filter(c => c)
-                        .filter(c => { if (c.type !== "role") { return true } else return (c as Role).name.replace(separatorRegex, "") !== component}) :
-                    state.added.filter(c => c)
-                        .filter(c => { if (c.type !== "group") { return true } else return (c as Group).name.replace(separatorRegex, "") !== component})
+                added: addToGroup(state, component, type, group)
             }
         })
     }
 
     onRemoveFromGroup(component: string, type: string, group: string): void {
         this.setState((state) => {
-            const g: Group = getAllGroups(state.added).find(c => c.name === group)
-            let comp: Option<Component>
-            if (type === "role") {
-                comp = option(Array.from(g.roles).find(r => r && r.name === component))
-                comp.apply(c => g.removeRole(c as Role))
-            }
-            if (type === "group") {
-                comp = option(Array.from(g.subgroups).find(g => g && g.name === component))
-                comp.apply(c => g.removeSubgroup(c as Group))
-            }
             return {
-                added: comp.map(c => g.roles.size === 0 && g.subgroups.size === 0 ?
-                    state.added
-                        .filter(c => c)
-                        .filter(c => c.type !== "group" || (c as Group).name !== g.name)
-                        .concat(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
-                    state.added.concat(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") }))).getOrElse(state.added)
+                added: removeFromGroup(state, component, type, group)
             }
         })
     }
