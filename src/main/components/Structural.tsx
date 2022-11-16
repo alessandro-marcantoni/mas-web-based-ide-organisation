@@ -17,6 +17,7 @@ import GroupModal from "./structural/GroupModal";
 import UpdateModal from "./structural/UpdateModal";
 import {none, Option, some} from "scala-types/dist/option/option";
 import {loadSpec} from "../utils/structural/loader";
+import {serialize} from "../utils/structural/serializer";
 
 export type StructuralState = {
     components: Array<Component>
@@ -198,6 +199,7 @@ class Structural extends React.Component<{}, StructuralState> {
                                     role: getAllRoles(elems[1]).length > 0 ? getAllRoles(elems[1])[0].name : "",
                                     group: getAllGroups(elems[1]).length > 0 ? getAllGroups(elems[1])[0].name : "" })
                             })}>LOAD</button>
+                            <button onClick={() => console.log(serialize(this.state.components, this.state.added))}>SERIALIZE</button>
                             <Sidebar
                                 role={this.state.role}
                                 group={this.state.group}
