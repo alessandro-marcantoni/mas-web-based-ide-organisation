@@ -2,12 +2,12 @@ import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} fr
 import {getAllRoles, getGlobalGroups, option, separatorRegex} from "./utils";
 
 export const serialize: (components: Array<Component>, diagram: Array<Component>) => string = (components, diagram) =>
-    "<structural-specification>" +
+    formatXml("<structural-specification>" +
         "<role-definitions>" +
             getAllRoles(components).map(role).join("\n") +
         "</role-definitions>" + "\n" +
         getGlobalGroups(diagram).map(group).join("\n") +
-    "</structural-specification>"
+    "</structural-specification>")
 
 export const role: (role: Role) => string = (role) =>
     `<role id="${role.name}">${option(role.extends).map(e => ` <extends role="${e.name}"/> `).getOrElse("")}</role>`
@@ -40,10 +40,10 @@ export const constraint: (constraint: Constraint) => string = (constraint) => {
     switch (constraint.constraint) {
         case "cardinality":
             const ca = constraint as Cardinality
-            return `<cardinality ${ca.min === 0 ? "" : `min="${ca.min}"`} ${ca.max === Number.MAX_VALUE ? "" : `max="${ca.max}"`} object="${ca.object}" id="${ca.id}"/>`
+            return `<cardinality ${ca.min === 0 ? "" : `min="${ca.min}"`} ${ca.max === Number.MAX_VALUE ? "" : `max="${ca.max}"`} object="${ca.object}" id="${shortName(ca.id)}"/>`
         case "compatibility":
             const co = constraint as Compatibility
-            return `<compatibility from="${co.from}" to="${co.to}" type="${co.type}" scope="${co.scope}" extends-subgroups="${co.extendsSubgroups}" bi-dir="${co.biDir}"/>`
+            return `<compatibility from="${shortName(co.from)}" to="${shortName(co.to)}" type="${co.type}" scope="${co.scope}" extends-subgroups="${co.extendsSubgroups}" bi-dir="${co.biDir}"/>`
         default:
             return ""
     }
@@ -58,4 +58,19 @@ const groupElements = {
 
 function shortName(longName: string, regex: RegExp = separatorRegex): string {
     return longName.replace(regex, "")
+}
+
+function formatXml(xml: string, tab: string = "\t") {
+    let formatted = ''
+    let indent = ''
+    xml.split(/>\s*</).forEach(node => {
+        if (node.match( /^\/\w/ )) {
+            indent = indent.substring(tab.length)
+        }
+        formatted += indent + '<' + node + '>\r\n'
+        if (node.match( /^<?\w[^>]*[^/]$/ )) {
+            indent += tab
+        }
+    })
+    return formatted.substring(1, formatted.length - 3)
 }
