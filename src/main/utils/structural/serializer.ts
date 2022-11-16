@@ -1,12 +1,13 @@
 import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} from "./types";
 import {getAllRoles, getGlobalGroups, option, separatorRegex} from "./utils";
+import {List, toArray} from "scala-types/dist/list/list";
 
-export const serialize: (components: Array<Component>, diagram: Array<Component>) => string = (components, diagram) =>
+export const serialize: (components: List<Component>, diagram: List<Component>) => string = (components, diagram) =>
     formatXml("<structural-specification>" +
         "<role-definitions>" +
-            getAllRoles(components).map(role).join("\n") +
+            toArray(getAllRoles(components).map(role)).join("\n") +
         "</role-definitions>" + "\n" +
-        getGlobalGroups(diagram).map(group).join("\n") +
+        toArray(getGlobalGroups(diagram).map(group)).join("\n") +
     "</structural-specification>")
 
 export const role: (role: Role) => string = (role) =>
