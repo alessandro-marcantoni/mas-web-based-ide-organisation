@@ -20,9 +20,10 @@ export const createComponent:
                     return none()
                 return some(new Role(
                     state.role,
-                    state.roleExtension ?
-                        getAllRoles(state.components).find(r => r.name === state.roleExtension).getOrElse(undefined) :
-                        undefined))
+                    toAdd ?
+                        getAllRoles(state.components).find(r => r.name === state.role).flatMap(r => option(r.extends)).getOrElse(undefined) :
+                        state.roleExtension ? getAllRoles(state.components).find(c => c.name === state.roleExtension).getOrElse(undefined) : undefined
+                    ))
             case "group":
                 if ((getAllGroups(state.components).exists(g => g.name === state.group) && !toAdd) ||
                     (getAllGroups(state.added).exists(g => g.name === state.group) && toAdd))
@@ -67,25 +68,45 @@ export const addToGroup:
         const destinationGroup: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
         if (type === "role") {
             getAllRoles(state.added).find(c => c.name === component)
-                .map(o => o.also(r => { r.name = `${group}${separator}${r.name.replace(separatorRegex, "")}` }))
-                .apply(o => destinationGroup.apply(og => og.addRole(o)))
+                .apply(o => destinationGroup.apply(og => og.addRole(
+                    new Role(`${group}${separator}${o.name.replace(separatorRegex, "")}`, o.extension, o.min, o.max)
+                )))
         }
         if (type === "group") {
             getAllGroups(state.added).find(c => c.name === component)
-                .map(o => o.also(g => { g.name = `${g.name.replace(separatorRegex, "")}` }))
-                .apply(o => destinationGroup.apply(og => {
-                    console.log(o)
-                    og.addSubgroup(o)
-                }))
+                .apply(o => destinationGroup.apply(og => og.addSubgroup(
+                    new Group(`${o.name.replace(separatorRegex, "")}`, o.min, o.max, o.subgroups, o.roles, o.links, o.constraints)
+                )))
         }
         return destinationGroup.map(og => type === "role" ?
             defined(state.added)
-                .filter(c => c.type !== "role" || (c as Role).name.replace(separatorRegex, "") !== component)
-                .collect(list(c => c.type === "group" && (c as Group).name === og.name, () => true), list(() => og, c => c)):
+                .filter(c => c.type !== "role" || (c as Role).name !== component)
+                .collect(
+                    list(
+                        c => c.type === "group" && (c as Group).name === og.name,
+                            c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component),
+                        () => true
+                    ),
+                    list(
+                        () => og,
+                            l => new Link(
+                                l.label,
+                                l.from === component ? separate(group, component) : l.from,
+                                l.to === component ? separate(group, component) : l.to,
+                                l.scope,
+                                l.extendsSubgroups,
+                                l.biDir
+                            ),
+                            c => c
+                    )
+                ):
                 //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c):
             defined(state.added)
-                .filter(c => c.type !== "group" || (c as Group).name.replace(separatorRegex, "") !== component)
-                .collect(list(c => c.type === "group" && (c as Group).name === og.name, () => true), list(() => og, c => c)))
+                .filter(c => c.type !== "group" || (c as Group).name !== component)
+                .collect(
+                    list(c => c.type === "group" && (c as Group).name === og.name, c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component), () => true),
+                    list(() => og, c => c))
+        )
                 //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c))
         .getOrElse(state.added)
     }
@@ -161,6 +182,8 @@ export const option: <T>(element: T) => Option<T> = (element) =>
 
 export const separator = '___'
 export const separatorRegex = new RegExp(`.*${separator}`)
+export const separate: (group: string, component: string) => string = (group, component) =>
+    `${group}${separator}${component}`
 
 export const fromSet: <T>(s: Set<T>) => List<T> = (s) =>
     fromArray(Array.from(s))
