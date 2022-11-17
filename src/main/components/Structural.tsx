@@ -7,7 +7,7 @@ import {
     getAllRoles,
     getAllGroups,
     getGlobalGroups,
-    addToGroup, removeFromGroup, add, presentation
+    addToGroup, removeFromGroup, add
 } from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
@@ -17,6 +17,7 @@ import {Option, none} from "scala-types/dist/option/option";
 import {list, List, toArray} from "scala-types/dist/list/list"
 import {loadSpec} from "../utils/structural/loader";
 import {serialize} from "../utils/structural/serializer";
+import {presentation} from "../utils/structural/cytoscape";
 
 export type StructuralState = {
     components: List<Component>
