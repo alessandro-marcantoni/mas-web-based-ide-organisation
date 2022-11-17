@@ -6,16 +6,15 @@ import {
     createComponent,
     getAllRoles,
     getAllGroups,
-    option,
     getGlobalGroups,
-    addToGroup, removeFromGroup, add
+    addToGroup, removeFromGroup, add, presentation
 } from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
 import GroupModal from "./structural/GroupModal";
 import UpdateModal from "./structural/UpdateModal";
-import {Option, some, none} from "scala-types/dist/option/option";
-import {list, List} from "scala-types/dist/list/list"
+import {Option, none} from "scala-types/dist/option/option";
+import {list, List, toArray} from "scala-types/dist/list/list"
 import {loadSpec} from "../utils/structural/loader";
 import {serialize} from "../utils/structural/serializer";
 
@@ -55,7 +54,8 @@ class Structural extends React.Component<{}, StructuralState> {
     }
 
     addComponent(c: string, l: string = "", toAdd: boolean = false) {
-        createComponent(this.state, c, l, toAdd).apply(comp => this.setState((state) => add(state, comp, toAdd)))
+        createComponent(this.state, c, l, toAdd)
+            .apply(comp => this.setState((state: StructuralState) => add(state, comp, toAdd)))
     }
 
     onPropertyChange(property: string, value: string): void {
@@ -151,8 +151,8 @@ class Structural extends React.Component<{}, StructuralState> {
                         onRemoveFromGroup={this.onRemoveFromGroup}/>
                     <div className="row m-0">
                         <div className="col-2 vh-100 p-0">
-                            <button onClick={() => console.log(this.state.added)}>SHOW STATE</button>
-                            <button onClick={() => console.log(this.state.components)}>DISTINCT ROLES</button>
+                            <button onClick={() => console.log(toArray(this.state.added))}>SHOW STATE</button>
+                            <button onClick={() => console.log(toArray(this.state.components))}>DISTINCT ROLES</button>
                             <button onClick={() => loadSpec("http://localhost:8080/spec.xml").then(elems => {
                                 this.setState({
                                     added: elems.get(0),
@@ -161,6 +161,7 @@ class Structural extends React.Component<{}, StructuralState> {
                                     group: getAllGroups(elems.get(1)).size() > 0 ? getAllGroups(elems.get(1)).get(0).name : "" })
                             })}>LOAD</button>
                             <button onClick={() => console.log(serialize(this.state.components, this.state.added))}>SERIALIZE</button>
+                            <button onClick={() => console.log(toArray(this.state.added.flatMap(presentation)))}>DIAGRAM</button>
                             <Sidebar
                                 role={this.state.role}
                                 group={this.state.group}
