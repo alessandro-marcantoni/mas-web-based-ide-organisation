@@ -1,4 +1,4 @@
-import {Compatibility, Component, Constraint, Group, Link, Role} from "./types";
+import {Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
 import {list, List} from "scala-types/dist/list/list";
 import {ElementDefinition} from "cytoscape";
 import {fromSet, separatorRegex} from "./utils";

@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {Component, Group} from "../../utils/structural/types";
+import {Component, Group} from "../../utils/structural/entities";
 import {Option} from "scala-types/dist/option/option";
 import {getGlobalGroups} from "../../utils/structural/utils";
 import {List, toArray} from "scala-types/dist/list/list";

@@ -1,4 +1,4 @@
-import {Cardinality, Compatibility, Component, Group, Link, Role} from "./types";
+import {Cardinality, Compatibility, Component, Group, Link, Role} from "./entities";
 import convert from 'xml-js';
 import {getAllGroups, getLinks, option, separator, separatorRegex} from "./utils";
 import {fromArray, List, list} from "scala-types/dist/list/list";
