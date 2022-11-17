@@ -5,7 +5,7 @@ type GroupModalProps = {
     show: boolean
     onHide: () => void
     value: string
-    propertyChanged: (p: string, v: any) => void
+    propertyChanged: (p: string, v: unknown) => void
     addGroup: () => void
 }
 

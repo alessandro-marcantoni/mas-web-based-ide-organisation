@@ -8,7 +8,7 @@ type RoleModalProps = {
     onHide: () => void
     value: string
     roles: List<Role>
-    propertyChanged: (p: string, v: any) => void
+    propertyChanged: (p: string, v: unknown) => void
     addRole: () => void
 }
 
