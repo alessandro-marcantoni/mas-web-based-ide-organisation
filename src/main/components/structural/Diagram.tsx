@@ -1,6 +1,6 @@
 import React from "react";
 import CytoscapeComponent from "react-cytoscapejs";
-import {Component, Group} from "../../utils/structural/types";
+import {Component, Group} from "../../utils/structural/entities";
 import {Core} from "cytoscape";
 import cytoscape from "cytoscape";
 import edgehandles from 'cytoscape-edgehandles';

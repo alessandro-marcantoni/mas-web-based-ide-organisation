@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "./structural/Sidebar";
 import Diagram from "./structural/Diagram";
-import {Component} from "../utils/structural/types";
+import {Component} from "../utils/structural/entities";
 import {
     createComponent,
     getAllRoles,

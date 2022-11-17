@@ -1,5 +1,5 @@
 import React from "react";
-import {Group, Role} from "../../utils/structural/types";
+import {Group, Role} from "../../utils/structural/entities";
 import {Button, Card, Form, InputGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {List, toArray} from "scala-types/dist/list/list";
 

@@ -1,6 +1,6 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import React from "react";
-import {Role} from "../../utils/structural/types";
+import {Role} from "../../utils/structural/entities";
 import {List, toArray} from "scala-types/dist/list/list";
 
 type RoleModalProps = {
