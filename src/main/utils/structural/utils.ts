@@ -1,4 +1,4 @@
-import {Component, Group, Link, Role} from "./entities";
+import {Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
 import {StructuralState} from "../../components/Structural";
 import {Option, none, some} from "scala-types/dist/option/option";
 import {fromArray, list, List} from "scala-types/dist/list/list";
@@ -85,18 +85,13 @@ export const addToGroup:
                     list(
                         c => c.type === "group" && (c as Group).name === og.name,
                             c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component),
+                            c => c.type === "constraint" && (c as Constraint).constraint === "compatibility" && ((c as Compatibility).from === component || (c as Compatibility).to === component),
                         () => true
                     ),
                     list(
                         () => og,
-                            l => new Link(
-                                l.label,
-                                l.from === component ? separate(group, component) : l.from,
-                                l.to === component ? separate(group, component) : l.to,
-                                l.scope,
-                                l.extendsSubgroups,
-                                l.biDir
-                            ),
+                            l => new Link(l.label, l.from === component ? separate(group, component) : l.from, l.to === component ? separate(group, component) : l.to, l.scope, l.extendsSubgroups, l.biDir),
+                            c => new Compatibility(c.from === component ? separate(group, component) : c.from, c.to === component ? separate(group, component) : c.to, c.scope, c.extendsSubgroups, c.biDir),
                             c => c
                     )
                 ):
@@ -104,7 +99,7 @@ export const addToGroup:
             defined(state.added)
                 .filter(c => c.type !== "group" || (c as Group).name !== component)
                 .collect(
-                    list(c => c.type === "group" && (c as Group).name === og.name, c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component), () => true),
+                    list(c => c.type === "group" && (c as Group).name === og.name, () => true),
                     list(() => og, c => c))
         )
                 //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c))
@@ -176,6 +171,13 @@ export const getAllGroups: (components: List<Component>) => List<Group> = compon
  */
 export const getLinks: (components: List<Component>) => List<Link> = components =>
     getAllGroups(components).flatMap(c => fromSet(c.links))
+
+export const getConstraints: (components: List<Component>) => List<Constraint> = components =>
+    getAllGroups(components).flatMap(c => fromSet(c.constraints))
+
+export const getCompatibilities: (components: List<Component>) => List<Compatibility> = components =>
+    getConstraints(components)
+        .collect(list(c => c.constraint === "compatibility"), list(c => c as Compatibility))
 
 export const option: <T>(element: T) => Option<T> = (element) =>
     element ? some(element) : none()
