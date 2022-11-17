@@ -1,4 +1,4 @@
-import {Component, Group, Link, Role} from "./types";
+import {Component, Group, Link, Role} from "./entities";
 import {StructuralState} from "../../components/Structural";
 import {Option, none, some} from "scala-types/dist/option/option";
 import {fromArray, list, List} from "scala-types/dist/list/list";

@@ -1,4 +1,4 @@
-import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} from "./types";
+import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
 import {getAllRoles, getGlobalGroups, option, separatorRegex} from "./utils";
 import {List, toArray} from "scala-types/dist/list/list";
 
