@@ -9,7 +9,7 @@ type SidebarProps = {
     role: string
     group: string
     addComponent: (c: string, add: boolean) => void
-    propertyChanged: (p: string, v: any) => void
+    propertyChanged: (p: string, v: unknown) => void
 }
 
 const Sidebar = (p: SidebarProps) => {

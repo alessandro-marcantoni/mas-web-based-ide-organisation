@@ -23,15 +23,12 @@ type DiagramProps = {
     onSelectedComponent: (t: string, c: string) => void
 }
 
-class Diagram extends React.Component<DiagramProps, {}> {
+class Diagram extends React.Component<DiagramProps, unknown> {
     private cy: Core
 
     componentDidMount() {
         cytoscape.use(edgehandles)
         cytoscape.use(compoundDragAndDrop)
-        //cytoscape.use(noOverlap)
-        // @ts-ignore
-        //this.cy.nodes().noOverlap({ padding: 5 });
         const defaults = {
             canConnect: () => true,
         };
@@ -53,7 +50,7 @@ class Diagram extends React.Component<DiagramProps, {}> {
         //@ts-ignore
         this.cy.compoundDragAndDrop(options);
         this.cy.center()
-        this.cy.on("free", (e) => {
+        this.cy.on("free", () => {
             //console.log(e.target._private.position)
         })
         this.cy.on("add", () => {
@@ -69,13 +66,13 @@ class Diagram extends React.Component<DiagramProps, {}> {
             this.cy.remove(e)
         })
         // @ts-ignore
-        this.cy.on("cdnddrop", (event, dropTarget, _) => {
+        this.cy.on("cdnddrop", (event, dropTarget) => {
             if (dropTarget._private.data) {
                 this.props.onAdditionToGroup(event.target._private.data.id, event.target._private.data.group ? "group" : "role", dropTarget._private.data.id)
             }
         })
         // @ts-ignore
-        this.cy.on("cdndout", (event, dropTarget, _) => {
+        this.cy.on("cdndout", (event, dropTarget) => {
             this.props.onRemoveFromGroup(event.target._private.data.id, event.target._private.data.group ? "group" : "role", dropTarget._private.data.id)
         })
         this.cy.on("click", (e) => {
