@@ -20,25 +20,25 @@ export const loadSpec: (path: string) => Promise<List<List<Component>>> = async 
     )
 }
 
-const structuralSpecification = (element: any) =>
+const structuralSpecification = (element: XMLElement) =>
     element.elements.map(e => converter[e.name](e))
 
-const roleDefinitions = (element: any) =>
+const roleDefinitions = (element: XMLElement) =>
     element.elements.map(e => converter[e.name](e))
 
-const role = (element: any, g: Group = undefined) =>
+const role = (element: XMLElement, g: Group = undefined) =>
     new Role(
-        `${option(g).map(o => o.name + separator).getOrElse("")}${element.attributes.id}`,
+        `${option(g).map(o => o.name + separator).getOrElse("")}${element.attributes["id"]}`,
         option(element.elements).map(e => new Role(e[0].attributes.role, null)).getOrElse(null),
-        option(element.attributes.min).getOrElse(0),
-        option(element.attributes.max).getOrElse(Number.MAX_VALUE)
+        option(element.attributes["min"]).getOrElse(0),
+        option(element.attributes["max"]).getOrElse(Number.MAX_VALUE)
     )
 
-const groupSpecification = (element: any) => {
+const groupSpecification = (element: XMLElement) => {
     const g = new Group(
-        element.attributes.id,
-        option(element.attributes.min).getOrElse(0),
-        option(element.attributes.max).getOrElse(Number.MAX_VALUE)
+        element.attributes["id"],
+        option(element.attributes["min"]).getOrElse(0),
+        option(element.attributes["max"]).getOrElse(Number.MAX_VALUE)
     )
     element.elements.forEach(e => converter[e.name](e, g))
     g.links.forEach(l => {
@@ -52,50 +52,51 @@ const groupSpecification = (element: any) => {
     return g
 }
 
-const roles = (element: any, g: Group) =>
+const roles = (element: XMLElement, g: Group) =>
     element.elements
         .map(e => converter[e.name](e, g))
         .forEach(r => g.addRole(r))
 
-const links = (element: any, g: Group) =>
+const links = (element: XMLElement, g: Group) =>
     element.elements
         .map(e => converter[e.name](e, g))
         .forEach(l => g.addLink(l))
 
-const link = (element: any, g: Group) =>
+const link = (element: XMLElement, g: Group) =>
     new Link(
-        element.attributes.type,
-        `${g.name}${separator}${element.attributes.from}`,
-        `${g.name}${separator}${element.attributes.to}`,
-        option(element.attributes.scope).getOrElse("intra-group"),
+        element.attributes["type"],
+        `${g.name}${separator}${element.attributes["from"]}`,
+        `${g.name}${separator}${element.attributes["to"]}`,
+        option(element.attributes["scope"]).getOrElse("intra-group"),
         option(element.attributes["extends-subgroups"]).getOrElse(false),
         option(element.attributes["bi-dir"]).getOrElse(false),
     )
 
-const subgroups = (element: any, g: Group) =>
+const subgroups = (element: XMLElement, g: Group) =>
     element.elements
         .map(e => converter[e.name](e))
         .forEach(s => g.addSubgroup(s))
 
-const formationConstraints = (element: any, g: Group) => {
+const formationConstraints = (element: XMLElement, g: Group) => {
     return element.elements
         .map(e => converter[e.name](e, g))
         .forEach(c => g.addConstraint(c))
 }
 
-const cardinality = (element: any, _: Group) =>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const cardinality = (element: XMLElement, _: Group) =>
     new Cardinality(
-        element.attributes.id,
-        element.attributes.object,
-        option(element.attributes.min).getOrElse(0),
-        option(element.attributes.max).getOrElse(Number.MAX_VALUE)
+        element.attributes["id"],
+        element.attributes["object"],
+        option(element.attributes["min"]).getOrElse(0),
+        option(element.attributes["max"]).getOrElse(Number.MAX_VALUE)
     )
 
-const compatibility = (element: any, g: Group) =>
+const compatibility = (element: XMLElement, g: Group) =>
     new Compatibility(
-        `${g.name}${separator}${element.attributes.from}`,
-        `${g.name}${separator}${element.attributes.to}`,
-        option(element.attributes.scope).getOrElse("intra-group"),
+        `${g.name}${separator}${element.attributes["from"]}`,
+        `${g.name}${separator}${element.attributes["to"]}`,
+        option(element.attributes["scope"]).getOrElse("intra-group"),
         option(element.attributes["extends-subgroups"]).getOrElse(false),
         option(element.attributes["bi-dir"]).getOrElse(false)
     )
@@ -112,4 +113,10 @@ const converter = {
     "formation-constraints": formationConstraints,
     "cardinality": cardinality,
     "compatibility": compatibility,
+}
+
+interface XMLElement {
+    elements: Array<XMLElement>
+    attributes: Array<Record<string, unknown>>
+    name: string
 }

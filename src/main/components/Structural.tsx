@@ -35,7 +35,7 @@ export type StructuralState = {
     toUpdate: Option<Component>
 }
 
-class Structural extends React.Component<{}, StructuralState> {
+class Structural extends React.Component<unknown, StructuralState> {
     constructor(props) {
         super(props);
         this.state = {
