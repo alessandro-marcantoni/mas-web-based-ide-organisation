@@ -103,15 +103,23 @@ export class Group extends Component {
     links: Set<Link>;
     constraints: Set<Constraint>;
 
-    constructor(name: string, min: number = 0, max: number = Number.MAX_VALUE) {
+    constructor(
+        name: string,
+        min: number = 0,
+        max: number = Number.MAX_VALUE,
+        subgroups: Set<Group> = new Set<Group>(),
+        roles: Set<Role> = new Set<Role>(),
+        links: Set<Link> = new Set<Link>(),
+        constraints: Set<Constraint> = new Set<Constraint>()
+    ) {
         super("group");
         this.name = name;
         this.min = min;
         this.max = max;
-        this.subgroups = new Set<Group>()
-        this.roles = new Set<Role>()
-        this.links = new Set<Link>()
-        this.constraints = new Set<Constraint>()
+        this.subgroups = subgroups
+        this.roles = roles
+        this.links = links
+        this.constraints = constraints
     }
 
     /**
