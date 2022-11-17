@@ -4,7 +4,7 @@ import {Option, none, some} from "scala-types/dist/option/option";
 import {fromArray, list, List} from "scala-types/dist/list/list";
 
 /**
- * Create a new structural component.
+ * Create a new structural {@link Component}.
  * @param state The current state of the structural specification.
  * @param type The type of component to create.
  * @param linkType The type of link to create (in case the component is a link).
@@ -19,7 +19,7 @@ export const createComponent:
                     (getAllRoles(state.components).exists(r => r.name === state.role) && !toAdd))
                     return none()
                 return some(new Role(
-                    calcName(state.role, state.added),
+                    state.role,
                     state.roleExtension ?
                         getAllRoles(state.components).find(r => r.name === state.roleExtension).getOrElse(undefined) :
                         undefined))
@@ -35,43 +35,69 @@ export const createComponent:
         }
     }
 
+/**
+ * Add a new structural {@link Component} to the current ones.
+ * @param state The current state of the structural specification.
+ * @param comp The component to be added.
+ * @param toAdd Whether the component should be added directly to the diagram or not.
+ * @returns The new state of the structural specification.
+ */
 export const add: (state: StructuralState, comp: Component, toAdd: boolean) => StructuralState = (state, comp, toAdd) => {
-    return {
+    return !state ? state : {
         components: !toAdd ? state.components.appended(comp) : state.components,
         added: toAdd ? state.added.appended(comp) : state.added,
         showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
-        group: getAllGroups(state.components).size() === 0 ? state.group : getAllGroups(state.components)[0].name,
-        role: getAllRoles(state.components).size() === 0 ? state.role : getAllRoles(state.components)[0].name,
+        group: getAllGroups(state.components).size() === 0 ? state.group : getAllGroups(state.components).get(0).name,
+        role: getAllRoles(state.components).size() === 0 ? state.role : getAllRoles(state.components).get(0).name,
         roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
         link: { to: "", from: "" }, toUpdate: state.toUpdate
     }
 }
 
+/**
+ * Add a structural {@link Component} to a {@link Group}.
+ * @param state The current state of the structural specification.
+ * @param component The name of the {@link Component} to be added to a {@link Group}.
+ * @param type The type of {@link Component} to be added.
+ * @param group The destination {@link Group}.
+ * @returns The new state of the diagram.
+ */
 export const addToGroup:
     (state: StructuralState, component: string, type: string, group: string) => List<Component> = (state, component, type, group) => {
-        const g: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
+        const destinationGroup: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
         if (type === "role") {
-            option(getAllRoles(state.added).find(c => c.name === component))
+            getAllRoles(state.added).find(c => c.name === component)
                 .map(o => o.also(r => { r.name = `${group}${separator}${r.name.replace(separatorRegex, "")}` }))
-                .apply(o => g.apply(og => og.addRole(o)))
+                .apply(o => destinationGroup.apply(og => og.addRole(o)))
         }
         if (type === "group") {
-            option(getAllGroups(state.added).find(c => c.name === component))
-                .map(o => o.also(g => { g.name = `${group}${separator}${g.name.replace(separatorRegex, "")}` }))
-                .apply(o => g.apply(og => og.addSubgroup(o)))
+            getAllGroups(state.added).find(c => c.name === component)
+                .map(o => o.also(g => { g.name = `${g.name.replace(separatorRegex, "")}` }))
+                .apply(o => destinationGroup.apply(og => {
+                    console.log(o)
+                    og.addSubgroup(o)
+                }))
         }
-        return g.map(og => type === "role" ?
+        return destinationGroup.map(og => type === "role" ?
             defined(state.added)
                 .filter(c => c.type !== "role" || (c as Role).name.replace(separatorRegex, "") !== component)
                 .collect(list(c => c.type === "group" && (c as Group).name === og.name, () => true), list(() => og, c => c)):
                 //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c):
             defined(state.added)
                 .filter(c => c.type !== "group" || (c as Group).name.replace(separatorRegex, "") !== component)
-                .collect(list(c => c.type === "group" && (c as Group).name === og.name, () => true), list(() => og, c => c))
+                .collect(list(c => c.type === "group" && (c as Group).name === og.name, () => true), list(() => og, c => c)))
                 //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c))
-        ).getOrElse(state.added)
+        .getOrElse(state.added)
     }
 
+/**
+ * Remove a structural {@link Component} from a {@link Group}.
+ * @param state The current state of the structural specification.
+ * @param component The name of the {@link Component} to be removed from a {@link Group}.
+ * @param type The type of {@link Component} to be removed.
+ * @param group The {@link Group} the {@link Component} is inside.
+ * @returns The new state of the diagram.
+ */
 export const removeFromGroup:
     (state: StructuralState, component: string, type: string, group: string) => List<Component> = (state, component, type, group) => {
         const g: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
@@ -87,8 +113,8 @@ export const removeFromGroup:
         return g.flatMap(og => comp.map(c => og.roles.size === 0 && og.subgroups.size === 0 ?
             defined(state.added)
                 .filter(c => c.type !== "group" || (c as Group).name !== og.name)
-                .appendedAll(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
-            state.added.appendedAll(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
+                .appended(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
+            state.added.appended(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
     }
 
 /**
@@ -129,10 +155,6 @@ export const getAllGroups: (components: List<Component>) => List<Group> = compon
  */
 export const getLinks: (components: List<Component>) => List<Link> = components =>
     getAllGroups(components).flatMap(c => fromSet(c.links))
-
-export const calcName: (name: string, components: List<Component>) => string = (name, components) =>
-    getAllRoles(components).map(r => r.name).contains(name)
-        ? calcName(name + "_", components) : name
 
 export const option: <T>(element: T) => Option<T> = (element) =>
     element ? some(element) : none()
