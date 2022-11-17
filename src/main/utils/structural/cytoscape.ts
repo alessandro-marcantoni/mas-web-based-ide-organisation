@@ -3,6 +3,12 @@ import {list, List} from "scala-types/dist/list/list";
 import {ElementDefinition} from "cytoscape";
 import {fromSet, separatorRegex} from "./utils";
 
+/**
+ * Convert a {@link Component} into an {@link ElementDefinition} to be displayed in cytoscape.
+ * @param c The {@link Component} to convert.
+ * @param group The name of the {@link Group} the {@link Component} is inside, if any.
+ * @returns The corresponding {@link ElementDefinition} representation.
+ */
 export function presentation(c: Component, group: string | undefined = undefined): List<ElementDefinition> {
     if (!c) return list()
     switch(c.type) {

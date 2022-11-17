@@ -8,5 +8,5 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     "no-case-declarations": "off",
   },
-  ignorePatterns: ["*.config.js"]
+  ignorePatterns: ["*.config.js"],
 };
