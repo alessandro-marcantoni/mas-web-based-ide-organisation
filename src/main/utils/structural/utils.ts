@@ -2,6 +2,7 @@ import {Compatibility, Component, Constraint, Group, Link, Role} from "./entitie
 import {StructuralState} from "../../components/Structural";
 import {Option, none, some} from "scala-types/dist/option/option";
 import {fromArray, list, List} from "scala-types/dist/list/list";
+import {Mapper, Predicate} from "scala-types/dist/utils";
 
 /**
  * Create a new structural {@link Component}.
@@ -69,7 +70,7 @@ export const addToGroup:
         if (type === "role") {
             getAllRoles(state.added).find(c => c.name === component)
                 .apply(o => destinationGroup.apply(og => og.addRole(
-                    new Role(`${group}${separator}${o.name.replace(separatorRegex, "")}`, o.extension, o.min, o.max)
+                    new Role(`${group}${separator}${o.name.replace(separatorRegex, "")}`, o.extends, o.min, o.max)
                 )))
         }
         if (type === "group") {
@@ -82,28 +83,16 @@ export const addToGroup:
             defined(state.added)
                 .filter(c => c.type !== "role" || (c as Role).name !== component)
                 .collect(
-                    list(
-                        c => c.type === "group" && (c as Group).name === og.name,
-                            c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component),
-                            c => c.type === "constraint" && (c as Constraint).constraint === "compatibility" && ((c as Compatibility).from === component || (c as Compatibility).to === component),
-                        () => true
-                    ),
-                    list(
-                        () => og,
-                            l => new Link(l.label, l.from === component ? separate(group, component) : l.from, l.to === component ? separate(group, component) : l.to, l.scope, l.extendsSubgroups, l.biDir),
-                            c => new Compatibility(c.from === component ? separate(group, component) : c.from, c.to === component ? separate(group, component) : c.to, c.scope, c.extendsSubgroups, c.biDir),
-                            c => c
-                    )
-                ):
-                //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c):
+                    list(c => c.type === "group" && (c as Group).name === og.name, () => true),
+                    list(() => og, c => c)
+                )
+                .collect(updateLinksPredicates(component), updateLinksMappers(component, separate(group))):
             defined(state.added)
                 .filter(c => c.type !== "group" || (c as Group).name !== component)
                 .collect(
                     list(c => c.type === "group" && (c as Group).name === og.name, () => true),
                     list(() => og, c => c))
-        )
-                //.map(c => c.type === "group" && (c as Group).name === og.name ? og : c))
-        .getOrElse(state.added)
+        ).getOrElse(state.added)
     }
 
 /**
@@ -119,18 +108,20 @@ export const removeFromGroup:
         const g: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
         let comp: Option<Component>
         if (type === "role") {
-            comp = g.map(o => fromSet(o.roles)).flatMap(o => o.find(r => r && r.name === component))
+            comp = g.flatMap((o: Group) => defined(fromSet(o.roles)).find((r: Role) => r.name === component))
             comp.apply(c => g.apply(o => o.removeRole(c as Role)))
         }
         if (type === "group") {
-            comp = g.map(o => fromSet(o.subgroups)).flatMap(o => o.find(g => g && g.name === component))
+            comp = g.flatMap((o: Group) => defined(fromSet(o.subgroups)).find((r: Group) => r.name === component))
             comp.apply(c => g.apply(o => o.removeSubgroup(c as Group)))
         }
-        return g.flatMap(og => comp.map(c => og.roles.size === 0 && og.subgroups.size === 0 ?
+        return g.flatMap(og => comp.map(oc => og.roles.size === 0 && og.subgroups.size === 0 ?
             defined(state.added)
+                .collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
                 .filter(c => c.type !== "group" || (c as Group).name !== og.name)
-                .appended(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
-            state.added.appended(c.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
+                .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
+            state.added.collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
+                .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
     }
 
 /**
@@ -170,7 +161,8 @@ export const getAllGroups: (components: List<Component>) => List<Group> = compon
  * @returns The List containing all the {@link Link}s.
  */
 export const getLinks: (components: List<Component>) => List<Link> = components =>
-    getAllGroups(components).flatMap(c => fromSet(c.links))
+    components.collect(list(c => c.type === "link"), list(c => c as Link))
+        .appendedAll(getAllGroups(components).flatMap(c => fromSet(c.links)))
 
 export const getConstraints: (components: List<Component>) => List<Constraint> = components =>
     getAllGroups(components).flatMap(c => fromSet(c.constraints))
@@ -184,11 +176,33 @@ export const option: <T>(element: T) => Option<T> = (element) =>
 
 export const separator = '___'
 export const separatorRegex = new RegExp(`.*${separator}`)
-export const separate: (group: string, component: string) => string = (group, component) =>
-    `${group}${separator}${component}`
+export const separate: (group: string) => (component: string) => string =
+    (group) => (component) => `${group}${separator}${component}`
+export function shortName(longName: string, regex: RegExp = separatorRegex): string {
+    return longName.replace(regex, "")
+}
 
 export const fromSet: <T>(s: Set<T>) => List<T> = (s) =>
     fromArray(Array.from(s))
 
 export const defined: <T>(l: List<T>) => List<T> = (l) =>
     l.filter(e => e !== undefined)
+
+const updateLinksPredicates: (component: string) => List<Predicate<Component>> = component => list(
+    c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component),
+    c => c.type === "constraint" && (c as Constraint).constraint === "compatibility" &&
+        ((c as Compatibility).from === component || (c as Compatibility).to === component),
+    () => true
+)
+
+const updateLinksMappers: (component: string, f: (s: string) => string) => List<Mapper<Component, Component>> = (component, f) => list(
+    l => new Link(
+        (l as Link).label, (l as Link).from === component ? f(component) : (l as Link).from,
+        (l as Link).to === component ? f(component) : (l as Link).to,
+        (l as Link).scope, (l as Link).extendsSubgroups, (l as Link).biDir),
+    c => new Compatibility(
+        (c as Compatibility).from === component ? f(component) : (c as Compatibility).from,
+        (c as Compatibility).to === component ? f(component) : (c as Compatibility).to,
+        (c as Compatibility).scope, (c as Compatibility).extendsSubgroups, (c as Compatibility).biDir),
+    c => c
+)
