@@ -2,13 +2,7 @@ import React from "react";
 import Sidebar from "./structural/Sidebar";
 import Diagram from "./structural/Diagram";
 import {Component} from "../utils/structural/entities";
-import {
-    createComponent,
-    getAllRoles,
-    getAllGroups,
-    getGlobalGroups,
-    addToGroup, removeFromGroup, add
-} from "../utils/structural/utils";
+import {getAllRoles, getAllGroups, getGlobalGroups} from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
 import GroupModal from "./structural/GroupModal";
@@ -18,6 +12,7 @@ import {list, List, toArray} from "scala-types/dist/list/list"
 import {loadSpec} from "../utils/structural/loader";
 import {serialize} from "../utils/structural/serializer";
 import {presentation} from "../utils/structural/cytoscape";
+import {add, addToGroup, createComponent, removeFromGroup} from "../utils/structural/diagram";
 
 export type StructuralState = {
     components: List<Component>
