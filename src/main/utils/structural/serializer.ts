@@ -1,5 +1,5 @@
 import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
-import {getAllRoles, getGlobalGroups, option, separatorRegex} from "./utils";
+import {getAllRoles, getGlobalGroups, option, shortName} from "./utils";
 import {List, toArray} from "scala-types/dist/list/list";
 
 export const serialize: (components: List<Component>, diagram: List<Component>) => string = (components, diagram) =>
@@ -55,10 +55,6 @@ const groupElements = {
     links: links,
     subgroups: subgroups,
     constraints: constraints,
-}
-
-function shortName(longName: string, regex: RegExp = separatorRegex): string {
-    return longName.replace(regex, "")
 }
 
 function formatXml(xml: string, tab: string = "\t") {
