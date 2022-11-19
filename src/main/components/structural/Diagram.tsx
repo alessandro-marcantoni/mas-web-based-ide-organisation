@@ -3,8 +3,9 @@ import CytoscapeComponent from "react-cytoscapejs";
 import {Component, Group} from "../../utils/structural/entities";
 import {Core} from "cytoscape";
 import cytoscape from "cytoscape";
-import edgehandles from 'cytoscape-edgehandles';
-import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
+import edgehandles from "cytoscape-edgehandles";
+import compoundDragAndDrop from "cytoscape-compound-drag-and-drop";
+import dblclick from "cytoscape-dblclick";
 import * as nodesStyle from "../../style/cytoscape/style.json";
 import {defined, fromSet} from "../../utils/structural/utils";
 import {list, List, toArray} from "scala-types/dist/list/list";
@@ -29,6 +30,7 @@ class Diagram extends React.Component<DiagramProps, unknown> {
     componentDidMount() {
         cytoscape.use(edgehandles)
         cytoscape.use(compoundDragAndDrop)
+        cytoscape.use(dblclick)
         const defaults = {
             canConnect: () => true,
         };
@@ -57,7 +59,7 @@ class Diagram extends React.Component<DiagramProps, unknown> {
             this.cy.layout({ name: "circle" }).run()
             this.cy.center()
         })
-        this.cy.on("cxttap", (e) => {
+        this.cy.on("dblclick", (e) => {
             eh.start(e.target)
         })
         // @ts-ignore
@@ -75,7 +77,7 @@ class Diagram extends React.Component<DiagramProps, unknown> {
         this.cy.on("cdndout", (event, dropTarget) => {
             this.props.onRemoveFromGroup(event.target._private.data.id, event.target._private.data.group ? "group" : "role", dropTarget._private.data.id)
         })
-        this.cy.on("click", (e) => {
+        this.cy.on("cxttap", (e) => {
             if (e.target._private.data.id) {
                 this.props.onSelectedComponent(e.target._private.data.group ? "group" : "role", e.target._private.data.id)
             }
