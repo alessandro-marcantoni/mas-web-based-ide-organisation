@@ -1,12 +1,12 @@
 import {StructuralState} from "../main/components/Structural";
 import {
-    fromSet, getCompatibilities, getGlobalGroups,
+    fromSet, getAllRoles, getCompatibilities, getGlobalGroups,
     getLinks, separate
 } from "../main/utils/structural/utils";
 import {none} from "scala-types/dist/option/option";
 import {Component, Group, Link, Role} from "../main/utils/structural/entities";
 import {List, list} from "scala-types/dist/list/list";
-import {add, addToGroup, createComponent, removeFromGroup} from "../main/utils/structural/diagram";
+import {add, addToGroup, createComponent, removeComponent, removeFromGroup} from "../main/utils/structural/diagram";
 
 let globalState: StructuralState = {
     components: list(), added: list(),
@@ -90,6 +90,22 @@ describe("create a structural specification", () => {
             globalState.added = added
         })
     })
+    describe("remove components", () => {
+        test("remove a link", () => {
+            getLinks(globalState.added).find(c => c.to === "Role2").apply(l => {
+                const added = removeComponent(globalState, "link", l)
+                expect(getLinks(added).find(l => l.to === "Role2").isDefined()).toBeFalsy()
+            })
+        })
+        test("remove a role", () => {
+            getAllRoles(globalState.added).find(c => c.name === separate("Group1")("Role1")).apply((r: Role) => {
+                const added = removeComponent(globalState, "role", r)
+                expect(getAllRoles(added).find(c => c.name === r.name).isDefined()).toBeFalsy()
+                expect(getLinks(added).find(l => l.from === separate("Group1")("Role1") ||
+                    l.to === separate("Group1")("Role1")).isDefined()).toBeFalsy()
+            })
+        })
+    });
 })
 
 const createRole: (name: string, extend: string) => void = (name, extend) => {
