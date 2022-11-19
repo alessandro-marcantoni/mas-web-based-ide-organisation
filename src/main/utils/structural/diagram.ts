@@ -6,12 +6,12 @@ import {
     defined,
     fromSet,
     getAllGroups,
-    getAllRoles,
+    getAllRoles, isInGroup,
     option,
     separate,
     separator,
     separatorRegex,
-    shortName
+    shortName, splitName
 } from "./utils";
 import {Mapper, Predicate} from "scala-types/dist/utils";
 
@@ -23,30 +23,60 @@ import {Mapper, Predicate} from "scala-types/dist/utils";
  * @param toAdd Whether the component should be added straight away to the diagram or not.
  * @returns An {@link Option} containing the new structural component if it could be created.
  */
-export const createComponent:
-    (state: StructuralState, type: string, linkType: string, toAdd: boolean) => Option<Component> = (state, type, linkType, toAdd) => {
-    switch (type) {
-        case "role":
-            if ((getAllRoles(state.added).exists(r => r.name === state.role) && toAdd) ||
-                (getAllRoles(state.components).exists(r => r.name === state.role) && !toAdd))
+export const createComponent: (state: StructuralState, type: string, linkType: string, toAdd: boolean) => Option<Component> =
+    (state, type, linkType, toAdd) => {
+        switch (type) {
+            case "role":
+                if ((getAllRoles(state.added).exists(r => r.name === state.role) && toAdd) ||
+                    (getAllRoles(state.components).exists(r => r.name === state.role) && !toAdd))
+                    return none()
+                return some(new Role(
+                    state.role,
+                    toAdd ?
+                        getAllRoles(state.components).find(r => r.name === state.role).flatMap(r => option(r.extends)).getOrElse(undefined) :
+                        state.roleExtension ? getAllRoles(state.components).find(c => c.name === state.roleExtension).getOrElse(undefined) : undefined
+                ))
+            case "group":
+                if ((getAllGroups(state.components).exists(g => g.name === state.group) && !toAdd) ||
+                    (getAllGroups(state.added).exists(g => g.name === state.group) && toAdd))
+                    return none()
+                return some(new Group(state.group))
+            case "link":
+                return linkType === "compatibility" ?
+                        (isInGroup(state.link.from) && isInGroup(state.link.to) ?
+                            some(new Compatibility(state.link.from, state.link.to)) :
+                            none()):
+                        some(new Link(linkType, state.link.from, state.link.to))
+            default:
                 return none()
-            return some(new Role(
-                state.role,
-                toAdd ?
-                    getAllRoles(state.components).find(r => r.name === state.role).flatMap(r => option(r.extends)).getOrElse(undefined) :
-                    state.roleExtension ? getAllRoles(state.components).find(c => c.name === state.roleExtension).getOrElse(undefined) : undefined
-            ))
-        case "group":
-            if ((getAllGroups(state.components).exists(g => g.name === state.group) && !toAdd) ||
-                (getAllGroups(state.added).exists(g => g.name === state.group) && toAdd))
-                return none()
-            return some(new Group(state.group))
-        case "link":
-            return some(new Link(linkType, state.link.from, state.link.to))
-        default:
-            return none()
+        }
     }
-}
+
+export const removeComponent: (state: StructuralState, type: string, comp: Component) => List<Component> =
+    (state, type, comp) => {
+        switch (type) {
+            case "link":
+                const l = comp as Link
+                return state.added.filter(c => c.type !== type ||
+                    (c as Link).label !== l.label ||
+                    (c as Link).from !== l.from ||
+                    (c as Link).to !== l.to)
+            case "role":
+                const r = comp as Role
+                const added = isInGroup(r.name) ?
+                    removeFromGroup(state, r.name, "role", splitName(r.name).group) : state.added
+                return defined(added.collect(
+                    list(c => c.type === "role",
+                        c => c.type === "link",
+                        c => c.type === "constraint" && (c as Constraint).constraint === "compatibility",
+                        () => true),
+                    list(c => (c as Role).name === r.name ? undefined : c,
+                        c => (c as Link).to === r.name || (c as Link).from === r.name ? undefined : c,
+                        c => (c as Compatibility).to === r.name || (c as Compatibility).from === r.name ? undefined : c,
+                        c => c)
+                ))
+        }
+    }
 
 /**
  * Add a new structural {@link Component} to the current ones.
@@ -55,17 +85,18 @@ export const createComponent:
  * @param toAdd Whether the component should be added directly to the diagram or not.
  * @returns The new state of the structural specification.
  */
-export const add: (state: StructuralState, comp: Component, toAdd: boolean) => StructuralState = (state, comp, toAdd) => {
-    return !state ? state : {
-        components: !toAdd ? state.components.appended(comp) : state.components,
-        added: toAdd ? state.added.appended(comp) : state.added,
-        showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
-        group: getAllGroups(state.components).size() === 0 ? state.group : getAllGroups(state.components).get(0).name,
-        role: getAllRoles(state.components).size() === 0 ? state.role : getAllRoles(state.components).get(0).name,
-        roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
-        link: { to: "", from: "" }, toUpdate: state.toUpdate
+export const add: (state: StructuralState, comp: Component, toAdd: boolean) => StructuralState =
+    (state, comp, toAdd) => {
+        return !state ? state : {
+            components: !toAdd ? state.components.appended(comp) : state.components,
+            added: toAdd ? state.added.appended(comp) : state.added,
+            showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
+            group: getAllGroups(state.components).size() === 0 ? state.group : getAllGroups(state.components).get(0).name,
+            role: getAllRoles(state.components).size() === 0 ? state.role : getAllRoles(state.components).get(0).name,
+            roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
+            link: { to: "", from: "" }, toUpdate: state.toUpdate
+        }
     }
-}
 
 /**
  * Add a structural {@link Component} to a {@link Group}.
@@ -75,36 +106,36 @@ export const add: (state: StructuralState, comp: Component, toAdd: boolean) => S
  * @param group The destination {@link Group}.
  * @returns The new state of the diagram.
  */
-export const addToGroup:
-    (state: StructuralState, component: string, type: string, group: string) => List<Component> = (state, component, type, group) => {
-    const destinationGroup: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
-    if (type === "role") {
-        getAllRoles(state.added).find(c => c.name === component)
-            .apply(o => destinationGroup.apply(og => og.addRole(
-                new Role(`${group}${separator}${o.name.replace(separatorRegex, "")}`, o.extends, o.min, o.max)
-            )))
+export const addToGroup: (state: StructuralState, component: string, type: string, group: string) => List<Component> =
+    (state, component, type, group) => {
+        const destinationGroup: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
+        if (type === "role") {
+            getAllRoles(state.added).find(c => c.name === component)
+                .apply(o => destinationGroup.apply(og => og.addRole(
+                    new Role(`${group}${separator}${o.name.replace(separatorRegex, "")}`, o.extends, o.min, o.max)
+                )))
+        }
+        if (type === "group") {
+            getAllGroups(state.added).find(c => c.name === component)
+                .apply(o => destinationGroup.apply(og => og.addSubgroup(
+                    new Group(`${o.name.replace(separatorRegex, "")}`, o.min, o.max, o.subgroups, o.roles, o.links, o.constraints)
+                )))
+        }
+        return destinationGroup.map(og => type === "role" ?
+            defined(state.added)
+                .filter(c => c.type !== "role" || (c as Role).name !== component)
+                .collect(
+                    list(c => c.type === "group" && (c as Group).name === og.name, () => true),
+                    list(() => og, c => c)
+                )
+                .collect(updateLinksPredicates(component), updateLinksMappers(component, separate(group))):
+            defined(state.added)
+                .filter(c => c.type !== "group" || (c as Group).name !== component)
+                .collect(
+                    list(c => c.type === "group" && (c as Group).name === og.name, () => true),
+                    list(() => og, c => c))
+        ).getOrElse(state.added)
     }
-    if (type === "group") {
-        getAllGroups(state.added).find(c => c.name === component)
-            .apply(o => destinationGroup.apply(og => og.addSubgroup(
-                new Group(`${o.name.replace(separatorRegex, "")}`, o.min, o.max, o.subgroups, o.roles, o.links, o.constraints)
-            )))
-    }
-    return destinationGroup.map(og => type === "role" ?
-        defined(state.added)
-            .filter(c => c.type !== "role" || (c as Role).name !== component)
-            .collect(
-                list(c => c.type === "group" && (c as Group).name === og.name, () => true),
-                list(() => og, c => c)
-            )
-            .collect(updateLinksPredicates(component), updateLinksMappers(component, separate(group))):
-        defined(state.added)
-            .filter(c => c.type !== "group" || (c as Group).name !== component)
-            .collect(
-                list(c => c.type === "group" && (c as Group).name === og.name, () => true),
-                list(() => og, c => c))
-    ).getOrElse(state.added)
-}
 
 /**
  * Remove a structural {@link Component} from a {@link Group}.
@@ -114,26 +145,26 @@ export const addToGroup:
  * @param group The {@link Group} the {@link Component} is inside.
  * @returns The new state of the diagram.
  */
-export const removeFromGroup:
-    (state: StructuralState, component: string, type: string, group: string) => List<Component> = (state, component, type, group) => {
-    const g: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
-    let comp: Option<Component>
-    if (type === "role") {
-        comp = g.flatMap((o: Group) => defined(fromSet(o.roles)).find((r: Role) => r.name === component))
-        comp.apply(c => g.apply(o => o.removeRole(c as Role)))
+export const removeFromGroup: (state: StructuralState, component: string, type: string, group: string) => List<Component> =
+    (state, component, type, group) => {
+        const g: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
+        let comp: Option<Component>
+        if (type === "role") {
+            comp = g.flatMap((o: Group) => defined(fromSet(o.roles)).find((r: Role) => r.name === component))
+            comp.apply(c => g.apply(o => o.removeRole(c as Role)))
+        }
+        if (type === "group") {
+            comp = g.flatMap((o: Group) => defined(fromSet(o.subgroups)).find((r: Group) => r.name === component))
+            comp.apply(c => g.apply(o => o.removeSubgroup(c as Group)))
+        }
+        return g.flatMap(og => comp.map(oc => og.roles.size === 0 && og.subgroups.size === 0 ?
+            defined(state.added)
+                .collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
+                .filter(c => c.type !== "group" || (c as Group).name !== og.name)
+                .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
+            state.added.collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
+                .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
     }
-    if (type === "group") {
-        comp = g.flatMap((o: Group) => defined(fromSet(o.subgroups)).find((r: Group) => r.name === component))
-        comp.apply(c => g.apply(o => o.removeSubgroup(c as Group)))
-    }
-    return g.flatMap(og => comp.map(oc => og.roles.size === 0 && og.subgroups.size === 0 ?
-        defined(state.added)
-            .collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
-            .filter(c => c.type !== "group" || (c as Group).name !== og.name)
-            .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })) :
-        state.added.collect(updateLinksPredicates(component), updateLinksMappers(component, shortName))
-            .appended(oc.also(cc => { cc.name = cc.name.replace(separatorRegex, "") })))).getOrElse(state.added)
-}
 
 const updateLinksPredicates: (component: string) => List<Predicate<Component>> = component => list(
     c => c.type === "link" && ((c as Link).from === component || (c as Link).to === component),

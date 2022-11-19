@@ -12,7 +12,7 @@ import {list, List, toArray} from "scala-types/dist/list/list"
 import {loadSpec} from "../utils/structural/loader";
 import {serialize} from "../utils/structural/serializer";
 import {presentation} from "../utils/structural/cytoscape";
-import {add, addToGroup, createComponent, removeFromGroup} from "../utils/structural/diagram";
+import {add, addToGroup, createComponent, removeComponent, removeFromGroup} from "../utils/structural/diagram";
 
 export type StructuralState = {
     components: List<Component>
@@ -47,11 +47,20 @@ class Structural extends React.Component<unknown, StructuralState> {
         this.onAdditionToGroup = this.onAdditionToGroup.bind(this)
         this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
         this.onSelectedComponent = this.onSelectedComponent.bind(this)
+        this.deleteComponent = this.deleteComponent.bind(this)
     }
 
     addComponent(c: string, l: string = "", toAdd: boolean = false) {
         createComponent(this.state, c, l, toAdd)
             .apply(comp => this.setState((state: StructuralState) => add(state, comp, toAdd)))
+    }
+
+    deleteComponent(c: Component): void {
+        this.setState((state) => {
+            return {
+                added: removeComponent(state, c.type, c)
+            }
+        })
     }
 
     onPropertyChange(property: string, value: string): void {
@@ -144,7 +153,8 @@ class Structural extends React.Component<unknown, StructuralState> {
                         component={this.state.toUpdate}
                         components={this.state.added}
                         onAdditionToGroup={this.onAdditionToGroup}
-                        onRemoveFromGroup={this.onRemoveFromGroup}/>
+                        onRemoveFromGroup={this.onRemoveFromGroup}
+                        onComponentDelete={this.deleteComponent}/>
                     <div className="row m-0">
                         <div className="col-2 vh-100 p-0">
                             <button onClick={() => console.log(toArray(this.state.added))}>SHOW STATE</button>
