@@ -59,6 +59,11 @@ export const separate: (group: string) => (component: string) => string =
 export function shortName(longName: string, regex: RegExp = separatorRegex): string {
     return longName.replace(regex, "")
 }
+export const isInGroup: (component: string) => boolean =
+    component => component.includes(separator)
+export const splitName: (longName: string) => { group: string, name: string } = longName => {
+    return { group: longName.split(separator)[0], name: longName.split(separator)[1] }
+}
 
 export const fromSet: <T>(s: Set<T>) => List<T> = (s) =>
     fromArray(Array.from(s))
