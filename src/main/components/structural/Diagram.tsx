@@ -2,16 +2,12 @@ import React from "react";
 import CytoscapeComponent from "react-cytoscapejs";
 import {Component, Group} from "../../utils/structural/entities";
 import {Core} from "cytoscape";
-import cytoscape from "cytoscape";
-import edgehandles from "cytoscape-edgehandles";
-import compoundDragAndDrop from "cytoscape-compound-drag-and-drop";
-import dblclick from "cytoscape-dblclick";
 import * as nodesStyle from "../../style/cytoscape/style.json";
 import {defined, fromSet} from "../../utils/structural/utils";
 import {list, List, toArray} from "scala-types/dist/list/list";
-import {presentation} from "../../utils/structural/cytoscape";
+import {config, presentation} from "../../utils/structural/cytoscape";
 
-type DiagramProps = {
+export type DiagramProps = {
     elements: List<Component>
     link: {
         from: string,
@@ -26,62 +22,27 @@ type DiagramProps = {
 
 class Diagram extends React.Component<DiagramProps, unknown> {
     private cy: Core
+    private ehOptions = {
+        canConnect: (source, target) =>
+            (source._private.data && source._private.data.parent) ||
+            (target._private.data && target._private.data.parent),
+    }
+    private cddOptions = {
+        grabbedNode: node =>
+            !defined(this.props.elements)
+                .collect(list(e => e.type === "group"), list(e => e as Group))
+                .flatMap(g => fromSet(g.subgroups))
+                .map(g => g.name)
+                .contains(node._private.data.parent),
+        dropTarget: node => node._private.data.group,
+        dropSibling: () => true,
+        newParentNode: (grabbedNode, dropSibling) => dropSibling,
+        overThreshold: 1,
+        outThreshold: 50
+    }
 
     componentDidMount() {
-        cytoscape.use(edgehandles)
-        cytoscape.use(compoundDragAndDrop)
-        cytoscape.use(dblclick)
-        const defaults = {
-            canConnect: () => true,
-        };
-        const options = {
-            grabbedNode: node =>
-                !defined(this.props.elements)
-                    .collect(list(e => e.type === "group"), list(e => e as Group))
-                    .flatMap(g => fromSet(g.subgroups))
-                    .map(g => g.name)
-                    .contains(node._private.data.parent),
-            dropTarget: node => node._private.data.group,
-            dropSibling: () => true,
-            newParentNode: (grabbedNode, dropSibling) => dropSibling,
-            overThreshold: 1,
-            outThreshold: 50
-        }
-        //@ts-ignore
-        const eh = this.cy.edgehandles(defaults)
-        //@ts-ignore
-        this.cy.compoundDragAndDrop(options);
-        this.cy.center()
-        this.cy.on("free", () => {
-            //console.log(e.target._private.position)
-        })
-        this.cy.on("add", () => {
-            this.cy.layout({ name: "circle" }).run()
-            this.cy.center()
-        })
-        this.cy.on("dblclick", (e) => {
-            eh.start(e.target)
-        })
-        // @ts-ignore
-        this.cy.on("ehcomplete", (ev, s, t, e) => {
-            this.props.onLinkCreation(s._private.data.id, t._private.data.id)
-            this.cy.remove(e)
-        })
-        // @ts-ignore
-        this.cy.on("cdnddrop", (event, dropTarget) => {
-            if (dropTarget._private.data) {
-                this.props.onAdditionToGroup(event.target._private.data.id, event.target._private.data.group ? "group" : "role", dropTarget._private.data.id)
-            }
-        })
-        // @ts-ignore
-        this.cy.on("cdndout", (event, dropTarget) => {
-            this.props.onRemoveFromGroup(event.target._private.data.id, event.target._private.data.group ? "group" : "role", dropTarget._private.data.id)
-        })
-        this.cy.on("cxttap", (e) => {
-            if (e.target._private.data.id) {
-                this.props.onSelectedComponent(e.target._private.data.group ? "group" : "role", e.target._private.data.id)
-            }
-        })
+        config(this.cy, this.ehOptions, this.cddOptions, this.props)
     }
 
     render() {
