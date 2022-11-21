@@ -1,6 +1,6 @@
 import {Cardinality, Compatibility, Component, Group, Link, Role} from "./entities";
 import convert from 'xml-js';
-import {getAllGroups, getLinks, option, separator, separatorRegex} from "./utils";
+import {getAllGroups, getLinks, option, separate, separator, separatorRegex} from "./utils";
 import {fromArray, List, list} from "scala-types/dist/list/list";
 
 export const loadSpec: (path: string) => Promise<List<List<Component>>> = async (path) => {
@@ -65,8 +65,8 @@ const links = (element: XMLElement, g: Group) =>
 const link = (element: XMLElement, g: Group) =>
     new Link(
         element.attributes["type"],
-        `${g.name}${separator}${element.attributes["from"]}`,
-        `${g.name}${separator}${element.attributes["to"]}`,
+        separate(g.name)(element.attributes["from"]),
+        separate(g.name)(element.attributes["to"]),
         option(element.attributes["scope"]).getOrElse("intra-group"),
         option(element.attributes["extends-subgroups"]).getOrElse(false),
         option(element.attributes["bi-dir"]).getOrElse(false),
@@ -94,8 +94,8 @@ const cardinality = (element: XMLElement, _: Group) =>
 
 const compatibility = (element: XMLElement, g: Group) =>
     new Compatibility(
-        `${g.name}${separator}${element.attributes["from"]}`,
-        `${g.name}${separator}${element.attributes["to"]}`,
+        separate(g.name)(element.attributes["from"]),
+        separate(g.name)(element.attributes["to"]),
         option(element.attributes["scope"]).getOrElse("intra-group"),
         option(element.attributes["extends-subgroups"]).getOrElse(false),
         option(element.attributes["bi-dir"]).getOrElse(false)
