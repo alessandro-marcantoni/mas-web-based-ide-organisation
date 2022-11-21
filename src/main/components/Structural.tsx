@@ -1,8 +1,8 @@
 import React from "react";
 import Sidebar from "./structural/Sidebar";
 import Diagram from "./structural/Diagram";
-import {Component} from "../utils/structural/entities";
-import {getAllRoles, getAllGroups, getGlobalGroups} from "../utils/structural/utils";
+import {Component, Link} from "../utils/structural/entities";
+import {getAllRoles, getAllGroups, getGlobalGroups, isInGroup, splitName} from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
 import RoleModal from "./structural/RoleModal";
 import GroupModal from "./structural/GroupModal";
@@ -52,7 +52,18 @@ class Structural extends React.Component<unknown, StructuralState> {
 
     addComponent(c: string, l: string = "", toAdd: boolean = false) {
         createComponent(this.state, c, l, toAdd)
-            .apply(comp => this.setState((state: StructuralState) => add(state, comp, toAdd)))
+            .apply((comp: Component) => this.setState((state: StructuralState) => {
+                const s = add(state, comp, toAdd)
+                if (comp.type === "link") {
+                    const l = comp as Link
+                    if (isInGroup(l.from)) {
+                        s.added = addToGroup(s, `${l.from}${l.to}${l.label}`, "link", splitName(l.from).group)
+                    } else if (isInGroup(l.to)) {
+                        s.added = addToGroup(s, `${l.from}${l.to}${l.label}`, "link", splitName(l.to).group)
+                    }
+                }
+                return s;
+            }))
     }
 
     deleteComponent(c: Component): void {
@@ -81,7 +92,9 @@ class Structural extends React.Component<unknown, StructuralState> {
     }
 
     onAdditionToGroup(component: string, type: string, group: string): void {
+        console.log(toArray(this.state.added))
         this.setState((state) => {
+            console.log(toArray(state.added))
             return {
                 added: addToGroup(state, component, type, group)
             }
