@@ -1,21 +1,13 @@
-import {Cardinality, Compatibility, Component, Group, Link, Role} from "./entities";
+import {Cardinality, Compatibility, Component, Group, Role} from "./entities";
 import convert from 'xml-js';
-import {getAllGroups, getLinks, option, separate, separator, separatorRegex} from "./utils";
+import {getAllGroups, getAllRoles, option, separate, separator, shortName} from "./utils";
 import {fromArray, List, list} from "scala-types/dist/list/list";
 
 export const loadSpec: (path: string) => Promise<List<List<Component>>> = async (path) => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
     return list(
-        list(elems[1]).appendedAll(
-            fromArray<Role>(elems[0]).filter(e =>
-                getLinks(list(elems[1]))
-                    .map(c => c.from)
-                    .contains(e.name.replace(separatorRegex, "")) ||
-                getLinks(list(elems[1]))
-                    .map(c => c.to)
-                    .contains(e.name.replace(separatorRegex, "")))
-        ),
+        list(elems[1]).appendedAll(fromArray<Role>(elems[0]).filter(r => !getAllRoles(list(elems[1])).map(ar => shortName(ar.name)).contains(r.name))),
         fromArray<Component>(elems[0]).appendedAll(getAllGroups(list(elems[1])).map(g => new Group(g.name, g.min, g.max)))
     )
 }
@@ -41,14 +33,6 @@ const groupSpecification = (element: XMLElement) => {
         option(element.attributes["max"]).getOrElse(Number.MAX_VALUE)
     )
     element.elements.forEach(e => converter[e.name](e, g))
-    g.links.forEach(l => {
-        if (!Array.from(g.roles).map(r => r.name).includes(l.from)) {
-            l.from = l.from.replace(separatorRegex, "")
-        }
-        if (!Array.from(g.roles).map(r => r.name).includes(l.to)) {
-            l.to = l.to.replace(separatorRegex, "")
-        }
-    })
     return g
 }
 
@@ -57,20 +41,11 @@ const roles = (element: XMLElement, g: Group) =>
         .map(e => converter[e.name](e, g))
         .forEach(r => g.addRole(r))
 
-const links = (element: XMLElement, g: Group) =>
-    element.elements
-        .map(e => converter[e.name](e, g))
-        .forEach(l => g.addLink(l))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const links = (element: XMLElement, g: Group) => []
 
-const link = (element: XMLElement, g: Group) =>
-    new Link(
-        element.attributes["type"],
-        separate(g.name)(element.attributes["from"]),
-        separate(g.name)(element.attributes["to"]),
-        option(element.attributes["scope"]).getOrElse("intra-group"),
-        option(element.attributes["extends-subgroups"]).getOrElse(false),
-        option(element.attributes["bi-dir"]).getOrElse(false),
-    )
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const link = (element: XMLElement, g: Group) => undefined
 
 const subgroups = (element: XMLElement, g: Group) =>
     element.elements

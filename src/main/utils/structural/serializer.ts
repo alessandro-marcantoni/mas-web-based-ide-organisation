@@ -1,4 +1,4 @@
-import {Cardinality, Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
+import {Cardinality, Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {getAllRoles, getGlobalGroups, option, shortName} from "./utils";
 import {List, toArray} from "scala-types/dist/list/list";
 
@@ -20,12 +20,6 @@ export const roles: (roles: Set<Role>) => string = (roles) =>
     "<roles>\n" +
     Array.from(roles).map(r => `<role id="${shortName(r.name)}" ${r.min === 0 ? "" : `min="${r.min}"`} ${r.max === Number.MAX_VALUE ? "" : `max="${r.max}"`}/>`).join("\n") +
     "</roles>"
-
-export const links: (links: Set<Link>) => string = (links) =>
-    "<links>\n" +
-    Array.from(links).map(l =>
-        `<link from="${shortName(l.from)}" to="${shortName(l.to)}" type="${l.label}" scope="${l.scope}" extends-subgroups="${l.extendsSubgroups}" bi-dir="${l.biDir}"/>`).join("\n") +
-    "</links>"
 
 export const subgroups: (subgroups: Set<Group>) => string = (subgroups) =>
     "<subgroups>\n" +
@@ -52,7 +46,6 @@ export const constraint: (constraint: Constraint) => string = (constraint) => {
 
 const groupElements = {
     roles: roles,
-    links: links,
     subgroups: subgroups,
     constraints: constraints,
 }
