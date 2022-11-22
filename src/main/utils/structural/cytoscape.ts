@@ -1,4 +1,4 @@
-import {Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
+import {Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {list, List} from "scala-types/dist/list/list";
 import cytoscape, {Core, ElementDefinition} from "cytoscape";
 import {fromSet, separatorRegex} from "./utils";
@@ -24,11 +24,7 @@ export function presentation(c: Component, group: string | undefined = undefined
             return list<ElementDefinition>({ data: { id: g.name, label: g.name.replace(separatorRegex, ""), group: true, parent: group } })
                 .appendedAll(fromSet(g.roles).flatMap(e => presentation(e, g.name)))
                 .appendedAll(fromSet(g.subgroups).filter(s => s && s.name !== g.name).flatMap(e => presentation(e, g.name)))
-                .appendedAll(fromSet(g.links).flatMap(l => presentation(l)))
                 .appendedAll(fromSet(g.constraints).flatMap(con => presentation(con)))
-        case "link":
-            const l = c as Link
-            return list({ data: { id: `${l.from}${l.to}${l.label}`, source: l.from, target: l.to, label: l.label, link: true, arrow: "triangle" } })
         case "constraint":
             const con = c as Constraint
             switch (con.constraint) {

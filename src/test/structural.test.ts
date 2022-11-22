@@ -1,10 +1,9 @@
 import {StructuralState} from "../main/components/Structural";
 import {
-    fromSet, getAllRoles, getCompatibilities, getGlobalGroups,
-    getLinks, separate
+    fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate
 } from "../main/utils/structural/utils";
 import {none} from "scala-types/dist/option/option";
-import {Component, Group, Link, Role} from "../main/utils/structural/entities";
+import {Component, Group, Role} from "../main/utils/structural/entities";
 import {List, list} from "scala-types/dist/list/list";
 import {add, addToGroup, createComponent, removeComponent, removeFromGroup} from "../main/utils/structural/diagram";
 
@@ -56,9 +55,6 @@ describe("create a structural specification", () => {
             globalState.components.find(c => c.type === "group" && (c as Group).name === "Group2")
                 .apply(c => addComponent(c))
         })
-        test("add a link", () => {
-            createLink("authority", "Role1", "Role2")
-        })
     })
     describe("move components", () => {
         test("add role to group", () => {
@@ -91,18 +87,10 @@ describe("create a structural specification", () => {
         })
     })
     describe("remove components", () => {
-        test("remove a link", () => {
-            getLinks(globalState.added).find(c => c.to === "Role2").apply(l => {
-                const added = removeComponent(globalState, "link", l)
-                expect(getLinks(added).find(l => l.to === "Role2").isDefined()).toBeFalsy()
-            })
-        })
         test("remove a role", () => {
             getAllRoles(globalState.added).find(c => c.name === separate("Group1")("Role1")).apply((r: Role) => {
                 const added = removeComponent(globalState, "role", r)
                 expect(getAllRoles(added).find(c => c.name === r.name).isDefined()).toBeFalsy()
-                expect(getLinks(added).find(l => l.from === separate("Group1")("Role1") ||
-                    l.to === separate("Group1")("Role1")).isDefined()).toBeFalsy()
             })
         })
     });
@@ -148,24 +136,6 @@ const additionAssertions: (oldState: StructuralState, newState: StructuralState,
         expect(newState.added.exists(c => c.type === type && (type === "group" ? c as Group : c as Role).name === name)).toBeTruthy()
     }
 
-const createLink: (linkType: string, from: string, to: string) => void =
-    (linkType, from, to) => {
-        globalState.link.from = from
-        globalState.link.to = to
-        createComponent(globalState, "link", linkType, true).apply(c => {
-            const newState = add(globalState, c, true)
-            expect(globalState.added.size()).toBeLessThan(newState.added.size())
-            expect(globalState.components.size()).toBe(newState.components.size())
-            const link = newState.added.find(c => c.type === "link" && (c as Link).label === linkType)
-            if (link.isEmpty()) { throw new Error("Link not created correctly") }
-            link.apply(l => {
-                expect(l.from).toBe(from)
-                expect(l.to).toBe(to)
-            })
-            globalState = newState
-        })
-    }
-
 const assertRoleCorrectlyInGroup: (oldState: List<Component>, newState: List<Component>, role: string, group: string) => void =
     (oldState, newState, role, group) => {
         expect(oldState.find(c => c.type === "role" && (c as Role).name === role).isDefined()).toBeTruthy()
@@ -194,11 +164,7 @@ const assertGroupCorrectlyInGroup: (oldState: List<Component>, newState: List<Co
 
 const assertLinksUpdatedInAddition: (oldState: List<Component>, newState: List<Component>, role: string, group: string) => void =
     (oldState, newState, role, group) => {
-        // If there's a link or compatibility connected to the role, its name should be updated.
-        if (getLinks(oldState).exists(c => c.from === role || c.to === role)) {
-            expect(getLinks(oldState).count(c => c.from === role || c.to === role))
-                .toBe(getLinks(newState).count(c => c.from === separate(group)(role) || c.to === separate(group)(role)))
-        }
+        // If there's a compatibility connected to the role, its name should be updated.
         if (getCompatibilities(oldState).exists(c => c.from === role || c.to === role)) {
             expect(getCompatibilities(oldState).count(c => c.from === role || c.to === role))
                 .toBe(getCompatibilities(newState).count(c => c.from === separate(group)(role) || c.to === separate(group)(role)))
@@ -207,11 +173,7 @@ const assertLinksUpdatedInAddition: (oldState: List<Component>, newState: List<C
 
 const assertLinksUpdatedInRemoval: (oldState: List<Component>, newState: List<Component>, role: string, group: string) => void =
     (oldState, newState, role, group) => {
-        // If there's a link or compatibility connected to the role, its name should be updated.
-        if (getLinks(oldState).exists(c => c.from === separate(group)(role) || c.to === separate(group)(role))) {
-            expect(getLinks(oldState).count(c => c.from === separate(group)(role) || c.to === separate(group)(role)))
-                .toBe(getLinks(newState).count(c => c.from === role || c.to === role))
-        }
+        // If there's a compatibility connected to the role, its name should be updated.
         if (getCompatibilities(oldState).exists(c => c.from === separate(group)(role) || c.to === separate(group)(role))) {
             expect(getCompatibilities(oldState).count(c => c.from === separate(group)(role) || c.to === separate(group)(role)))
                 .toBe(getCompatibilities(newState).count(c => c.from === role || c.to === role))

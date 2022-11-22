@@ -1,4 +1,4 @@
-import {Compatibility, Component, Constraint, Group, Link, Role} from "./entities";
+import {Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {Option, none, some} from "scala-types/dist/option/option";
 import {fromArray, list, List} from "scala-types/dist/list/list";
 
@@ -32,15 +32,6 @@ export const getAllGroups: (components: List<Component>) => List<Group> = compon
         defined(components)
             .collect(list(c => c.type === "group"), list(c => c as Group))
             .flatMap(c => fromSet(c.subgroups)))
-
-/**
- * Retrieve all the {@link Link}s among the {@link Component}s recursively.
- * @param components The List containing all the {@link Component}s.
- * @returns The List containing all the {@link Link}s.
- */
-export const getLinks: (components: List<Component>) => List<Link> = components =>
-    components.collect(list(c => c.type === "link"), list(c => c as Link))
-        .appendedAll(getAllGroups(components).flatMap(c => fromSet(c.links)))
 
 export const getConstraints: (components: List<Component>) => List<Constraint> = components =>
     getAllGroups(components).flatMap(c => fromSet(c.constraints))

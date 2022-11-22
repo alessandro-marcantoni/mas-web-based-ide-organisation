@@ -34,25 +34,6 @@ export class Role extends Component {
     }
 }
 
-export class Link extends Component {
-    label: string;
-    from: string;
-    to: string;
-    scope: string;
-    extendsSubgroups: boolean;
-    biDir: boolean;
-
-    constructor(label: string, from: string, to: string, scope: string = "intra-group", extendsSubgroups: boolean = false, biDir: boolean = false) {
-        super("link");
-        this.label = label;
-        this.from = from;
-        this.to = to;
-        this.scope = scope;
-        this.extendsSubgroups = extendsSubgroups;
-        this.biDir = biDir;
-    }
-}
-
 export abstract class Constraint extends Component {
     constraint: string;
 
@@ -100,7 +81,6 @@ export class Group extends Component {
     max: number;
     subgroups: Set<Group>
     roles: Set<Role>;
-    links: Set<Link>;
     constraints: Set<Constraint>;
 
     constructor(
@@ -109,7 +89,6 @@ export class Group extends Component {
         max: number = Number.MAX_VALUE,
         subgroups: Set<Group> = new Set<Group>(),
         roles: Set<Role> = new Set<Role>(),
-        links: Set<Link> = new Set<Link>(),
         constraints: Set<Constraint> = new Set<Constraint>()
     ) {
         super("group");
@@ -118,7 +97,6 @@ export class Group extends Component {
         this.max = max;
         this.subgroups = subgroups
         this.roles = roles
-        this.links = links
         this.constraints = constraints
     }
 
@@ -138,10 +116,6 @@ export class Group extends Component {
 
     removeRole(r: Role) {
         this.roles.delete(r)
-    }
-
-    addLink(l: Link) {
-        this.links.add(l)
     }
 
     addConstraint(c: Constraint) {
