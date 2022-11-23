@@ -1,20 +1,29 @@
 [{
-  "selector": "node[role]",
-  "style": {
-    "width": 25,
-    "height": 25,
-    "background-color": "lightblue",
-    "z-index": 1
-  }
-}, {
-  "selector": "node[group]",
+  "selector": "node[?group]",
   "style": {
     "shape": "round-rectangle",
     "width": 100,
     "height": 50,
-    "background-color": "lightgray",
     "background-opacity": 0.5,
     "z-index": 0
+  }
+}, {
+  "selector": "node[?role]",
+  "style": {
+    "width": 25,
+    "height": 25,
+    "z-index": 1,
+    "background-color": "#C4DBE0"
+  }
+}, {
+  "selector": "node[?group]:orphan, node[?group]:orphan > node[?role]",
+  "style": {
+    "background-color": "#2EB5E0"
+  }
+}, {
+  "selector": "node[?group]:child, node[?group]:child > node[?role]",
+  "style": {
+    "background-color": "#00A8A8"
   }
 }, {
   "selector": "node[label]",
@@ -34,14 +43,24 @@
     "text-background-opacity": 1
   }
 }, {
-  "selector": "edge[arrow]",
+  "selector": "edge[arrow = 'compatibility']",
   "style": {
-    "target-arrow-shape": "data(arrow)",
-    "target-arrow-color": "black"
+    "target-arrow-shape": "diamond",
+    "target-arrow-color": "black",
+    "line-style": "dashed"
   }
 }, {
-  "selector": "edge.hollow",
+  "selector": "edge[arrow = 'extends']",
   "style": {
-    "target-arrow-fill": "hollow"
+    "target-arrow-shape": "triangle",
+    "target-arrow-fill": "hollow",
+    "target-arrow-color": "black",
+    "line-style": "solid"
+  }
+}, {
+  "selector": "edge[?biDir]",
+  "style": {
+    "source-arrow-shape": "diamond",
+    "source-arrow-color": "black"
   }
 }]
