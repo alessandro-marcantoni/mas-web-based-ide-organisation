@@ -157,6 +157,13 @@ class Structural extends React.Component<unknown, StructuralState> {
                         onComponentDelete={this.deleteComponent}/>
                     <div className="row m-0">
                         <div className="col-2 vh-100 p-0">
+                            <Sidebar
+                                role={this.state.role}
+                                group={this.state.group}
+                                roles={getAllRoles(this.state.components)}
+                                groups={getAllGroups(this.state.components)}
+                                addComponent={(c, add) => this.addComponent(c, "", add)}
+                                propertyChanged={this.onPropertyChange}/>
                             <button onClick={() => console.log(toArray(this.state.added))}>SHOW STATE</button>
                             <button onClick={() => console.log(toArray(this.state.components))}>DISTINCT ROLES</button>
                             <button onClick={() => loadSpec("http://localhost:8080/spec.xml").then(elems => {
@@ -167,14 +174,8 @@ class Structural extends React.Component<unknown, StructuralState> {
                                     group: getAllGroups(elems.get(1)).size() > 0 ? getAllGroups(elems.get(1)).get(0).name : "" })
                             })}>LOAD</button>
                             <button onClick={() => console.log(serialize(this.state.components, this.state.added))}>SERIALIZE</button>
-                            <button onClick={() => console.log(toArray(this.state.added.flatMap(presentation)))}>DIAGRAM</button>
-                            <Sidebar
-                                role={this.state.role}
-                                group={this.state.group}
-                                roles={getAllRoles(this.state.components)}
-                                groups={getAllGroups(this.state.components)}
-                                addComponent={(c, add) => this.addComponent(c, "", add)}
-                                propertyChanged={this.onPropertyChange}/>
+                            <button onClick={() => console.log(toArray(this.state.added.flatMap((c) => presentation(c, this.state.added))))}>DIAGRAM</button>
+
                         </div>
                         <div className="col-10 vh-100 p-0">
                             <Diagram

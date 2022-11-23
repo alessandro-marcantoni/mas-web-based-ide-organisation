@@ -6,8 +6,14 @@ import {fromArray, List, list} from "scala-types/dist/list/list";
 export const loadSpec: (path: string) => Promise<List<List<Component>>> = async (path) => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
+    getAllRoles(list(elems[1])).foreach(r =>
+        r.extends = fromArray<Role>(elems[0])
+            .find(or => or.name === shortName(r.name))
+            .map(or => or.extends).getOrElse(null))
     return list(
-        list(elems[1]).appendedAll(fromArray<Role>(elems[0]).filter(r => !getAllRoles(list(elems[1])).map(ar => shortName(ar.name)).contains(r.name))),
+        list(elems[1]).appendedAll(
+            fromArray<Role>(elems[0])
+                .filter(r => !getAllRoles(list(elems[1])).map(ar => shortName(ar.name)).contains(r.name))),
         fromArray<Component>(elems[0]).appendedAll(getAllGroups(list(elems[1])).map(g => new Group(g.name, g.min, g.max)))
     )
 }
