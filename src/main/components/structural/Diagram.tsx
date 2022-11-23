@@ -50,9 +50,9 @@ class Diagram extends React.Component<DiagramProps, unknown> {
             <div id="cy" className="diagram h-100">
                 <CytoscapeComponent
                     className="diagram-component h-100"
-                    layout={ { name: "cose", zoom: 1 } }
+                    layout={ { name: "breadthfirst", zoom: 1 } }
                     cy={(cy) => { this.cy = cy }}
-                    elements={toArray(this.props.elements.flatMap(e => presentation(e)))}
+                    elements={toArray(this.props.elements.flatMap(e => presentation(e, this.props.elements)))}
                     // @ts-ignore
                     stylesheet={nodesStyle}
                 />
