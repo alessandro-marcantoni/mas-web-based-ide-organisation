@@ -25,6 +25,10 @@
   },
   "homepage": "https://github.com/alessandro-marcantoni/mas-web-based-ide-organisation#readme",
   "dependencies": {
+    "@emotion/react": "11.10.5",
+    "@emotion/styled": "11.10.5",
+    "@mui/icons-material": "5.10.15",
+    "@mui/material": "5.10.15",
     "bootstrap": "5.2.2",
     "buffer": "6.0.3",
     "cytoscape": "3.23.0",
