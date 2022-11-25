@@ -10,12 +10,7 @@ import {Toolbar} from "@mui/material";
 
 export type DiagramProps = {
     elements: List<Component>
-    link: {
-        from: string,
-        to: string,
-    }
     onLinkCreation: (from: string, to: string) => void
-    onPropertyChange: (p: string, v: string) => void
     onAdditionToGroup: (r: string, t: string, g: string) => void
     onRemoveFromGroup: (r: string, t: string, g: string) => void
     onSelectedComponent: (t: string, c: string) => void

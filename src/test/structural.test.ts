@@ -8,52 +8,44 @@ import {List, list} from "scala-types/dist/list/list";
 import {add, addToGroup, createComponent, removeComponent, removeFromGroup} from "../main/utils/structural/diagram";
 
 let globalState: StructuralState = {
-    components: list(), added: list(),
-    showRoleModal: false, showGroupModal: false,
-    role: "", roleExtension: "", subgroupOf: "", group: "",
-    link: { from: "", to: "" }, selected: none()
+    added: list(),
+    role: "", group: "",
+    selected: none()
 }
 
 describe("create a structural specification", () => {
-    describe("crate components", () => {
-        test("create a simple role", () => {
-            createRole("Role1", "")
-        })
-        test("create a role with extends", () => {
-            createRole("Role2", "Role1")
-            globalState.components.find(c => c.type === "role" && (c as Role).name === "Role2").apply(r => {
-                expect((r as Role).extends.name === "Role1")
-            })
-        })
-        test("create a group", () => {
-            createGroup("Group1")
-        })
-        test("create a second group", () => {
-            createGroup("Group2")
-        })
-    })
     describe("add components", () => {
         test("add a role", () => {
-            globalState.components.find(c => c.type === "role" && (c as Role).name === "Role1")
-                .apply(c => {
-                    globalState.role = (c as Role).name
-                    addComponent(c)
-                })
+            globalState.role = "Role1"
+            createComponent(globalState, "role", "", "", "").apply(c => {
+                const newState = add(globalState, c)
+                additionAssertions(globalState, newState, "role", "Role1")
+                globalState = newState
+            })
         })
         test("add a second role", () => {
             globalState.role = "Role2"
-            globalState.components.find(c => c.type === "role" && (c as Role).name === "Role2")
-                .apply(c => addComponent(c))
+            createComponent(globalState, "role", "", "", "").apply(c => {
+                const newState = add(globalState, c)
+                additionAssertions(globalState, newState, "role", "Role2")
+                globalState = newState
+            })
         })
         test("add a group", () => {
             globalState.group = "Group1"
-            globalState.components.find(c => c.type === "group" && (c as Group).name === "Group1")
-                .apply(c => addComponent(c))
+            createComponent(globalState, "group", "", "", "").apply(c => {
+                const newState = add(globalState, c)
+                additionAssertions(globalState, newState, "group", "Group1")
+                globalState = newState
+            })
         })
         test("add a second group", () => {
             globalState.group = "Group2"
-            globalState.components.find(c => c.type === "group" && (c as Group).name === "Group2")
-                .apply(c => addComponent(c))
+            createComponent(globalState, "group", "", "", "").apply(c => {
+                const newState = add(globalState, c)
+                additionAssertions(globalState, newState, "group", "Group2")
+                globalState = newState
+            })
         })
     })
     describe("move components", () => {
@@ -96,43 +88,9 @@ describe("create a structural specification", () => {
     });
 })
 
-const createRole: (name: string, extend: string) => void = (name, extend) => {
-    globalState.role = name
-    globalState.roleExtension = extend
-    createComponent(globalState, "role", "", "", "", false).apply(c => {
-        const newState = add(globalState, c, false)
-        creationAssertions(globalState, newState, "role", name)
-        globalState = newState
-    })
-}
-
-const createGroup: (name: string) => void = (name) => {
-    globalState.group = name
-    createComponent(globalState, "group", "", "", "", false).apply(c => {
-        const newState = add(globalState, c, false)
-        creationAssertions(globalState, newState, "group", name)
-        globalState = newState
-    })
-}
-
-const creationAssertions: (oldState: StructuralState, newState: StructuralState, type: string, name: string) => void =
-    (oldState, newState, type, name) => {
-        expect(oldState.added.size()).toBe(newState.added.size())
-        expect(oldState.components.size()).toBeLessThan(newState.components.size())
-        expect(newState.components.exists(c => c.type === type && (type === "group" ? c as Group : c as Role).name === name)).toBeTruthy()
-    }
-
-const addComponent: (component: Component) => void = (component) =>
-    createComponent(globalState, component.type, "", "", "", true).apply(c => {
-        const newState = add(globalState, c, true)
-        additionAssertions(globalState, newState, component.type, (component.type === "group" ? component as Group : component as Role).name)
-        globalState = newState
-    })
-
 const additionAssertions: (oldState: StructuralState, newState: StructuralState, type: string, name: string) => void =
     (oldState, newState, type, name) => {
         expect(oldState.added.size()).toBeLessThan(newState.added.size())
-        expect(oldState.components.size()).toBe(newState.components.size())
         expect(newState.added.exists(c => c.type === type && (type === "group" ? c as Group : c as Role).name === name)).toBeTruthy()
     }
 
