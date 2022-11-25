@@ -12,7 +12,6 @@ function Header() {
                             alt=""
                             src="/img/interactions-logo-pure-white.png"
                             height="50"
-                            className="d-inline-block align-top"
                         />
                     </Toolbar>
                 </Container>
