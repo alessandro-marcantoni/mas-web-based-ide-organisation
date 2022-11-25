@@ -11,7 +11,7 @@ let globalState: StructuralState = {
     components: list(), added: list(),
     showRoleModal: false, showGroupModal: false,
     role: "", roleExtension: "", subgroupOf: "", group: "",
-    link: { from: "", to: "" }, toUpdate: none()
+    link: { from: "", to: "" }, selected: none()
 }
 
 describe("create a structural specification", () => {
@@ -99,7 +99,7 @@ describe("create a structural specification", () => {
 const createRole: (name: string, extend: string) => void = (name, extend) => {
     globalState.role = name
     globalState.roleExtension = extend
-    createComponent(globalState, "role", "", false).apply(c => {
+    createComponent(globalState, "role", "", "", "", false).apply(c => {
         const newState = add(globalState, c, false)
         creationAssertions(globalState, newState, "role", name)
         globalState = newState
@@ -108,7 +108,7 @@ const createRole: (name: string, extend: string) => void = (name, extend) => {
 
 const createGroup: (name: string) => void = (name) => {
     globalState.group = name
-    createComponent(globalState, "group", "", false).apply(c => {
+    createComponent(globalState, "group", "", "", "", false).apply(c => {
         const newState = add(globalState, c, false)
         creationAssertions(globalState, newState, "group", name)
         globalState = newState
@@ -123,7 +123,7 @@ const creationAssertions: (oldState: StructuralState, newState: StructuralState,
     }
 
 const addComponent: (component: Component) => void = (component) =>
-    createComponent(globalState, component.type, "", true).apply(c => {
+    createComponent(globalState, component.type, "", "", "", true).apply(c => {
         const newState = add(globalState, c, true)
         additionAssertions(globalState, newState, component.type, (component.type === "group" ? component as Group : component as Role).name)
         globalState = newState

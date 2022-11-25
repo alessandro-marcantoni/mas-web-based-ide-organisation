@@ -17,11 +17,13 @@ import {
  * @param state The current state of the structural specification.
  * @param type The type of component to create.
  * @param linkType The type of link to create (in case the component is a link).
+ * @param from The role the link comes from.
+ * @param to The role the link goes to.
  * @param toAdd Whether the component should be added straight away to the diagram or not.
  * @returns An {@link Option} containing the new structural component if it could be created.
  */
-export const createComponent: (state: StructuralState, type: string, linkType: string, toAdd: boolean) => Option<Component> =
-    (state, type, linkType, toAdd) => {
+export const createComponent: (state: StructuralState, type: string, link: string, from: string, to: string, toAdd: boolean) => Option<Component> =
+    (state, type, linkType, from, to, toAdd) => {
         switch (type) {
             case "role":
                 if ((getAllRoles(state.added).exists(r => r.name === state.role) && toAdd) ||
@@ -38,6 +40,12 @@ export const createComponent: (state: StructuralState, type: string, linkType: s
                     (getAllGroups(state.added).exists(g => g.name === state.group) && toAdd))
                     return none()
                 return some(new Group(state.group))
+            case "link":
+                if (!getAllRoles(state.added).exists(r => r.name === from) ||
+                    !getAllRoles(state.added).exists(r => r.name === to) ||
+                    linkType !== "compatibility")
+                    return none()
+                return some(new Compatibility(from, to))
             default:
                 return none()
         }
@@ -83,10 +91,10 @@ export const add: (state: StructuralState, comp: Component, toAdd: boolean) => S
             components: !toAdd ? state.components.appended(comp) : state.components,
             added: toAdd ? state.added.appended(comp) : state.added,
             showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
-            group: getAllGroups(state.components).size() === 0 ? state.group : getAllGroups(state.components).get(0).name,
-            role: getAllRoles(state.components).size() === 0 ? state.role : getAllRoles(state.components).get(0).name,
+            group: "",
+            role: "",
             roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
-            link: {to: "", from: ""}, toUpdate: state.toUpdate
+            link: {to: "", from: ""}, selected: state.selected
         }
     }
 
@@ -149,4 +157,27 @@ export const removeFromGroup: (state: StructuralState, component: string, type: 
                 .appended(oc.also(cc => {
                     cc.name = shortName(cc.name)
                 })))).getOrElse(state.added)
+    }
+
+export const changeExtension: (state: StructuralState, role: string, extended: string) => List<Component> =
+    (state, role, extended) => {
+        const er = getAllRoles(state.added).find(r => shortName(r.name) === extended)
+            .map((r: Role) => new Role(shortName(r.name), r.extends, r.min, r.max)).getOrElse(undefined)
+        return state.added.collect(
+                list(
+                    c => c.type === "role" && shortName((c as Role).name) === shortName(role),
+                    c => c.type === "group" && fromSet((c as Group).roles).map(r => shortName(r.name)).contains(shortName(role)),
+                    () => true
+                ),
+                list(
+                    c => new Role((c as Role).name, er, (c as Role).min, (c as Role).max),
+                    c => {
+                        const roleInGroup = fromSet((c as Group).roles).filter(r => shortName(r.name) === shortName(role)).get(0)
+                        return new Group((c as Group).name, (c as Group).min, (c as Group).max, (c as Group).subgroups,
+                            new Set(Array.from((c as Group).roles).filter(r => shortName(r.name) !== shortName(role)))
+                                .add(new Role(roleInGroup.name, er, roleInGroup.min, roleInGroup.max)), (c as Group).constraints)
+                    },
+                    c => c
+                )
+            )
     }
