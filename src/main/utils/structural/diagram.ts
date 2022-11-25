@@ -19,25 +19,19 @@ import {
  * @param linkType The type of link to create (in case the component is a link).
  * @param from The role the link comes from.
  * @param to The role the link goes to.
- * @param toAdd Whether the component should be added straight away to the diagram or not.
  * @returns An {@link Option} containing the new structural component if it could be created.
  */
-export const createComponent: (state: StructuralState, type: string, link: string, from: string, to: string, toAdd: boolean) => Option<Component> =
-    (state, type, linkType, from, to, toAdd) => {
+export const createComponent: (state: StructuralState, type: string, link: string, from: string, to: string) => Option<Component> =
+    (state, type, linkType, from, to) => {
         switch (type) {
             case "role":
-                if ((getAllRoles(state.added).exists(r => r.name === state.role) && toAdd) ||
-                    (getAllRoles(state.components).exists(r => r.name === state.role) && !toAdd))
+                if (getAllRoles(state.added).exists(r => r.name === state.role))
                     return none()
-                return some(new Role(
-                    state.role,
-                    toAdd ?
-                        getAllRoles(state.components).find(r => r.name === state.role).flatMap(r => option(r.extends)).getOrElse(undefined) :
-                        state.roleExtension ? getAllRoles(state.components).find(c => c.name === state.roleExtension).getOrElse(undefined) : undefined
-                ))
+                return some(new Role(state.role,
+                    getAllRoles(state.added).find(r => shortName(r.name) === state.role)
+                        .flatMap(r => option(r.extends)).getOrElse(undefined)))
             case "group":
-                if ((getAllGroups(state.components).exists(g => g.name === state.group) && !toAdd) ||
-                    (getAllGroups(state.added).exists(g => g.name === state.group) && toAdd))
+                if (getAllGroups(state.added).exists(g => g.name === state.group))
                     return none()
                 return some(new Group(state.group))
             case "link":
@@ -73,6 +67,10 @@ export const removeComponent: (state: StructuralState, type: string, comp: Compo
                     removeFromGroup(state, g.name, "group", getAllGroups(state.added)
                         .find(gr => gr.subgroups.has(g)).map(gr => gr.name).getOrElse(""))
                 return a.filter(c => c.type !== "group" || (c as Group).name != g.name)
+            case "constraint":
+                if ((comp as Constraint).constraint !== "compatibility") return state.added
+                getAllGroups(state.added).foreach(g => g.constraints.delete(comp as Compatibility))
+                return state.added
             default:
                 return state.added
         }
@@ -82,20 +80,25 @@ export const removeComponent: (state: StructuralState, type: string, comp: Compo
  * Add a new structural {@link Component} to the current ones.
  * @param state The current state of the structural specification.
  * @param comp The component to be added.
- * @param toAdd Whether the component should be added directly to the diagram or not.
  * @returns The new state of the structural specification.
  */
-export const add: (state: StructuralState, comp: Component, toAdd: boolean) => StructuralState =
-    (state, comp, toAdd) => {
+export const add: (state: StructuralState, comp: Component) => StructuralState =
+    (state, comp) => {
         return !state ? state : {
-            components: !toAdd ? state.components.appended(comp) : state.components,
-            added: toAdd ? state.added.appended(comp) : state.added,
-            showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
-            group: "",
-            role: "",
-            roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
-            link: {to: "", from: ""}, selected: state.selected
+            added: comp.type === "group" || comp.type === "role" ?
+                state.added.appended(comp) :
+                (comp.type === "constraint" && (comp as Constraint).constraint === "compatibility" ?
+                    compatibilityInGroup(state, comp as Compatibility) : state.added),
+            group: "", role: "", link: {to: "", from: ""},
+            selected: state.selected.flatMap((s) => getAllGroups(state.added).find(g => g.name === s.name))
         }
+    }
+
+const compatibilityInGroup: (state: StructuralState, comp: Compatibility) => List<Component> =
+    (state, comp) => {
+        getAllGroups(state.added).find(g => g.name === splitName(comp.from).group)
+            .apply((g: Group) => g.addConstraint(comp))
+        return state.added
     }
 
 /**
@@ -161,23 +164,9 @@ export const removeFromGroup: (state: StructuralState, component: string, type: 
 
 export const changeExtension: (state: StructuralState, role: string, extended: string) => List<Component> =
     (state, role, extended) => {
-        const er = getAllRoles(state.added).find(r => shortName(r.name) === extended)
-            .map((r: Role) => new Role(shortName(r.name), r.extends, r.min, r.max)).getOrElse(undefined)
-        return state.added.collect(
-                list(
-                    c => c.type === "role" && shortName((c as Role).name) === shortName(role),
-                    c => c.type === "group" && fromSet((c as Group).roles).map(r => shortName(r.name)).contains(shortName(role)),
-                    () => true
-                ),
-                list(
-                    c => new Role((c as Role).name, er, (c as Role).min, (c as Role).max),
-                    c => {
-                        const roleInGroup = fromSet((c as Group).roles).filter(r => shortName(r.name) === shortName(role)).get(0)
-                        return new Group((c as Group).name, (c as Group).min, (c as Group).max, (c as Group).subgroups,
-                            new Set(Array.from((c as Group).roles).filter(r => shortName(r.name) !== shortName(role)))
-                                .add(new Role(roleInGroup.name, er, roleInGroup.min, roleInGroup.max)), (c as Group).constraints)
-                    },
-                    c => c
-                )
-            )
+        getAllRoles(state.added).filter(r => shortName(r.name) === shortName(role)).foreach(r => {
+            r.extends = getAllRoles(state.added).find(r => shortName(r.name) === extended)
+                .map((r: Role) => new Role(shortName(r.name), r.extends, r.min, r.max)).getOrElse(undefined)
+        })
+        return state.added
     }
