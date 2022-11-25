@@ -1,20 +1,23 @@
 import React from "react";
-import {Container, Navbar} from "react-bootstrap";
+import {AppBar, Container, Toolbar} from "@mui/material";
 
 function Header() {
     return (
-        <Navbar bg="blue" variant="dark" className="shadow">
-            <Container fluid="true">
-                <Navbar.Brand className="p-4">
-                    <img
-                        alt=""
-                        src="/img/interactions-logo-pure-white.png"
-                        height="80"
-                        className="d-inline-block align-top"
-                    />
-                </Navbar.Brand>
-            </Container>
-        </Navbar>
+        <>
+            <AppBar position="fixed" className="shadow"
+                    sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <Container maxWidth="xl" sx={{px: 3, m: 0}}>
+                    <Toolbar disableGutters>
+                        <img
+                            alt=""
+                            src="/img/interactions-logo-pure-white.png"
+                            height="50"
+                            className="d-inline-block align-top"
+                        />
+                    </Toolbar>
+                </Container>
+            </AppBar>
+        </>
     );
 }
 

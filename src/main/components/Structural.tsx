@@ -4,15 +4,10 @@ import Diagram from "./structural/Diagram";
 import {Component} from "../utils/structural/entities";
 import {getAllRoles, getAllGroups, getGlobalGroups} from "../utils/structural/utils";
 import LinkModal from "./structural/LinkModal";
-import RoleModal from "./structural/RoleModal";
-import GroupModal from "./structural/GroupModal";
-import UpdateModal from "./structural/UpdateModal";
 import {Option, none} from "scala-types/dist/option/option";
-import {list, List, toArray} from "scala-types/dist/list/list"
-import {loadSpec} from "../utils/structural/loader";
-import {serialize} from "../utils/structural/serializer";
-import {presentation} from "../utils/structural/cytoscape";
-import {add, addToGroup, createComponent, removeComponent, removeFromGroup} from "../utils/structural/diagram";
+import {list, List} from "scala-types/dist/list/list"
+import {add, addToGroup, createComponent, removeComponent, removeFromGroup, changeExtension} from "../utils/structural/diagram";
+import SideMenu from "./structural/SideMenu";
 
 export type StructuralState = {
     components: List<Component>
@@ -27,7 +22,7 @@ export type StructuralState = {
         from: string,
         to: string,
     }
-    toUpdate: Option<Component>
+    selected: Option<Component>
 }
 
 class Structural extends React.Component<unknown, StructuralState> {
@@ -38,7 +33,7 @@ class Structural extends React.Component<unknown, StructuralState> {
             showRoleModal: false, showGroupModal: false,
             role: "", roleExtension: "", subgroupOf: "", group: "",
             link: { from: "", to: "" },
-            toUpdate: none()
+            selected: none()
         }
         this.addComponent = this.addComponent.bind(this)
         this.onPropertyChange = this.onPropertyChange.bind(this)
@@ -48,10 +43,11 @@ class Structural extends React.Component<unknown, StructuralState> {
         this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
         this.onSelectedComponent = this.onSelectedComponent.bind(this)
         this.deleteComponent = this.deleteComponent.bind(this)
+        this.changeExtension = this.changeExtension.bind(this)
     }
 
-    addComponent(c: string, l: string = "", toAdd: boolean = false) {
-        createComponent(this.state, c, l, toAdd)
+    addComponent(c: string, l: string = "", from: string = "", to: string = "", toAdd: boolean = false) {
+        createComponent(this.state, c, l, from, to, toAdd)
             .apply((comp: Component) => this.setState((state: StructuralState) => add(state, comp, toAdd)))
     }
 
@@ -63,14 +59,24 @@ class Structural extends React.Component<unknown, StructuralState> {
         })
     }
 
-    onPropertyChange(property: string, value: string): void {
+    changeExtension(role: string, extended: string): void {
+        this.setState((state) => {
+            const added = changeExtension(state, role, extended)
+            return {
+                added: added,
+                selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role))
+            }
+        })
+    }
+
+    onPropertyChange(property: string, value: unknown): void {
         this.setState((state) => {
             return {
                 components: state.components, added: state.added,
                 showRoleModal: state.showRoleModal, showGroupModal: state.showGroupModal,
                 group: state.group, role: state.role,
                 roleExtension: state.roleExtension, subgroupOf: state.subgroupOf,
-                link: state.link, toUpdate: state.toUpdate,
+                link: state.link, selected: state.selected,
                 [property]: value
             }
         })
@@ -114,7 +120,7 @@ class Structural extends React.Component<unknown, StructuralState> {
     onSelectedComponent(componentType: string, component: string): void {
         this.setState((state) => {
             return {
-                toUpdate: componentType === "group" ?
+                selected: componentType === "group" ?
                     getAllGroups(state.added).find(c => c.name === component) :
                     getAllRoles(state.added).find(c => c.name === component),
                 subgroupOf: componentType === "group" ?
@@ -127,68 +133,22 @@ class Structural extends React.Component<unknown, StructuralState> {
 
     render() {
         return (
-                <div className="container-fluid p-0 body">
-                    <LinkModal
-                        show={this.state.link.to !== ""}
-                        onHide={() => this.setState({ link: { from: "", to: "" }})}
-                        onAction={label => this.addComponent("link", label, true)}/>
-                    <RoleModal
-                        show={this.state.showRoleModal}
-                        onHide={() => this.setState({ showRoleModal: false })}
-                        value={this.state.role}
-                        roles={getAllRoles(this.state.components)}
-                        propertyChanged={this.onPropertyChange}
-                        addRole={() => this.addComponent("role")}/>
-                    <GroupModal
-                        show={this.state.showGroupModal}
-                        onHide={() => this.setState({showGroupModal: false})}
-                        value={this.state.group}
-                        propertyChanged={this.onPropertyChange}
-                        addGroup={() => this.addComponent("group")}/>
-                    <UpdateModal
-                        show={this.state.toUpdate.isDefined()}
-                        onHide={() => this.setState({ toUpdate: none() })}
-                        subgroupOf={this.state.subgroupOf}
-                        onPropertyChange={this.onPropertyChange}
-                        component={this.state.toUpdate}
-                        components={this.state.added}
-                        onAdditionToGroup={this.onAdditionToGroup}
-                        onRemoveFromGroup={this.onRemoveFromGroup}
-                        onComponentDelete={this.deleteComponent}/>
-                    <div className="row m-0">
-                        <div className="col-2 vh-100 p-0">
-                            <Sidebar
-                                role={this.state.role}
-                                group={this.state.group}
-                                roles={getAllRoles(this.state.components)}
-                                groups={getAllGroups(this.state.components)}
-                                addComponent={(c, add) => this.addComponent(c, "", add)}
-                                propertyChanged={this.onPropertyChange}/>
-                            <button onClick={() => console.log(toArray(this.state.added))}>SHOW STATE</button>
-                            <button onClick={() => console.log(toArray(this.state.components))}>DISTINCT ROLES</button>
-                            <button onClick={() => loadSpec("http://localhost:8080/spec.xml").then(elems => {
-                                this.setState({
-                                    added: elems.get(0),
-                                    components: elems.get(1),
-                                    role: getAllRoles(elems.get(1)).size() > 0 ? getAllRoles(elems.get(1)).get(0).name : "",
-                                    group: getAllGroups(elems.get(1)).size() > 0 ? getAllGroups(elems.get(1)).get(0).name : "" })
-                            })}>LOAD</button>
-                            <button onClick={() => console.log(serialize(this.state.components, this.state.added))}>SERIALIZE</button>
-                            <button onClick={() => console.log(toArray(this.state.added.flatMap((c) => presentation(c, this.state.added))))}>DIAGRAM</button>
-
-                        </div>
-                        <div className="col-10 vh-100 p-0">
-                            <Diagram
-                                onLinkCreation={this.onLinkCreation}
-                                onAdditionToGroup={this.onAdditionToGroup}
-                                onRemoveFromGroup={this.onRemoveFromGroup}
-                                onPropertyChange={this.onLinkPropertyChange}
-                                link={this.state.link}
-                                elements={this.state.added} onSelectedComponent={this.onSelectedComponent}/>
-                        </div>
-                    </div>
-
-                </div>
+                <>
+                    <LinkModal show={false} onHide={() => this.setState({ link: { from: "", to: "" }})}
+                               onAction={label => this.addComponent("link", label, this.state.link.from, this.state.link.to, true)}/>
+                    <Sidebar role={this.state.role} group={this.state.group}
+                             components={this.state.added} propertyChanged={this.onPropertyChange}
+                             addComponent={(c, add) => this.addComponent(c, "", "", "", add)}/>
+                    <Diagram onLinkCreation={this.onLinkCreation} onAdditionToGroup={this.onAdditionToGroup}
+                             onRemoveFromGroup={this.onRemoveFromGroup} onPropertyChange={this.onLinkPropertyChange}
+                             link={this.state.link} elements={this.state.added}
+                             onSelectedComponent={this.onSelectedComponent}/>
+                    <SideMenu component={this.state.selected} components={this.state.added}
+                              onClose={() => this.setState({ selected: none() })}
+                              onExtensionChange={this.changeExtension} deleteComponent={this.deleteComponent}
+                              addToGroup={this.onAdditionToGroup} removeFromGroup={this.onRemoveFromGroup}
+                              addLink={(from, to, type) => this.addComponent("link", type, from, to, true)}/>
+                </>
         )
     }
 }
