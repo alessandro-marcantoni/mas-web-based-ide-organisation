@@ -6,6 +6,7 @@ import * as nodesStyle from "../../style/cytoscape/style.json";
 import {defined, fromSet} from "../../utils/structural/utils";
 import {list, List, toArray} from "scala-types/dist/list/list";
 import {config, presentation} from "../../utils/structural/cytoscape";
+import {Toolbar} from "@mui/material";
 
 export type DiagramProps = {
     elements: List<Component>
@@ -47,16 +48,19 @@ class Diagram extends React.Component<DiagramProps, unknown> {
 
     render() {
         return (
-            <div id="cy" className="diagram h-100">
-                <CytoscapeComponent
-                    className="diagram-component h-100"
-                    layout={ { name: "breadthfirst", zoom: 1 } }
-                    cy={(cy) => { this.cy = cy }}
-                    elements={toArray(this.props.elements.flatMap(e => presentation(e, this.props.elements)))}
-                    // @ts-ignore
-                    stylesheet={nodesStyle}
-                />
-            </div>
+            <>
+                <Toolbar/>
+                <div id="cy" className="diagram">
+                    <CytoscapeComponent
+                        className="diagram-component"
+                        layout={ { name: "breadthfirst", zoom: 1 } }
+                        cy={(cy) => { this.cy = cy }}
+                        elements={toArray(this.props.elements.flatMap(e => presentation(e, this.props.elements)))}
+                        // @ts-ignore
+                        stylesheet={nodesStyle}
+                    />
+                </div>
+            </>
         );
     }
 }

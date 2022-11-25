@@ -20,8 +20,7 @@ type UpdateModalProps = {
 const UpdateModal = (p: UpdateModalProps) =>
     <Modal show={p.show} onHide={p.onHide}>
         <Modal.Header closeButton>
-            <Modal.Title>{p.component
-                .map(c => c.name)
+            <Modal.Title>{p.component.map(c => c.name)
                 .map(n => isInGroup(n) ? n.replace(separator, "'s ") : n).getOrElse("")}
             </Modal.Title>
         </Modal.Header>
