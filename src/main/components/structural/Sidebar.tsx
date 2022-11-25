@@ -10,7 +10,7 @@ type SidebarProps = {
     components: List<Component>
     role: string
     group: string
-    addComponent: (c: string, add: boolean) => void
+    addComponent: (c: string) => void
     propertyChanged: (p: string, v: unknown) => void
 }
 
@@ -28,7 +28,7 @@ const Sidebar = (p: SidebarProps) =>
                     <InputBox options={toArray(getAllRoles(p.components).map(r => shortName(r.name)))}
                               onChange={v => p.propertyChanged("role", v)}
                               label={"Role"} value={p.role}
-                              onButtonClick={() => p.addComponent("role", true)}/>
+                              onButtonClick={() => p.addComponent("role")}/>
                 </Paper>
             </Grid>
             <Grid item xs={12}>
@@ -39,7 +39,7 @@ const Sidebar = (p: SidebarProps) =>
                     <InputBox options={toArray(getAllGroups(p.components).map(g => g.name))}
                               onChange={v => p.propertyChanged("group", v)}
                               label={"Group"} value={p.group}
-                              onButtonClick={() => p.addComponent("group", true)}/>
+                              onButtonClick={() => p.addComponent("group")}/>
                 </Paper>
             </Grid>
         </Grid>
