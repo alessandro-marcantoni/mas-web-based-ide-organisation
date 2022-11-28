@@ -2,7 +2,7 @@ import {Option} from "scala-types/dist/option/option";
 import {Component, Role} from "../../utils/structural/entities";
 import {List, toArray} from "scala-types/dist/list/list";
 import {fromSet, getAllGroups, getAllRoles, shortName} from "../../utils/structural/utils";
-import {Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
+import {Grid, Input, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import React from "react";
 import {noGroup, noRole} from "./SideMenu";
 
@@ -12,6 +12,7 @@ type RoleMenu = {
     onExtensionChange: (role: string, extended: string) => void
     addToGroup: (c: string, t: string, g: string) => void
     removeFromGroup: (c: string, t: string, g: string) => void
+    changeCardinality: (property: string, value: number) => void
 }
 
 const RoleMenu = (p: RoleMenu) => {
@@ -20,11 +21,11 @@ const RoleMenu = (p: RoleMenu) => {
             .map(r => shortName(r.name))
             .contains(shortName((p.component.get() as Role).name))).map(c => shortName(c.name)).getOrElse(noGroup)
     return <>
-        <Grid item xs={12} sx={{mx: 2}}>
+        <Grid item xs={12}>
             <Typography variant="h4"
                         component="div">{p.component.map(c => shortName(c.name)).getOrElse("")}</Typography>
         </Grid>
-        <Grid item xs={12} sx={{mx: 2, mt: 3}}>
+        <Grid item xs={12} sx={{mt: 3}}>
             <InputLabel id="extendsLabel" htmlFor="extends">Extends</InputLabel>
             <Select id="extends" labelId="extendsLabel" fullWidth variant="standard"
                     value={p.component.map(c => c.extends ? c.extends.name : noRole).getOrElse(noRole)}
@@ -34,7 +35,7 @@ const RoleMenu = (p: RoleMenu) => {
                     .map(r => <MenuItem key={r} value={r}>{r}</MenuItem>)}
             </Select>
         </Grid>
-        <Grid item xs={12} sx={{mx: 2, mt: 3}}>
+        <Grid item xs={12} sx={{mt: 3}}>
             <InputLabel id="inGroupLabel" htmlFor="inGroup">In group</InputLabel>
             <Select id="inGroup" labelId="subGroupOfLabel" fullWidth variant="standard"
                     value={inGroup}
@@ -46,6 +47,18 @@ const RoleMenu = (p: RoleMenu) => {
                 {Array.from(new Set(toArray(getAllGroups(p.components)).map(g => g.name)))
                     .map(g => <MenuItem key={g} value={g}>{g}</MenuItem>)}
             </Select>
+        </Grid>
+        <Grid item xs={6} sx={{mt: 3}}>
+            <InputLabel id="cardinalityMinLabel" htmlFor="cardinalityMin">Min</InputLabel>
+            <Input type="number" value={p.component.map(c => c.min).getOrElse(0)} fullWidth
+                    onChange={(e) => p.changeCardinality("min",
+                    e.target.value === "" ? 0 : parseInt(e.target.value))}/>
+        </Grid>
+        <Grid item xs={6} sx={{mt: 3}}>
+            <InputLabel id="cardinalityMaxLabel" htmlFor="cardinalitytMax">Max</InputLabel>
+            <Input type="number" value={p.component.map(c => c.max).getOrElse("")} fullWidth
+                    onChange={(e) => p.changeCardinality("max",
+                        e.target.value === "" ? Number.MAX_VALUE : parseInt(e.target.value))}/>
         </Grid>
     </>
 }

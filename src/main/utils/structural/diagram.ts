@@ -1,13 +1,13 @@
 import {StructuralState} from "../../components/Structural";
 import {none, Option, some} from "scala-types/dist/option/option";
-import {Compatibility, Component, Constraint, Group, Role} from "./entities";
+import {Cardinality, Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {list, List} from "scala-types/dist/list/list";
 import {
     defined,
     fromSet,
     getAllGroups,
     getAllRoles, getGlobalGroups, isInGroup,
-    option,
+    option, removeDuplicates,
     separate,
     shortName, splitName
 } from "./utils";
@@ -21,7 +21,7 @@ import {
  * @param to The role the link goes to.
  * @returns An {@link Option} containing the new structural component if it could be created.
  */
-export const createComponent: (state: StructuralState, type: string, link: string, from: string, to: string) => Option<Component> =
+export const createComponent: (state: StructuralState, type: string, linkType: string, from: string, to: string) => Option<Component> =
     (state, type, linkType, from, to) => {
         switch (type) {
             case "role":
@@ -43,6 +43,27 @@ export const createComponent: (state: StructuralState, type: string, link: strin
             default:
                 return none()
         }
+    }
+
+export const createCardinality: (state: StructuralState, group: string, type: string, subject: string, min: number, max: number) => List<Component> =
+    (state, group, type, subject, min, max) => {
+        getAllGroups(state.added).find(g => g.name === group)
+            .apply((g: Group) => {
+                g.addConstraint(new Cardinality(subject, type, min, max))
+                g.constraints = removeDuplicates<Constraint>(g.constraints, c => c.constraint === "cardinality" ?
+                    (c as Cardinality).type + (c as Cardinality).object : (c as Compatibility).from + (c as Compatibility).to)
+            })
+        return state.added
+    }
+
+export const changeRoleCardinality: (state: StructuralState, role: string, property: string, value: number) => List<Component> =
+    (state, role, property, value) => {
+        getAllRoles(state.added).find(r => r.name === role)
+            .apply((r: Role) => {
+                if (property === "min") r.min = value
+                if (property === "max") r.max = value
+            })
+        return state.added
     }
 
 export const removeComponent: (state: StructuralState, type: string, comp: Component) => List<Component> =
@@ -68,8 +89,9 @@ export const removeComponent: (state: StructuralState, type: string, comp: Compo
                         .find(gr => gr.subgroups.has(g)).map(gr => gr.name).getOrElse(""))
                 return a.filter(c => c.type !== "group" || (c as Group).name != g.name)
             case "constraint":
-                if ((comp as Constraint).constraint !== "compatibility") return state.added
-                getAllGroups(state.added).foreach(g => g.constraints.delete(comp as Compatibility))
+                (comp as Constraint).constraint === "compatibility" ?
+                    getAllGroups(state.added).foreach(g => g.constraints.delete(comp as Compatibility)) :
+                    getAllGroups(state.added).foreach(g => g.constraints.delete(comp as Cardinality))
                 return state.added
             default:
                 return state.added
@@ -113,12 +135,13 @@ export const addToGroup: (state: StructuralState, component: string, type: strin
     (state, component, type, group) => {
         const destinationGroup: Option<Group> = getAllGroups(state.added).find(c => c.name === group)
         if (type === "role") {
-            const o = getAllRoles(state.added).find(c => c.name === component).get() as Role
-            return destinationGroup.map((og: Group) => defined(state.added)
-                .filter(c => c.type !== "role" || (c as Role).name !== component)
-                .filter(c => c.type !== "group" || (c as Group).name !== group)
-                .appended(new Group(og.name, og.min, og.max, og.subgroups, new Set(Array.from(og.roles).filter(r => r.name !== o.name)).add(new Role(separate(group)(shortName(o.name)), o.extends, o.min, o.max)), og.constraints))
-            ).getOrElse(state.added)
+            destinationGroup.zip(getAllRoles(state.added).find(c => c.name === component), (g, r) => [g, r])
+                .apply(([g, r]) => {
+                    state.added = state.added.filter(c => c !== r)
+                    getAllGroups(state.added).foreach(c => c.roles.delete(r))
+                    g.addRole(new Role(separate(group)(shortName(r.name)), r.extends, r.min, r.max))
+                    g.roles = removeDuplicates<Role>(g.roles, c => c.name)
+                })
         }
         if (type === "group") {
             const o = getAllGroups(state.added).find(c => c.name === component).get() as Group

@@ -28,8 +28,8 @@ const role = (element: XMLElement, g: Group = undefined) =>
     new Role(
         `${option(g).map(o => o.name + separator).getOrElse("")}${element.attributes["id"]}`,
         option(element.elements).map(e => new Role(e[0].attributes.role, null)).getOrElse(null),
-        option(element.attributes["min"]).getOrElse(0),
-        option(element.attributes["max"]).getOrElse(Number.MAX_VALUE)
+        option(parseInt(element.attributes["min"])).getOrElse(0),
+        option(parseInt(element.attributes["max"])).getOrElse(Number.MAX_VALUE)
     )
 
 const groupSpecification = (element: XMLElement) => {

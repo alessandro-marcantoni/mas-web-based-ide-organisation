@@ -1,6 +1,6 @@
 import {Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {Option, none, some} from "scala-types/dist/option/option";
-import {fromArray, list, List} from "scala-types/dist/list/list";
+import {fromArray, list, List, toArray} from "scala-types/dist/list/list";
 
 /**
  * Retrieve all the {@link Role}s among the {@link Component}s recursively.
@@ -61,3 +61,6 @@ export const fromSet: <T>(s: Set<T>) => List<T> = (s) =>
 
 export const defined: <T>(l: List<T>) => List<T> = (l) =>
     l.filter(e => e !== undefined)
+
+export const removeDuplicates: <T>(s: Set<T>, f: (e: T) => string) => Set<T> = <T>(s, f) =>
+    new Set<T>(toArray(fromSet<T>(s).distinctBy(f)))
