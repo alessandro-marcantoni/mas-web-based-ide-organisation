@@ -96,7 +96,6 @@ const additionAssertions: (oldState: StructuralState, newState: StructuralState,
 
 const assertRoleCorrectlyInGroup: (oldState: List<Component>, newState: List<Component>, role: string, group: string) => void =
     (oldState, newState, role, group) => {
-        expect(oldState.find(c => c.type === "role" && (c as Role).name === role).isDefined()).toBeTruthy()
         expect(newState.find(c => c.type === "role" && (c as Role).name === role).isEmpty()).toBeTruthy()
         expect(getGlobalGroups(oldState).find(c => c.name === group).isDefined())
             .toBe(getGlobalGroups(newState).find(c => c.name === group).isDefined())
