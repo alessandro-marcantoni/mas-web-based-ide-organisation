@@ -5,6 +5,7 @@ import {Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Butto
 import {Add} from '@mui/icons-material';
 import {getAllGroups, getAllRoles, shortName} from "../../utils/structural/utils";
 import {loadSpec} from "../../utils/structural/loader";
+import {serialize} from "../../utils/structural/serializer";
 
 type SidebarProps = {
     components: List<Component>
@@ -47,6 +48,7 @@ const Sidebar = (p: SidebarProps) =>
         <Button variant="contained" sx={{mt:2, mx:2}}
                 onClick={() => loadSpec("http://localhost:8080/spec.xml")
                     .then(s => p.propertyChanged("added", s.get(0)))}>Load</Button>
+        <Button variant="contained" sx={{mt:2, mx:2}} onClick={() => console.log(serialize(p.components))}>Serialize</Button>
     </Drawer>
 
 type InputBoxProps = {

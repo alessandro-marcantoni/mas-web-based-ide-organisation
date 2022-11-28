@@ -5,7 +5,16 @@ import {Component, Group, Role} from "../utils/structural/entities";
 import {getAllRoles, getAllGroups} from "../utils/structural/utils";
 import {Option, none} from "scala-types/dist/option/option";
 import {list, List} from "scala-types/dist/list/list"
-import {add, addToGroup, createComponent, removeComponent, removeFromGroup, changeExtension} from "../utils/structural/diagram";
+import {
+    add,
+    addToGroup,
+    createComponent,
+    removeComponent,
+    removeFromGroup,
+    changeExtension,
+    createCardinality,
+    changeRoleCardinality
+} from "../utils/structural/diagram";
 import SideMenu from "./structural/SideMenu";
 
 export type StructuralState = {
@@ -30,11 +39,19 @@ class Structural extends React.Component<unknown, StructuralState> {
         this.onSelectedComponent = this.onSelectedComponent.bind(this)
         this.deleteComponent = this.deleteComponent.bind(this)
         this.changeExtension = this.changeExtension.bind(this)
+        this.addCardinality = this.addCardinality.bind(this)
+        this.changeRoleCardinality = this.changeRoleCardinality.bind(this)
     }
 
     addComponent(c: string, l: string = "", from: string = "", to: string = "") {
         createComponent(this.state, c, l, from, to)
             .apply((comp: Component) => this.setState((state: StructuralState) => add(state, comp)))
+    }
+
+    addCardinality(g: string, type: string, subject: string, min: number, max: number) {
+        this.setState((state) => {
+            return { added: createCardinality(state, g, type, subject, min, max) }
+        })
     }
 
     deleteComponent(c: Component): void {
@@ -56,6 +73,21 @@ class Structural extends React.Component<unknown, StructuralState> {
             return {
                 added: added,
                 selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role))
+            }
+        })
+    }
+
+    changeRoleCardinality(property: string, value: number) {
+        this.state.selected.apply((c) => {
+            if (c.type === "role") {
+                const role = c as Role
+                this.setState((state) => {
+                    const added = changeRoleCardinality(state, role.name, property, value)
+                    return {
+                        added: added,
+                        selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role.name)),
+                    }
+                })
             }
         })
     }
@@ -110,7 +142,8 @@ class Structural extends React.Component<unknown, StructuralState> {
                               onClose={() => this.setState({ selected: none() })}
                               onExtensionChange={this.changeExtension} deleteComponent={this.deleteComponent}
                               addToGroup={this.onAdditionToGroup} removeFromGroup={this.onRemoveFromGroup}
-                              addLink={(from, to, type) => this.addComponent("link", type, from, to)}/>
+                              addLink={(from, to, type) => this.addComponent("link", type, from, to)}
+                              addCardinality={this.addCardinality} changeRoleCardinality={this.changeRoleCardinality}/>
                 </>
         )
     }

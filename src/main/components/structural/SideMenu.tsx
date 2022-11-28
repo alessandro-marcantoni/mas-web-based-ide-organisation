@@ -16,6 +16,8 @@ type SideMenuProps = {
     addToGroup: (c: string, t: string, g: string) => void
     removeFromGroup: (c: string, t: string, g: string) => void
     addLink: (from: string, to: string, type: string) => void
+    addCardinality: (group: string, type: string, subject: string, min: number, max: number) => void
+    changeRoleCardinality: (property: string, value: number) => void
 }
 
 const SideMenu = (p: SideMenuProps) =>
@@ -30,19 +32,19 @@ const SideMenu = (p: SideMenuProps) =>
             { p.component.map(c => c.type === "role").getOrElse(false) &&
                 <RoleMenu component={p.component as Option<Role>} components={p.components}
                           onExtensionChange={p.onExtensionChange} addToGroup={p.addToGroup}
-                          removeFromGroup={p.removeFromGroup}/>
+                          removeFromGroup={p.removeFromGroup} changeCardinality={p.changeRoleCardinality}/>
             }
             { p.component.map(c => c.type === "group").getOrElse(false) &&
               <GroupMenu component={p.component as Option<Group>} components={p.components}
                          addToGroup={p.addToGroup} removeFromGroup={p.removeFromGroup}
-                         addLink={p.addLink} deleteComponent={p.deleteComponent}/>
+                         addLink={p.addLink} deleteComponent={p.deleteComponent} addCardinality={p.addCardinality}/>
             }
-            <Grid item xs={12} sx={{position: "absolute", bottom: 8, mx: 0, px: 2, mb: 1, width: 500}}>
+            <Grid item xs={12} sx={{position: "fixed", bottom: 8, width: 468, mt: 3}}>
                 <Button color="error" variant="contained" fullWidth
                         sx={{mx: 0}} onClick={() => {
-                            p.deleteComponent(p.component.getOrElse(undefined))
-                            p.onClose()
-                        }}>Delete component</Button>
+                    p.deleteComponent(p.component.getOrElse(undefined))
+                    p.onClose()
+                }}>Delete component</Button>
             </Grid>
         </Grid>
     </Drawer>
