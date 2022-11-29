@@ -2,25 +2,25 @@
  * A generic structural component.
  */
 export abstract class Component {
-    type: string;
+    type: string
 
     protected constructor(type: string) {
-        this.type = type;
+        this.type = type
     }
 }
 
 export class Role extends Component {
-    name: string;
-    extends: Role | undefined;
-    min: number;
-    max: number;
+    name: string
+    extends: Role | undefined
+    min: number
+    max: number
 
     constructor(name: string, extension: Role | undefined, min: number = 0, max: number = Number.MAX_VALUE) {
-        super("role");
-        this.name = name;
-        this.extends = extension;
-        this.min = min;
-        this.max = max;
+        super("role")
+        this.name = name
+        this.extends = extension
+        this.min = min
+        this.max = max
     }
 
     /**
@@ -28,60 +28,66 @@ export class Role extends Component {
      * @param f A side effect function that can be applied on the component.
      * @returns The component
      */
-    also(f: ((o: Role) => void)): Role {
+    also(f: (o: Role) => void): Role {
         f(this)
         return this
     }
 }
 
 export abstract class Constraint extends Component {
-    constraint: string;
+    constraint: string
 
     protected constructor(constraint: string) {
-        super("constraint");
-        this.constraint = constraint;
+        super("constraint")
+        this.constraint = constraint
     }
 }
 
 export class Cardinality extends Constraint {
-    min: number;
-    max: number;
-    object: string;
-    id: string;
+    min: number
+    max: number
+    object: string
+    id: string
 
     constructor(id: string, object: string, min: number = 0, max: number = Number.MAX_VALUE) {
-        super("cardinality");
-        this.min = min;
-        this.max = max;
-        this.object = object;
-        this.id = id;
+        super("cardinality")
+        this.min = min
+        this.max = max
+        this.object = object
+        this.id = id
     }
 }
 
 export class Compatibility extends Constraint {
-    from: string;
-    to: string;
-    scope: string;
-    extendsSubgroups: boolean;
-    biDir: boolean;
+    from: string
+    to: string
+    scope: string
+    extendsSubgroups: boolean
+    biDir: boolean
 
-    constructor(from: string, to: string, scope: string = "intra-group", extendsSubgroups: boolean = false, biDir: boolean = false) {
-        super("compatibility");
-        this.from = from;
-        this.to = to;
-        this.scope = scope;
-        this.extendsSubgroups = extendsSubgroups;
-        this.biDir = biDir;
+    constructor(
+        from: string,
+        to: string,
+        scope: string = "intra-group",
+        extendsSubgroups: boolean = false,
+        biDir: boolean = false
+    ) {
+        super("compatibility")
+        this.from = from
+        this.to = to
+        this.scope = scope
+        this.extendsSubgroups = extendsSubgroups
+        this.biDir = biDir
     }
 }
 
 export class Group extends Component {
-    name: string;
-    min: number;
-    max: number;
+    name: string
+    min: number
+    max: number
     subgroups: Set<Group>
-    roles: Set<Role>;
-    constraints: Set<Constraint>;
+    roles: Set<Role>
+    constraints: Set<Constraint>
 
     constructor(
         name: string,
@@ -91,10 +97,10 @@ export class Group extends Component {
         roles: Set<Role> = new Set<Role>(),
         constraints: Set<Constraint> = new Set<Constraint>()
     ) {
-        super("group");
-        this.name = name;
-        this.min = min;
-        this.max = max;
+        super("group")
+        this.name = name
+        this.min = min
+        this.max = max
         this.subgroups = subgroups
         this.roles = roles
         this.constraints = constraints
@@ -105,7 +111,7 @@ export class Group extends Component {
      * @param f A side effect function that can be applied on the component.
      * @returns The component
      */
-    also(f: ((o: Group) => void)): Group {
+    also(f: (o: Group) => void): Group {
         f(this)
         return this
     }
