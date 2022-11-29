@@ -5,14 +5,12 @@ import {fromSet, getAllGroups, getAllRoles, shortName} from "../../utils/structu
 import {Grid, Input, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import React from "react";
 import {noGroup, noRole} from "./SideMenu";
+import {AdditionToGroupEvent, DiagramEventHandler, ExtensionChangeEvent, RemovalFromGroupEvent, RoleCardinalityChangeEvent} from "../../utils/commons";
 
 type RoleMenu = {
     component: Option<Role>
     components: List<Component>
-    onExtensionChange: (role: string, extended: string) => void
-    addToGroup: (c: string, t: string, g: string) => void
-    removeFromGroup: (c: string, t: string, g: string) => void
-    changeCardinality: (property: string, value: number) => void
+    onEvent: DiagramEventHandler
 }
 
 const RoleMenu = (p: RoleMenu) => {
@@ -29,7 +27,7 @@ const RoleMenu = (p: RoleMenu) => {
             <InputLabel id="extendsLabel" htmlFor="extends">Extends</InputLabel>
             <Select id="extends" labelId="extendsLabel" fullWidth variant="standard"
                     value={p.component.map(c => c.extends ? c.extends.name : noRole).getOrElse(noRole)}
-                    onChange={(e) => p.onExtensionChange(p.component.map(c => c.name).getOrElse(""), e.target.value)}>
+                    onChange={(e) => p.onEvent(new ExtensionChangeEvent(p.component.map(c => c.name).getOrElse(""), e.target.value))}>
                 <MenuItem value={noRole}>None</MenuItem>
                 {Array.from(new Set(toArray(getAllRoles(p.components)).map(r => shortName(r.name))))
                     .map(r => <MenuItem key={r} value={r}>{r}</MenuItem>)}
@@ -40,8 +38,8 @@ const RoleMenu = (p: RoleMenu) => {
             <Select id="inGroup" labelId="subGroupOfLabel" fullWidth variant="standard"
                     value={inGroup}
                     onChange={(e) => {(e.target.value === noGroup) ?
-                        p.removeFromGroup(p.component.map(c => c.name).getOrElse(""), "role", inGroup) :
-                        p.addToGroup(p.component.map(c => c.name).getOrElse(""), "role", e.target.value)
+                        p.onEvent(new RemovalFromGroupEvent(p.component.map(c => c.name).getOrElse(""), "role", inGroup)) :
+                        p.onEvent(new AdditionToGroupEvent(p.component.map(c => c.name).getOrElse(""), "role", e.target.value))
                     }}>
                 <MenuItem value={noGroup}>None</MenuItem>
                 {Array.from(new Set(toArray(getAllGroups(p.components)).map(g => g.name)))
@@ -53,14 +51,14 @@ const RoleMenu = (p: RoleMenu) => {
                 <Grid item xs={6} sx={{mt: 3}}>
                     <InputLabel id="cardinalityMinLabel" htmlFor="cardinalityMin">Min</InputLabel>
                     <Input type="number" value={p.component.map(c => c.min).getOrElse(0)} fullWidth
-                            onChange={(e) => p.changeCardinality("min",
-                            e.target.value === "" ? 0 : parseInt(e.target.value))}/>
+                            onChange={(e) => p.onEvent(new RoleCardinalityChangeEvent((p.component.get() as Role).name, "min",
+                            e.target.value === "" ? 0 : parseInt(e.target.value)))}/>
                 </Grid>
                 <Grid item xs={6} sx={{mt: 3}}>
                     <InputLabel id="cardinalityMaxLabel" htmlFor="cardinalitytMax">Max</InputLabel>
                     <Input type="number" value={p.component.map(c => c.max).getOrElse("")} fullWidth
-                            onChange={(e) => p.changeCardinality("max",
-                                e.target.value === "" ? Number.MAX_VALUE : parseInt(e.target.value))}/>
+                            onChange={(e) => p.onEvent(new RoleCardinalityChangeEvent((p.component.get() as Role).name, "max",
+                                e.target.value === "" ? Number.MAX_VALUE : parseInt(e.target.value)))}/>
                 </Grid>
             </>}
     </>

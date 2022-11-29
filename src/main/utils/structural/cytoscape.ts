@@ -6,6 +6,7 @@ import dblclick from "cytoscape-dblclick";
 import edgehandles from "cytoscape-edgehandles";
 import compoundDragAndDrop from "cytoscape-compound-drag-and-drop";
 import {DiagramProps} from "../../components/structural/Diagram";
+import {AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent} from "../commons";
 
 /**
  * Convert a {@link Component} into an {@link ElementDefinition} to be displayed in cytoscape.
@@ -87,18 +88,19 @@ export const config: (cy: Core, ehOptions: Record<string, unknown>, cddOption: R
             //"dblclick": (e) => eh.start(e.target),
             "cdnddrop": (event, dropTarget) => {
                 if (dropTarget._private.data) {
-                    props.onAdditionToGroup(event.target._private.data.id,
+                    props.onDiagramEvent(new AdditionToGroupEvent(event.target._private.data.id,
                         event.target._private.data.group ? "group" : "role",
-                        dropTarget._private.data.id)
+                        dropTarget._private.data.id))
                 }
             },
-            "cdndout": (event, dropTarget) => props.onRemoveFromGroup(
+            "cdndout": (event, dropTarget) => props.onDiagramEvent(new RemovalFromGroupEvent(
                 event.target._private.data.id,
                 event.target._private.data.group ? "group" : "role",
-                dropTarget._private.data.id),
+                dropTarget._private.data.id)),
             "tap": (e) => {
                 if (e.target._private.data.id) {
-                    props.onSelectedComponent(e.target._private.data.group ? "group" : "role", e.target._private.data.id)
+                    props.onDiagramEvent(new SelectedComponentEvent(e.target._private.data.id,
+                        e.target._private.data.group ? "group" : "role"))
                 }
             }
         }
