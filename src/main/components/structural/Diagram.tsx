@@ -1,11 +1,11 @@
-import React from "react";
-import CytoscapeComponent from "react-cytoscapejs";
-import {Component} from "../../utils/structural/entities";
-import {Core, ElementDefinition} from "cytoscape";
-import * as nodesStyle from "../../style/cytoscape/style.json";
-import {List, toArray} from "scala-types/dist/list/list";
-import {Toolbar} from "@mui/material";
-import {DiagramEventHandler} from "../../utils/commons";
+import React from "react"
+import CytoscapeComponent from "react-cytoscapejs"
+import { Component } from "../../utils/structural/entities"
+import { Core, ElementDefinition } from "cytoscape"
+import * as nodesStyle from "../../style/cytoscape/style.json"
+import { List, toArray } from "scala-types/dist/list/list"
+import { Toolbar } from "@mui/material"
+import { DiagramEventHandler } from "../../utils/commons"
 
 export type DiagramProps = {
     elements: List<Component>
@@ -24,19 +24,23 @@ class Diagram extends React.Component<DiagramProps, unknown> {
     render() {
         return (
             <>
-                <Toolbar/>
+                <Toolbar />
                 <div id="cy" className="diagram">
                     <CytoscapeComponent
                         className="diagram-component"
-                        layout={ { name: "breadthfirst", zoom: 1 } }
-                        cy={(cy) => { this.cy = cy }}
-                        elements={toArray(this.props.elements.flatMap(e => this.props.presentation(e, this.props.elements)))}
+                        layout={{ name: "breadthfirst", zoom: 1 }}
+                        cy={cy => {
+                            this.cy = cy
+                        }}
+                        elements={toArray(
+                            this.props.elements.flatMap(e => this.props.presentation(e, this.props.elements))
+                        )}
                         // @ts-ignore
                         stylesheet={nodesStyle}
                     />
                 </div>
             </>
-        );
+        )
     }
 }
 

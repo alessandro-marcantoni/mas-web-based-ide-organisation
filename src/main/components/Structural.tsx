@@ -1,10 +1,10 @@
-import React from "react";
-import Sidebar from "./structural/Sidebar";
-import Diagram from "./structural/Diagram";
-import {Component, Group, Role} from "../utils/structural/entities";
-import {getAllRoles, getAllGroups} from "../utils/structural/utils";
-import {Option, none} from "scala-types/dist/option/option";
-import {list, List} from "scala-types/dist/list/list"
+import React from "react"
+import Sidebar from "./structural/Sidebar"
+import Diagram from "./structural/Diagram"
+import { Component, Group, Role } from "../utils/structural/entities"
+import { getAllRoles, getAllGroups } from "../utils/structural/utils"
+import { Option, none } from "scala-types/dist/option/option"
+import { list, List } from "scala-types/dist/list/list"
 import {
     add,
     addToGroup,
@@ -13,11 +13,22 @@ import {
     removeFromGroup,
     changeExtension,
     createCardinality,
-    changeRoleCardinality
-} from "../utils/structural/diagram";
-import SideMenu from "./structural/SideMenu";
-import {AdditionToGroupEvent, CardinalityConstraintAdditionEvent, ComponentDeletionEvent, DiagramEvent, DiagramEventType, ExtensionChangeEvent, LinkCreationEvent, RemovalFromGroupEvent, RoleCardinalityChangeEvent, SelectedComponentEvent} from "../utils/commons";
-import { cddOptions, config, ehOptions, presentation } from "../utils/structural/cytoscape";
+    changeRoleCardinality,
+} from "../utils/structural/diagram"
+import SideMenu from "./structural/SideMenu"
+import {
+    AdditionToGroupEvent,
+    CardinalityConstraintAdditionEvent,
+    ComponentDeletionEvent,
+    DiagramEvent,
+    DiagramEventType,
+    ExtensionChangeEvent,
+    LinkCreationEvent,
+    RemovalFromGroupEvent,
+    RoleCardinalityChangeEvent,
+    SelectedComponentEvent,
+} from "../utils/commons"
+import { cddOptions, config, ehOptions, presentation } from "../utils/structural/cytoscape"
 
 export type StructuralState = {
     added: List<Component>
@@ -28,11 +39,12 @@ export type StructuralState = {
 
 class Structural extends React.Component<unknown, StructuralState> {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             added: list<Component>(),
-            role: "", group: "",
-            selected: none()
+            role: "",
+            group: "",
+            selected: none(),
         }
         this.addComponent = this.addComponent.bind(this)
         this.onPropertyChange = this.onPropertyChange.bind(this)
@@ -47,41 +59,43 @@ class Structural extends React.Component<unknown, StructuralState> {
     }
 
     addComponent(c: string, l: string = "", from: string = "", to: string = "") {
-        createComponent(this.state, c, l, from, to)
-            .apply((comp: Component) => this.setState((state: StructuralState) => add(state, comp)))
+        createComponent(this.state, c, l, from, to).apply((comp: Component) =>
+            this.setState((state: StructuralState) => add(state, comp))
+        )
     }
 
     addCardinality(g: string, type: string, subject: string, min: number, max: number) {
-        this.setState((state) => {
+        this.setState(state => {
             return { added: createCardinality(state, g, type, subject, min, max) }
         })
     }
 
     deleteComponent(c: Component): void {
-        this.setState((state) => {
+        this.setState(state => {
             return {
                 added: removeComponent(state, c.type, c),
-                selected: state.selected
-                    .flatMap(s => list<Component>()
+                selected: state.selected.flatMap(s =>
+                    list<Component>()
                         .appendedAll(getAllGroups(state.added))
                         .appendedAll(getAllRoles(state.added))
-                        .find(c => (c.type === "group" ? c as Group : c as Role).name === s.name))
+                        .find(c => (c.type === "group" ? (c as Group) : (c as Role)).name === s.name)
+                ),
             }
         })
     }
 
     changeExtension(role: string, extended: string): void {
-        this.setState((state) => {
+        this.setState(state => {
             const added = changeExtension(state, role, extended)
             return {
                 added: added,
-                selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role))
+                selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role)),
             }
         })
     }
 
     changeRoleCardinality(name: string, property: string, value: number) {
-        this.setState((state) => {
+        this.setState(state => {
             const added = changeRoleCardinality(state, name, property, value)
             return {
                 added: added,
@@ -91,38 +105,40 @@ class Structural extends React.Component<unknown, StructuralState> {
     }
 
     onPropertyChange(property: string, value: unknown): void {
-        this.setState((state) => {
+        this.setState(state => {
             return {
                 added: state.added,
-                group: state.group, role: state.role,
+                group: state.group,
+                role: state.role,
                 selected: state.selected,
-                [property]: value
+                [property]: value,
             }
         })
     }
 
     onAdditionToGroup(component: string, type: string, group: string): void {
-        this.setState((state) => {
+        this.setState(state => {
             return {
-                added: addToGroup(state, component, type, group)
+                added: addToGroup(state, component, type, group),
             }
         })
     }
 
     onRemoveFromGroup(component: string, type: string, group: string): void {
-        this.setState((state) => {
+        this.setState(state => {
             return {
-                added: removeFromGroup(state, component, type, group)
+                added: removeFromGroup(state, component, type, group),
             }
         })
     }
 
     onSelectedComponent(componentType: string, component: string): void {
-        this.setState((state) => {
+        this.setState(state => {
             return {
-                selected: componentType === "group" ?
-                    getAllGroups(state.added).find(c => c.name === component) :
-                    getAllRoles(state.added).find(c => c.name === component),
+                selected:
+                    componentType === "group"
+                        ? getAllGroups(state.added).find(c => c.name === component)
+                        : getAllRoles(state.added).find(c => c.name === component),
             }
         })
     }
@@ -166,17 +182,27 @@ class Structural extends React.Component<unknown, StructuralState> {
 
     render() {
         return (
-                <>
-                    <Sidebar role={this.state.role} group={this.state.group}
-                             components={this.state.added} propertyChanged={this.onPropertyChange}
-                             addComponent={(c) => this.addComponent(c, "", "", "")}/>
-                    <Diagram onDiagramEvent={this.onDiagramEvent} elements={this.state.added}
-                             presentation={presentation}
-                             configuration={(cy, props) => config(cy, ehOptions(), cddOptions(props), props)}/>
-                    <SideMenu component={this.state.selected} components={this.state.added}
-                              onClose={() => this.setState({ selected: none() })}
-                              onEvent={this.onDiagramEvent}/>
-                </>
+            <>
+                <Sidebar
+                    role={this.state.role}
+                    group={this.state.group}
+                    components={this.state.added}
+                    propertyChanged={this.onPropertyChange}
+                    addComponent={c => this.addComponent(c, "", "", "")}
+                />
+                <Diagram
+                    onDiagramEvent={this.onDiagramEvent}
+                    elements={this.state.added}
+                    presentation={presentation}
+                    configuration={(cy, props) => config(cy, ehOptions(), cddOptions(props), props)}
+                />
+                <SideMenu
+                    component={this.state.selected}
+                    components={this.state.added}
+                    onClose={() => this.setState({ selected: none() })}
+                    onEvent={this.onDiagramEvent}
+                />
+            </>
         )
     }
 }
