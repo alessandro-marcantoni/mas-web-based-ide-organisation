@@ -19,11 +19,10 @@ export function presentation(c: Component, cs: List<Component>, group: string | 
     switch(c.type) {
         case "role":
             const r = c as Role
-            return list({ data: { id: r.name, label: r.name.replace(separatorRegex, ""), role: true, parent: group } })
-                // @ts-ignore
-                .appendedAll(!r.extends ?
-                    list() :
-                    getAllRoles(cs).filter(rc => shortName(rc.name) === r.extends.name).map(rc => extensionLink(r.name, rc.name)))
+            // @ts-ignore
+            return list(role(r, group)).appendedAll(!r.extends ? list() :
+                    getAllRoles(cs).filter(rc => shortName(rc.name) === r.extends.name)
+                        .map(rc => extensionLink(r.name, rc.name)))
         case "group":
             const g = c as Group
             return list<ElementDefinition>({ data: { id: g.name, label: g.name.replace(separatorRegex, ""), group: true, parent: group } })
@@ -101,5 +100,16 @@ const compatibilityLink = (com: Compatibility) => {
             source: com.from, target: com.to, label: com.constraint,
             link: true,
             arrow: "compatibility", biDir: com.biDir }
+    }
+}
+
+const role = (role: Role, group: string | undefined) => {
+    return {
+        data: {
+            id: role.name,
+            label: role.name.replace(separatorRegex, "") + (group ? 
+                ` <${role.min},${role.max === Number.MAX_VALUE ? "Inf" : role.max}>` : ""),
+            role: true, parent: group 
+        }
     }
 }
