@@ -1,10 +1,11 @@
 import Header from "./components/Header"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Structural from "./components/Structural"
+import Structural from "./components/structural/Structural"
 import * as React from "react"
 import "./style/main.scss"
 import { Box, CssBaseline } from "@mui/material"
 import Loader from "./components/Loader"
+import Functional from "./components/functional/Functional"
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Loader />} />
                         <Route path="/structural" element={<Structural />} />
+                        <Route path="/functional" element={<Functional />} />
                     </Routes>
                 </Box>
             </BrowserRouter>

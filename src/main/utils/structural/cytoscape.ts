@@ -5,7 +5,7 @@ import { defined, fromSet, getAllRoles, separatorRegex, shortName } from "./util
 import dblclick from "cytoscape-dblclick"
 import edgehandles from "cytoscape-edgehandles"
 import compoundDragAndDrop from "cytoscape-compound-drag-and-drop"
-import { DiagramProps } from "../../components/structural/Diagram"
+import { DiagramProps } from "../../components/Diagram"
 import { AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent } from "../commons"
 
 /**

@@ -1,11 +1,11 @@
 import React from "react"
 import CytoscapeComponent from "react-cytoscapejs"
-import { Component } from "../../utils/structural/entities"
+import { Component } from "../utils/structural/entities"
 import { Core, ElementDefinition } from "cytoscape"
-import * as nodesStyle from "../../style/cytoscape/style.json"
+import * as nodesStyle from "../style/cytoscape/style.json"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Toolbar } from "@mui/material"
-import { DiagramEventHandler } from "../../utils/commons"
+import { DiagramEventHandler } from "../utils/commons"
 
 export type DiagramProps = {
     elements: List<Component>
