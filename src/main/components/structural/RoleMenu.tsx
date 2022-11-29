@@ -48,18 +48,21 @@ const RoleMenu = (p: RoleMenu) => {
                     .map(g => <MenuItem key={g} value={g}>{g}</MenuItem>)}
             </Select>
         </Grid>
-        <Grid item xs={6} sx={{mt: 3}}>
-            <InputLabel id="cardinalityMinLabel" htmlFor="cardinalityMin">Min</InputLabel>
-            <Input type="number" value={p.component.map(c => c.min).getOrElse(0)} fullWidth
-                    onChange={(e) => p.changeCardinality("min",
-                    e.target.value === "" ? 0 : parseInt(e.target.value))}/>
-        </Grid>
-        <Grid item xs={6} sx={{mt: 3}}>
-            <InputLabel id="cardinalityMaxLabel" htmlFor="cardinalitytMax">Max</InputLabel>
-            <Input type="number" value={p.component.map(c => c.max).getOrElse("")} fullWidth
-                    onChange={(e) => p.changeCardinality("max",
-                        e.target.value === "" ? Number.MAX_VALUE : parseInt(e.target.value))}/>
-        </Grid>
+        {inGroup !== noGroup &&
+            <>
+                <Grid item xs={6} sx={{mt: 3}}>
+                    <InputLabel id="cardinalityMinLabel" htmlFor="cardinalityMin">Min</InputLabel>
+                    <Input type="number" value={p.component.map(c => c.min).getOrElse(0)} fullWidth
+                            onChange={(e) => p.changeCardinality("min",
+                            e.target.value === "" ? 0 : parseInt(e.target.value))}/>
+                </Grid>
+                <Grid item xs={6} sx={{mt: 3}}>
+                    <InputLabel id="cardinalityMaxLabel" htmlFor="cardinalitytMax">Max</InputLabel>
+                    <Input type="number" value={p.component.map(c => c.max).getOrElse("")} fullWidth
+                            onChange={(e) => p.changeCardinality("max",
+                                e.target.value === "" ? Number.MAX_VALUE : parseInt(e.target.value))}/>
+                </Grid>
+            </>}
     </>
 }
 
