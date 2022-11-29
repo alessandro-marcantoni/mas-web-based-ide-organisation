@@ -1,9 +1,10 @@
 import { StructuralState } from "../main/components/structural/Structural"
 import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/utils/structural/utils"
 import { none } from "scala-types/dist/option/option"
-import { Component, Group, Role } from "../main/utils/structural/entities"
+import { Group, Role } from "../main/utils/structural/entities"
 import { List, list } from "scala-types/dist/list/list"
 import { add, addToGroup, createComponent, removeComponent, removeFromGroup } from "../main/utils/structural/diagram"
+import { Component } from "../main/utils/commons"
 
 let globalState: StructuralState = {
     added: list(),

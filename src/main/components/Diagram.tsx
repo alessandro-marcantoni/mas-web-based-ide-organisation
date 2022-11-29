@@ -1,6 +1,6 @@
 import React from "react"
 import CytoscapeComponent from "react-cytoscapejs"
-import { Component } from "../utils/structural/entities"
+import { Component } from "../utils/commons"
 import { Core, ElementDefinition } from "cytoscape"
 import * as nodesStyle from "../style/cytoscape/style.json"
 import { List, toArray } from "scala-types/dist/list/list"

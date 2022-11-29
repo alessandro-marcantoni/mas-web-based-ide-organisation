@@ -1,6 +1,7 @@
-import { Compatibility, Component, Constraint, Group, Role } from "./entities"
+import { Compatibility, Constraint, Group, Role } from "./entities"
 import { Option, none, some } from "scala-types/dist/option/option"
 import { fromArray, list, List, toArray } from "scala-types/dist/list/list"
+import { Component } from "../commons"
 
 /**
  * Retrieve all the {@link Role}s among the {@link Component}s recursively.

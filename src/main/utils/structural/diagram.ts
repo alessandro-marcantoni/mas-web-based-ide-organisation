@@ -1,6 +1,6 @@
 import { StructuralState } from "../../components/structural/Structural"
 import { none, Option, some } from "scala-types/dist/option/option"
-import { Cardinality, Compatibility, Component, Constraint, Group, Role } from "./entities"
+import { Cardinality, Compatibility, Constraint, Group, Role } from "./entities"
 import { list, List } from "scala-types/dist/list/list"
 import {
     defined,
@@ -15,6 +15,7 @@ import {
     shortName,
     splitName,
 } from "./utils"
+import { Component } from "../commons"
 
 /**
  * Create a new structural {@link Component}.
@@ -72,11 +73,7 @@ export const createCardinality: (
         .find(g => g.name === group)
         .apply((g: Group) => {
             g.addConstraint(new Cardinality(subject, type, min, max))
-            g.constraints = removeDuplicates<Constraint>(g.constraints, c =>
-                c.constraint === "cardinality"
-                    ? (c as Cardinality).type + (c as Cardinality).object
-                    : (c as Compatibility).from + (c as Compatibility).to
-            )
+            g.constraints = removeDuplicates<Constraint>(g.constraints, c => c.getName())
         })
     return state.added
 }
