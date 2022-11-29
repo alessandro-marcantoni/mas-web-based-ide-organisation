@@ -1,25 +1,24 @@
 import React from "react";
 import CytoscapeComponent from "react-cytoscapejs";
 import {Component} from "../../utils/structural/entities";
-import {Core} from "cytoscape";
+import {Core, ElementDefinition} from "cytoscape";
 import * as nodesStyle from "../../style/cytoscape/style.json";
 import {List, toArray} from "scala-types/dist/list/list";
-import {cddOptions, config, ehOptions, presentation} from "../../utils/structural/cytoscape";
 import {Toolbar} from "@mui/material";
+import {DiagramEventHandler} from "../../utils/commons";
 
 export type DiagramProps = {
     elements: List<Component>
-    onLinkCreation: (from: string, to: string) => void
-    onAdditionToGroup: (r: string, t: string, g: string) => void
-    onRemoveFromGroup: (r: string, t: string, g: string) => void
-    onSelectedComponent: (t: string, c: string) => void
+    onDiagramEvent: DiagramEventHandler
+    presentation: (c: Component, cs: List<Component>, options?: string | undefined) => List<ElementDefinition>
+    configuration: (cy: Core, p: DiagramProps) => void
 }
 
 class Diagram extends React.Component<DiagramProps, unknown> {
     private cy: Core
 
     componentDidMount() {
-        config(this.cy, ehOptions(), cddOptions(this.props), this.props)
+        this.props.configuration(this.cy, this.props)
     }
 
     render() {
@@ -31,7 +30,7 @@ class Diagram extends React.Component<DiagramProps, unknown> {
                         className="diagram-component"
                         layout={ { name: "breadthfirst", zoom: 1 } }
                         cy={(cy) => { this.cy = cy }}
-                        elements={toArray(this.props.elements.flatMap(e => presentation(e, this.props.elements)))}
+                        elements={toArray(this.props.elements.flatMap(e => this.props.presentation(e, this.props.elements)))}
                         // @ts-ignore
                         stylesheet={nodesStyle}
                     />

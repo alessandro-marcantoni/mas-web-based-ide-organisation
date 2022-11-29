@@ -6,18 +6,13 @@ import {Close} from "@mui/icons-material";
 import {List} from "scala-types/dist/list/list";
 import RoleMenu from "./RoleMenu";
 import GroupMenu from "./GroupMenu";
+import {ComponentDeletionEvent, DiagramEventHandler} from "../../utils/commons";
 
 type SideMenuProps = {
     component: Option<Component>
     components: List<Component>
     onClose: () => void
-    onExtensionChange: (role: string, extended: string) => void
-    deleteComponent: (c: Component) => void
-    addToGroup: (c: string, t: string, g: string) => void
-    removeFromGroup: (c: string, t: string, g: string) => void
-    addLink: (from: string, to: string, type: string) => void
-    addCardinality: (group: string, type: string, subject: string, min: number, max: number) => void
-    changeRoleCardinality: (property: string, value: number) => void
+    onEvent: DiagramEventHandler
 }
 
 const SideMenu = (p: SideMenuProps) =>
@@ -31,18 +26,16 @@ const SideMenu = (p: SideMenuProps) =>
             ><Close/></IconButton>
             { p.component.map(c => c.type === "role").getOrElse(false) &&
                 <RoleMenu component={p.component as Option<Role>} components={p.components}
-                          onExtensionChange={p.onExtensionChange} addToGroup={p.addToGroup}
-                          removeFromGroup={p.removeFromGroup} changeCardinality={p.changeRoleCardinality}/>
+                          onEvent={p.onEvent}/>
             }
             { p.component.map(c => c.type === "group").getOrElse(false) &&
               <GroupMenu component={p.component as Option<Group>} components={p.components}
-                         addToGroup={p.addToGroup} removeFromGroup={p.removeFromGroup}
-                         addLink={p.addLink} deleteComponent={p.deleteComponent} addCardinality={p.addCardinality}/>
+                         onEvent={p.onEvent}/>
             }
             <Grid item xs={12} sx={{position: "fixed", bottom: 8, width: 468, mt: 3}}>
                 <Button color="error" variant="contained" fullWidth
                         sx={{mx: 0}} onClick={() => {
-                    p.deleteComponent(p.component.getOrElse(undefined))
+                    p.onEvent(new ComponentDeletionEvent(p.component.getOrElse(undefined)))
                     p.onClose()
                 }}>Delete component</Button>
             </Grid>

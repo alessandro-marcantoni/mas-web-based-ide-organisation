@@ -16,6 +16,8 @@ import {
     changeRoleCardinality
 } from "../utils/structural/diagram";
 import SideMenu from "./structural/SideMenu";
+import {AdditionToGroupEvent, CardinalityConstraintAdditionEvent, ComponentDeletionEvent, DiagramEvent, DiagramEventType, ExtensionChangeEvent, LinkCreationEvent, RemovalFromGroupEvent, RoleCardinalityChangeEvent, SelectedComponentEvent} from "../utils/commons";
+import { cddOptions, config, ehOptions, presentation } from "../utils/structural/cytoscape";
 
 export type StructuralState = {
     added: List<Component>
@@ -41,6 +43,7 @@ class Structural extends React.Component<unknown, StructuralState> {
         this.changeExtension = this.changeExtension.bind(this)
         this.addCardinality = this.addCardinality.bind(this)
         this.changeRoleCardinality = this.changeRoleCardinality.bind(this)
+        this.onDiagramEvent = this.onDiagramEvent.bind(this)
     }
 
     addComponent(c: string, l: string = "", from: string = "", to: string = "") {
@@ -77,17 +80,12 @@ class Structural extends React.Component<unknown, StructuralState> {
         })
     }
 
-    changeRoleCardinality(property: string, value: number) {
-        this.state.selected.apply((c) => {
-            if (c.type === "role") {
-                const role = c as Role
-                this.setState((state) => {
-                    const added = changeRoleCardinality(state, role.name, property, value)
-                    return {
-                        added: added,
-                        selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === role.name)),
-                    }
-                })
+    changeRoleCardinality(name: string, property: string, value: number) {
+        this.setState((state) => {
+            const added = changeRoleCardinality(state, name, property, value)
+            return {
+                added: added,
+                selected: state.selected.flatMap(() => getAllRoles(added).find(r => r.name === name)),
             }
         })
     }
@@ -129,21 +127,55 @@ class Structural extends React.Component<unknown, StructuralState> {
         })
     }
 
+    onDiagramEvent(event: DiagramEvent): void {
+        switch (event.type) {
+            case DiagramEventType.LinkCreation:
+                const lce = event as LinkCreationEvent
+                this.addComponent("link", lce.linkType, lce.from, lce.to)
+                break
+            case DiagramEventType.AdditionToGroup:
+                const ae = event as AdditionToGroupEvent
+                this.onAdditionToGroup(ae.component, ae.componentType, ae.destinationGroup)
+                break
+            case DiagramEventType.RemovalFromGroup:
+                const re = event as RemovalFromGroupEvent
+                this.onRemoveFromGroup(re.component, re.componentType, re.sourceGroup)
+                break
+            case DiagramEventType.SelectedComponent:
+                const se = event as SelectedComponentEvent
+                this.onSelectedComponent(se.componentType, se.component)
+                break
+            case DiagramEventType.ExtensionChange:
+                const ece = event as ExtensionChangeEvent
+                this.changeExtension(ece.role, ece.extension)
+                break
+            case DiagramEventType.RoleCardinalityChange:
+                const rce = event as RoleCardinalityChangeEvent
+                this.changeRoleCardinality(rce.role, rce.property, rce.value)
+                break
+            case DiagramEventType.ComponentDeletion:
+                const de = event as ComponentDeletionEvent
+                this.deleteComponent(de.component)
+                break
+            case DiagramEventType.CardinalityConstraintAddition:
+                const cae = event as CardinalityConstraintAdditionEvent
+                this.addCardinality(cae.group, cae.objectType, cae.object, cae.min, cae.max)
+                break
+        }
+    }
+
     render() {
         return (
                 <>
                     <Sidebar role={this.state.role} group={this.state.group}
                              components={this.state.added} propertyChanged={this.onPropertyChange}
                              addComponent={(c) => this.addComponent(c, "", "", "")}/>
-                    <Diagram onLinkCreation={(from, to) => this.addComponent("role", "compatibility", from, to)}
-                             onAdditionToGroup={this.onAdditionToGroup} onRemoveFromGroup={this.onRemoveFromGroup}
-                             elements={this.state.added} onSelectedComponent={this.onSelectedComponent}/>
+                    <Diagram onDiagramEvent={this.onDiagramEvent} elements={this.state.added}
+                             presentation={presentation}
+                             configuration={(cy, props) => config(cy, ehOptions(), cddOptions(props), props)}/>
                     <SideMenu component={this.state.selected} components={this.state.added}
                               onClose={() => this.setState({ selected: none() })}
-                              onExtensionChange={this.changeExtension} deleteComponent={this.deleteComponent}
-                              addToGroup={this.onAdditionToGroup} removeFromGroup={this.onRemoveFromGroup}
-                              addLink={(from, to, type) => this.addComponent("link", type, from, to)}
-                              addCardinality={this.addCardinality} changeRoleCardinality={this.changeRoleCardinality}/>
+                              onEvent={this.onDiagramEvent}/>
                 </>
         )
     }

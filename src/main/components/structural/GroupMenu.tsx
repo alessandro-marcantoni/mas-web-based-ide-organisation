@@ -14,15 +14,12 @@ import {
 import React from "react";
 import {noGroup, noRole} from "./SideMenu";
 import {Delete} from "@mui/icons-material";
+import {AdditionToGroupEvent, CardinalityConstraintAdditionEvent, ComponentDeletionEvent, DiagramEventHandler, LinkCreationEvent, RemovalFromGroupEvent} from "../../utils/commons";
 
 type GroupMenuProps = {
     component: Option<Group>
     components: List<Component>
-    addToGroup: (c: string, t: string, g: string) => void
-    removeFromGroup: (c: string, t: string, g: string) => void
-    deleteComponent: (c: Component) => void
-    addLink: (from: string, to: string, type: string) => void
-    addCardinality: (group: string, type: string, subject: string, min: number, max: number) => void
+    onEvent: DiagramEventHandler
 }
 
 type GroupMenuState = {
@@ -58,8 +55,8 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                 <Select id="subgroupOf" labelId="subGroupOfLabel" fullWidth value={this.subgroup} variant="standard"
                         sx={{maxWidth: 500}} onChange={(e) => {
                             (e.target.value === noGroup) ?
-                                this.props.removeFromGroup(this.props.component.map(c => c.name).getOrElse(""), "group", this.subgroup) :
-                                this.props.addToGroup(this.props.component.map(c => c.name).getOrElse(""), "group", e.target.value)}} >
+                                this.props.onEvent(new RemovalFromGroupEvent(this.props.component.map(c => c.name).getOrElse(""), "group", this.subgroup)) :
+                                this.props.onEvent(new AdditionToGroupEvent(this.props.component.map(c => c.name).getOrElse(""), "group", e.target.value))}} >
                     <MenuItem value={noGroup}>None</MenuItem>
                     {this.props.component.map(c => (c as Group).subgroups.size === 0).getOrElse(false) ?
                         toArray(getGlobalGroups(this.props.components)
@@ -80,11 +77,11 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                 alignItems: "flex-end", maxWidth: 100}}>
                 <Button variant="contained" fullWidth onClick={() => {
                             (this.state.compatibilityFrom !== noRole && this.state.compatibilityTo !== noRole) ?
-                                this.props.addLink(this.state.compatibilityFrom, this.state.compatibilityTo, "compatibility") : {}
+                                this.props.onEvent(new LinkCreationEvent(this.state.compatibilityFrom, this.state.compatibilityTo, "compatibility")) : {}
                             this.setState({ compatibilityFrom: noRole, compatibilityTo: noRole })
                         }}>ADD</Button>
             </Grid>
-            <GroupMenuTable cols={["From", "To"]} deleteComponent={this.props.deleteComponent}
+            <GroupMenuTable cols={["From", "To"]} onEvent={this.props.onEvent}
                             items={this.props.component.map((g: Group) => Array.from(g.constraints)
                                 .filter((c: Constraint) => c.constraint === "compatibility")).getOrElse([])}
                             props={[(e: Compatibility) => shortName(e.from), (e: Compatibility) => shortName(e.to)]}/>
@@ -114,14 +111,14 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                 alignItems: "flex-end", maxWidth: 100}}>
                 <Button variant="contained" fullWidth onClick={() => {
                     (this.state.cardinalitySubject !== noRole) ?
-                        this.props.addCardinality(this.props.component.map(g => g.name).get() as string,
+                        this.props.onEvent(new CardinalityConstraintAdditionEvent(this.props.component.map(g => g.name).get() as string,
                             this.state.cardinalityRole, this.state.cardinalitySubject,
                             this.state.cardinalityMin === "" ? 0 : parseInt(this.state.cardinalityMin),
-                            this.state.cardinalityMax === "" ? Number.MAX_VALUE : parseInt(this.state.cardinalityMax)) : {}
+                            this.state.cardinalityMax === "" ? Number.MAX_VALUE : parseInt(this.state.cardinalityMax))) : {}
                     this.setState({ cardinalityMin: "", cardinalityMax: "", cardinalitySubject: noRole })
                 }}>ADD</Button>
             </Grid>
-            <GroupMenuTable cols={["Subject", "Min", "Max"]} deleteComponent={this.props.deleteComponent}
+            <GroupMenuTable cols={["Subject", "Min", "Max"]} onEvent={this.props.onEvent}
                             items={this.props.component.map(g => Array.from(g.constraints)
                                 .filter((c: Constraint) => c.constraint === "cardinality")).getOrElse([])}
                             props={[(c: Cardinality) => c.id, (c: Cardinality) => c.min.toString(), (c: Cardinality) => c.max.toString()]}/>
@@ -152,7 +149,7 @@ type GroupMenuTableProps<T> = {
     cols: Array<string>
     items: Array<T>
     props: Array<(e: T) => string>
-    deleteComponent: (c: T) => void
+    onEvent: DiagramEventHandler
 }
 
 const GroupMenuTable = <T,>(p: GroupMenuTableProps<T>) =>
@@ -169,7 +166,7 @@ const GroupMenuTable = <T,>(p: GroupMenuTableProps<T>) =>
                         <TableRow key={p.props.map(f => f(i)).join()}>
                             {p.props.map(f => f(i)).map(e => <TableCell key={e}>{e}</TableCell>)}
                             <TableCell sx={{p: 0}}>
-                                <IconButton onClick={() => p.deleteComponent(i)}><Delete/></IconButton>
+                                <IconButton onClick={() => p.onEvent(new ComponentDeletionEvent(i as Component))}><Delete/></IconButton>
                             </TableCell>
                         </TableRow>
                     )}
