@@ -1,11 +1,10 @@
 import React from "react";
 import CytoscapeComponent from "react-cytoscapejs";
-import {Component, Group} from "../../utils/structural/entities";
+import {Component} from "../../utils/structural/entities";
 import {Core} from "cytoscape";
 import * as nodesStyle from "../../style/cytoscape/style.json";
-import {defined, fromSet} from "../../utils/structural/utils";
-import {list, List, toArray} from "scala-types/dist/list/list";
-import {config, presentation} from "../../utils/structural/cytoscape";
+import {List, toArray} from "scala-types/dist/list/list";
+import {cddOptions, config, ehOptions, presentation} from "../../utils/structural/cytoscape";
 import {Toolbar} from "@mui/material";
 
 export type DiagramProps = {
@@ -18,27 +17,9 @@ export type DiagramProps = {
 
 class Diagram extends React.Component<DiagramProps, unknown> {
     private cy: Core
-    private ehOptions = {
-        canConnect: (source, target) =>
-            (source._private.data && source._private.data.parent) ||
-            (target._private.data && target._private.data.parent),
-    }
-    private cddOptions = {
-        grabbedNode: node =>
-            !defined(this.props.elements)
-                .collect(list(e => e.type === "group"), list(e => e as Group))
-                .flatMap(g => fromSet(g.subgroups))
-                .map(g => g.name)
-                .contains(node._private.data.parent),
-        dropTarget: node => node._private.data.group,
-        dropSibling: () => true,
-        newParentNode: (grabbedNode, dropSibling) => dropSibling,
-        overThreshold: 1,
-        outThreshold: 50
-    }
 
     componentDidMount() {
-        config(this.cy, this.ehOptions, this.cddOptions, this.props)
+        config(this.cy, ehOptions(), cddOptions(this.props), this.props)
     }
 
     render() {
