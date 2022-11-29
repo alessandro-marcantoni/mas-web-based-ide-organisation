@@ -1,7 +1,7 @@
 import {Compatibility, Component, Constraint, Group, Role} from "./entities";
 import {list, List} from "scala-types/dist/list/list";
 import cytoscape, {Core, ElementDefinition} from "cytoscape";
-import {fromSet, getAllRoles, separatorRegex, shortName} from "./utils";
+import {defined, fromSet, getAllRoles, separatorRegex, shortName} from "./utils";
 import dblclick from "cytoscape-dblclick";
 import edgehandles from "cytoscape-edgehandles";
 import compoundDragAndDrop from "cytoscape-compound-drag-and-drop";
@@ -43,24 +43,48 @@ export function presentation(c: Component, cs: List<Component>, group: string | 
     }
 }
 
+export const ehOptions = () => {
+    return {
+        canConnect: (source, target) =>
+            (source._private.data && source._private.data.parent) ||
+            (target._private.data && target._private.data.parent),
+    }
+}
+
+export const cddOptions = (props: DiagramProps) => {
+    return {
+        grabbedNode: node =>
+            !defined(props.elements)
+                .collect(list(e => e.type === "group"), list(e => e as Group))
+                .flatMap(g => fromSet(g.subgroups))
+                .map(g => g.name)
+                .contains(node._private.data.parent),
+        dropTarget: node => node._private.data.group,
+        dropSibling: () => true,
+        newParentNode: (grabbedNode, dropSibling) => dropSibling,
+        overThreshold: 1,
+        outThreshold: 50
+    }
+}
+
 export const config: (cy: Core, ehOptions: Record<string, unknown>, cddOption: Record<string, unknown>, props: DiagramProps) => void =
     (cy, ehOptions, cddOption, props) => {
         cytoscape.use(edgehandles)
         cytoscape.use(compoundDragAndDrop)
         cytoscape.use(dblclick)
         //@ts-ignore
-        const eh = cy.edgehandles(ehOptions)
+        //const eh = cy.edgehandles(ehOptions)
         // @ts-ignore
         cy.compoundDragAndDrop(cddOption);
         cy.center()
 
         const handlers = {
-            "ehcomplete": (ev, s, t, e) => {
+            /*"ehcomplete": (ev, s, t, e) => {
                 props.onLinkCreation(s._private.data.id, t._private.data.id)
                 cy.remove(e)
-            },
+            },*/
             "add": () => { cy.layout({ name: "breadthfirst" }).run(); cy.center() },
-            "dblclick": (e) => eh.start(e.target),
+            //"dblclick": (e) => eh.start(e.target),
             "cdnddrop": (event, dropTarget) => {
                 if (dropTarget._private.data) {
                     props.onAdditionToGroup(event.target._private.data.id,
@@ -72,7 +96,7 @@ export const config: (cy: Core, ehOptions: Record<string, unknown>, cddOption: R
                 event.target._private.data.id,
                 event.target._private.data.group ? "group" : "role",
                 dropTarget._private.data.id),
-            "cxttap": (e) => {
+            "tap": (e) => {
                 if (e.target._private.data.id) {
                     props.onSelectedComponent(e.target._private.data.group ? "group" : "role", e.target._private.data.id)
                 }
