@@ -1,8 +1,8 @@
 import React from "react"
-import Sidebar from "./structural/Sidebar"
-import Diagram from "./structural/Diagram"
-import { Component, Group, Role } from "../utils/structural/entities"
-import { getAllRoles, getAllGroups } from "../utils/structural/utils"
+import Sidebar from "./Sidebar"
+import Diagram from "../Diagram"
+import { Component, Group, Role } from "../../utils/structural/entities"
+import { getAllRoles, getAllGroups } from "../../utils/structural/utils"
 import { Option, none } from "scala-types/dist/option/option"
 import { list, List } from "scala-types/dist/list/list"
 import {
@@ -14,8 +14,8 @@ import {
     changeExtension,
     createCardinality,
     changeRoleCardinality,
-} from "../utils/structural/diagram"
-import SideMenu from "./structural/SideMenu"
+} from "../../utils/structural/diagram"
+import SideMenu from "./SideMenu"
 import {
     AdditionToGroupEvent,
     CardinalityConstraintAdditionEvent,
@@ -27,8 +27,8 @@ import {
     RemovalFromGroupEvent,
     RoleCardinalityChangeEvent,
     SelectedComponentEvent,
-} from "../utils/commons"
-import { cddOptions, config, ehOptions, presentation } from "../utils/structural/cytoscape"
+} from "../../utils/commons"
+import { cddOptions, config, ehOptions, presentation } from "../../utils/structural/cytoscape"
 
 export type StructuralState = {
     added: List<Component>
