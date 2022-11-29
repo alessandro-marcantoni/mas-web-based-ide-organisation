@@ -1,4 +1,4 @@
-import { Compatibility, Component, Constraint, Group, Role } from "./entities"
+import { Compatibility, Constraint, Group, Role } from "./entities"
 import { list, List } from "scala-types/dist/list/list"
 import cytoscape, { Core, ElementDefinition } from "cytoscape"
 import { defined, fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
@@ -6,7 +6,8 @@ import dblclick from "cytoscape-dblclick"
 import edgehandles from "cytoscape-edgehandles"
 import compoundDragAndDrop from "cytoscape-compound-drag-and-drop"
 import { DiagramProps } from "../../components/Diagram"
-import { AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent } from "../commons"
+import { AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent } from "../structural/events"
+import { Component } from "../commons"
 
 /**
  * Convert a {@link Component} into an {@link ElementDefinition} to be displayed in cytoscape.
