@@ -1,4 +1,4 @@
-import { StructuralState } from "../main/components/Structural"
+import { StructuralState } from "../main/components/structural/Structural"
 import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/utils/structural/utils"
 import { none } from "scala-types/dist/option/option"
 import { Component, Group, Role } from "../main/utils/structural/entities"
