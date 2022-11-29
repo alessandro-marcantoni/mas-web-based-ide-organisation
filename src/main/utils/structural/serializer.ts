@@ -1,6 +1,7 @@
-import { Cardinality, Compatibility, Component, Constraint, Group, Role } from "./entities"
+import { Cardinality, Compatibility, Constraint, Group, Role } from "./entities"
 import { getAllRoles, getGlobalGroups, option, shortName } from "./utils"
 import { List, toArray } from "scala-types/dist/list/list"
+import { Component } from "../commons"
 
 export const serialize: (diagram: List<Component>) => string = diagram =>
     formatXml(

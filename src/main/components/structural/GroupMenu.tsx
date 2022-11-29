@@ -1,5 +1,5 @@
 import { Option } from "scala-types/dist/option/option"
-import { Cardinality, Compatibility, Component, Constraint, Group, Role } from "../../utils/structural/entities"
+import { Cardinality, Compatibility, Constraint, Group, Role } from "../../utils/structural/entities"
 import { List, toArray } from "scala-types/dist/list/list"
 import { fromSet, getAllGroups, getGlobalGroups, shortName } from "../../utils/structural/utils"
 import {
@@ -26,10 +26,10 @@ import {
     AdditionToGroupEvent,
     CardinalityConstraintAdditionEvent,
     ComponentDeletionEvent,
-    DiagramEventHandler,
     LinkCreationEvent,
     RemovalFromGroupEvent,
-} from "../../utils/commons"
+} from "../../utils/structural/events"
+import { Component, DiagramEventHandler } from "../../utils/commons"
 
 type GroupMenuProps = {
     component: Option<Group>

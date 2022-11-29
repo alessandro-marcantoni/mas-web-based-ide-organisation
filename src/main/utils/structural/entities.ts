@@ -1,15 +1,6 @@
-/**
- * A generic structural component.
- */
-export abstract class Component {
-    type: string
+import { AbstractComponent } from "../commons"
 
-    protected constructor(type: string) {
-        this.type = type
-    }
-}
-
-export class Role extends Component {
+export class Role extends AbstractComponent {
     name: string
     extends: Role | undefined
     min: number
@@ -23,18 +14,12 @@ export class Role extends Component {
         this.max = max
     }
 
-    /**
-     * Perform a side effect and continue the computation.
-     * @param f A side effect function that can be applied on the component.
-     * @returns The component
-     */
-    also(f: (o: Role) => void): Role {
-        f(this)
-        return this
+    getName(): string {
+        return this.name
     }
 }
 
-export abstract class Constraint extends Component {
+export abstract class Constraint extends AbstractComponent {
     constraint: string
 
     protected constructor(constraint: string) {
@@ -55,6 +40,10 @@ export class Cardinality extends Constraint {
         this.max = max
         this.object = object
         this.id = id
+    }
+
+    getName(): string {
+        return this.type + this.object + "cardinality"
     }
 }
 
@@ -79,9 +68,13 @@ export class Compatibility extends Constraint {
         this.extendsSubgroups = extendsSubgroups
         this.biDir = biDir
     }
+
+    getName(): string {
+        return this.from + this.to + "compatibility"
+    }
 }
 
-export class Group extends Component {
+export class Group extends AbstractComponent {
     name: string
     min: number
     max: number
@@ -106,14 +99,8 @@ export class Group extends Component {
         this.constraints = constraints
     }
 
-    /**
-     * Perform a side effect and continue the computation.
-     * @param f A side effect function that can be applied on the component.
-     * @returns The component
-     */
-    also(f: (o: Group) => void): Group {
-        f(this)
-        return this
+    getName(): string {
+        return this.name
     }
 
     addRole(r: Role) {

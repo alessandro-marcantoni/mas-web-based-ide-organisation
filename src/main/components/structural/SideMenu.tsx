@@ -1,12 +1,13 @@
 import React from "react"
 import { Button, Drawer, Grid, IconButton, Toolbar } from "@mui/material"
 import { Option } from "scala-types/dist/option/option"
-import { Component, Group, Role } from "../../utils/structural/entities"
+import { Group, Role } from "../../utils/structural/entities"
 import { Close } from "@mui/icons-material"
 import { List } from "scala-types/dist/list/list"
 import RoleMenu from "./RoleMenu"
 import GroupMenu from "./GroupMenu"
-import { ComponentDeletionEvent, DiagramEventHandler } from "../../utils/commons"
+import { Component, DiagramEventHandler } from "../../utils/commons"
+import { ComponentDeletionEvent } from "../../utils/structural/events"
 
 type SideMenuProps = {
     component: Option<Component>
