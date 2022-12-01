@@ -7,6 +7,7 @@ export enum DiagramEventType {
     ComponentDeletion,
     CardinalityConstraintAddition,
     RoleCardinalityChange,
+    GoalCreation,
 }
 
 export type DiagramEventHandler = (event: DiagramEvent) => void
@@ -35,4 +36,10 @@ export abstract class AbstractComponent implements Component {
     }
 
     abstract getName(): string
+}
+
+export interface XMLElement {
+    elements: Array<XMLElement>
+    attributes: Array<Record<string, unknown>>
+    name: string
 }
