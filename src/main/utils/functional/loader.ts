@@ -12,10 +12,7 @@ export const loadFunctionalSpec: (path: string) => Promise<List<Component>> = as
     const elems = fromArray<Component>(converter[orgSpec[1].name](orgSpec[1])[0])
     dependencyMap.forEach((deps, goalName) => {
         getAllGoals(elems).find(g => g.getName() === goalName)
-            .apply(g => {
-                console.log(g.getName());
-                g.dependsOn = new Set(toArray(fromSet(deps).map(d => getAllGoals(elems).find(g => g.getName() === d).get() as Goal)))
-            })
+            .apply(g => g.dependsOn = new Set(toArray(fromSet(deps).map(d => getAllGoals(elems).find(g => g.getName() === d).get() as Goal))))
     })
     return elems
 }
@@ -27,7 +24,9 @@ const scheme = (element: XMLElement) => element.elements.filter(e => e.name === 
 const goal = (element: XMLElement) => {
     const g = Goal.named(element.attributes["id"])
     if (element.elements) {
-        element.elements.filter(e => e.name === "depends-on").forEach(e => dependsOn(e.attributes["goal"], element.attributes["id"]))
+        element.elements
+            .filter(e => e.name === "depends-on")
+            .forEach(e => dependsOn(e.attributes["goal"], element.attributes["id"]))
         return g
             .withArguments(fromArray(element.elements.filter(e => e.name === "argument").map(argument)))
             .withSubGoals(new Set(element.elements.filter(e => e.name === "plan").flatMap(plan)))
@@ -41,13 +40,10 @@ const goal = (element: XMLElement) => {
 
 const argument = (element: XMLElement) => new Argument(element.attributes["id"], option(element.attributes["value"]))
 
-const dependsOn = (dependee: string, depender: string) => {
-    console.log(dependee, depender);
-    
+const dependsOn = (dependee: string, depender: string) =>
     dependencyMap.get(depender)
         ? dependencyMap.get(depender).add(dependee)
         : dependencyMap.set(depender, new Set([dependee]))
-}
 
 const plan = (element: XMLElement) => {
     const goals = element.elements.filter(e => e.name === "goal")
