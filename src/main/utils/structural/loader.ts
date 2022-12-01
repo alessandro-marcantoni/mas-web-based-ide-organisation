@@ -1,10 +1,10 @@
 import { Cardinality, Compatibility, Group, Role } from "./entities"
 import convert from "xml-js"
-import { getAllGroups, getAllRoles, option, separate, separator, shortName } from "./utils"
+import { getAllRoles, option, separate, separator, shortName } from "./utils"
 import { fromArray, List, list } from "scala-types/dist/list/list"
-import { Component } from "../commons"
+import { Component, XMLElement } from "../commons"
 
-export const loadSpec: (path: string) => Promise<List<List<Component>>> = async path => {
+export const loadSpec: (path: string) => Promise<List<Component>> = async path => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
     getAllRoles(list(elems[1])).foreach(
@@ -14,17 +14,12 @@ export const loadSpec: (path: string) => Promise<List<List<Component>>> = async 
                 .map(or => or.extends)
                 .getOrElse(null))
     )
-    return list(
-        list(elems[1]).appendedAll(
-            fromArray<Role>(elems[0]).filter(
-                r =>
-                    !getAllRoles(list(elems[1]))
-                        .map(ar => shortName(ar.name))
-                        .contains(r.name)
-            )
-        ),
-        fromArray<Component>(elems[0]).appendedAll(
-            getAllGroups(list(elems[1])).map(g => new Group(g.name, g.min, g.max))
+    return list(elems[1]).appendedAll(
+        fromArray<Role>(elems[0]).filter(
+            r =>
+                !getAllRoles(list(elems[1]))
+                    .map(ar => shortName(ar.name))
+                    .contains(r.name)
         )
     )
 }
@@ -101,10 +96,4 @@ const converter = {
     "formation-constraints": formationConstraints,
     cardinality: cardinality,
     compatibility: compatibility,
-}
-
-interface XMLElement {
-    elements: Array<XMLElement>
-    attributes: Array<Record<string, unknown>>
-    name: string
 }
