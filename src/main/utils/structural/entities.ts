@@ -17,6 +17,16 @@ export class Role extends AbstractComponent {
     getName(): string {
         return this.name
     }
+
+    /**
+     * Perform a side effect and continue the computation.
+     * @param f A side effect function that can be applied on the component.
+     * @returns The component
+     */
+     also(f: ((o: Role) => void)): Role {
+        f(this)
+        return this
+    }
 }
 
 export abstract class Constraint extends AbstractComponent {
@@ -121,5 +131,15 @@ export class Group extends AbstractComponent {
 
     removeSubgroup(g: Group) {
         this.subgroups.delete(g)
+    }
+
+    /**
+     * Perform a side effect and continue the computation.
+     * @param f A side effect function that can be applied on the component.
+     * @returns The component
+     */
+     also(f: ((o: Group) => void)): Group {
+        f(this)
+        return this
     }
 }
