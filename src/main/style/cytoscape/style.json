@@ -63,4 +63,39 @@
     "source-arrow-shape": "diamond",
     "source-arrow-color": "black"
   }
+}, {
+  "selector": "node[?goal]",
+  "style": {
+    "shape": "round-rectangle",
+    "text-valign": "center",
+    "text-halign": "center",
+    "width": 100,
+    "height": 50,
+    "text-wrap": "wrap",
+    "text-max-width": 90
+  }
+}, {
+  "selector": "edge[relationType = 'and']",
+  "style": {
+    "target-arrow-shape": "triangle",
+    "target-arrow-color": "black",
+    "target-arrow-fill": "hollow",
+    "line-style": "solid"
+  }
+}, {
+  "selector": "edge[relationType = 'or']",
+  "style": {
+    "target-arrow-shape": "triangle",
+    "target-arrow-color": "black",
+    "target-arrow-fill": "hollow",
+    "line-style": "dashed"
+  }
+}, {
+  "selector": "edge[?dependency]",
+  "style": {
+    "target-arrow-shape": "vee",
+    "target-arrow-color": "black",
+    "line-style": "dotted",
+    "label": "depends on"
+  }
 }]
