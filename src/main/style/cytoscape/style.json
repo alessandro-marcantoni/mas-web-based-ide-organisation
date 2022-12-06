@@ -1,5 +1,5 @@
 [{
-  "selector": "node[?group]",
+  "selector": "node[componentType = 'group']",
   "style": {
     "shape": "round-rectangle",
     "width": 100,
@@ -8,7 +8,7 @@
     "z-index": 0
   }
 }, {
-  "selector": "node[?role]",
+  "selector": "node[componentType = 'role']",
   "style": {
     "width": 25,
     "height": 25,
@@ -16,12 +16,12 @@
     "background-color": "#C4DBE0"
   }
 }, {
-  "selector": "node[?group]:orphan, node[?group]:orphan > node[?role]",
+  "selector": "node[componentType = 'group']:orphan, node[componentType = 'group']:orphan > node[componentType = 'role']",
   "style": {
     "background-color": "#2EB5E0"
   }
 }, {
-  "selector": "node[?group]:child, node[?group]:child > node[?role]",
+  "selector": "node[componentType = 'group']:child, node[componentType = 'group']:child > node[componentType = 'role']",
   "style": {
     "background-color": "#00A8A8"
   }
@@ -64,7 +64,7 @@
     "source-arrow-color": "black"
   }
 }, {
-  "selector": "node[?goal]",
+  "selector": "node[componentType = 'goal']",
   "style": {
     "shape": "round-rectangle",
     "text-valign": "center",
@@ -91,7 +91,7 @@
     "line-style": "dashed"
   }
 }, {
-  "selector": "edge[?dependency]",
+  "selector": "edge[componentType = 'dependency']",
   "style": {
     "target-arrow-shape": "vee",
     "target-arrow-color": "black",
