@@ -9,19 +9,10 @@ import {
     MenuItem,
     Select,
     Typography,
-    IconButton,
-    TableContainer,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
     Input,
 } from "@mui/material"
 import React from "react"
-import { noGroup, noRole } from "./SideMenu"
-import { Delete } from "@mui/icons-material"
+import { noGroup, noRole } from "../common/SideMenu"
 import {
     AdditionToGroupEvent,
     CardinalityConstraintAdditionEvent,
@@ -30,6 +21,7 @@ import {
     RemovalFromGroupEvent,
 } from "../../utils/structural/events"
 import { Component, DiagramEventHandler } from "../../utils/commons"
+import TableWithDeletion from "../common/TableWithDeletion"
 
 type GroupMenuProps = {
     component: Option<Group>
@@ -166,9 +158,9 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                         ADD
                     </Button>
                 </Grid>
-                <GroupMenuTable
+                <TableWithDeletion
                     cols={["From", "To"]}
-                    onEvent={this.props.onEvent}
+                    onDelete={(c) => this.props.onEvent(new ComponentDeletionEvent(c))}
                     items={this.props.component
                         .map((g: Group) =>
                             Array.from(g.constraints).filter((c: Constraint) => c.constraint === "compatibility")
@@ -254,9 +246,9 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                         ADD
                     </Button>
                 </Grid>
-                <GroupMenuTable
+                <TableWithDeletion
                     cols={["Subject", "Min", "Max"]}
-                    onEvent={this.props.onEvent}
+                    onDelete={(c) => this.props.onEvent(new ComponentDeletionEvent(c))}
                     items={this.props.component
                         .map(g => Array.from(g.constraints).filter((c: Constraint) => c.constraint === "cardinality"))
                         .getOrElse([])}
@@ -303,44 +295,5 @@ const GroupMenuSelect = (p: GroupMenuSelectProps) => (
     </Grid>
 )
 
-type GroupMenuTableProps<T> = {
-    cols: Array<string>
-    items: Array<T>
-    props: Array<(e: T) => string>
-    onEvent: DiagramEventHandler
-}
-
-const GroupMenuTable = <T,>(p: GroupMenuTableProps<T>) => (
-    <Grid item xs={12} sx={{ maxWidth: 500 }}>
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {p.cols.map(c => (
-                            <TableCell key={c}>{c}</TableCell>
-                        ))}
-                        <TableCell width={50} />
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {p.items.map(i => (
-                        <TableRow key={p.props.map(f => f(i)).join()}>
-                            {p.props
-                                .map(f => f(i))
-                                .map(e => (
-                                    <TableCell key={e}>{e}</TableCell>
-                                ))}
-                            <TableCell sx={{ p: 0 }}>
-                                <IconButton onClick={() => p.onEvent(new ComponentDeletionEvent(i as Component))}>
-                                    <Delete />
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </Grid>
-)
 
 export default GroupMenu
