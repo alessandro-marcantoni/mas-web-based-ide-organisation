@@ -5,7 +5,7 @@ import { defined, fromSet, getAllRoles, separatorRegex, shortName } from "./util
 import dblclick from "cytoscape-dblclick"
 import edgehandles from "cytoscape-edgehandles"
 import compoundDragAndDrop from "cytoscape-compound-drag-and-drop"
-import { DiagramProps } from "../../components/Diagram"
+import { DiagramProps } from "../../components/common/Diagram"
 import { AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent } from "../structural/events"
 import { Component } from "../commons"
 
@@ -36,7 +36,7 @@ export function presentation(
         case "group":
             const g = c as Group
             return list<ElementDefinition>({
-                data: { id: g.name, label: g.name.replace(separatorRegex, ""), group: true, parent: group },
+                data: { id: g.name, label: g.name.replace(separatorRegex, ""), componentType: "group", parent: group },
             })
                 .appendedAll(fromSet(g.roles).flatMap(e => presentation(e, cs, g.name)))
                 .appendedAll(
@@ -116,7 +116,7 @@ export const config: (
                 props.onDiagramEvent(
                     new AdditionToGroupEvent(
                         event.target._private.data.id,
-                        event.target._private.data.group ? "group" : "role",
+                        event.target._private.data.componentType,
                         dropTarget._private.data.id
                     )
                 )
@@ -126,7 +126,7 @@ export const config: (
             props.onDiagramEvent(
                 new RemovalFromGroupEvent(
                     event.target._private.data.id,
-                    event.target._private.data.group ? "group" : "role",
+                    event.target._private.data.componentType,
                     dropTarget._private.data.id
                 )
             ),
@@ -135,7 +135,7 @@ export const config: (
                 props.onDiagramEvent(
                     new SelectedComponentEvent(
                         e.target._private.data.id,
-                        e.target._private.data.group ? "group" : "role"
+                        e.target._private.data.componentType
                     )
                 )
             }
@@ -153,7 +153,7 @@ const extensionLink = (extender: string, extended: string) => {
             source: extender,
             target: extended,
             label: "extends",
-            link: true,
+            componentType: "link",
             arrow: "extends",
         },
     }
@@ -166,7 +166,7 @@ const compatibilityLink = (com: Compatibility) => {
             source: com.from,
             target: com.to,
             label: com.constraint,
-            link: true,
+            componentType: "link",
             arrow: "compatibility",
             biDir: com.biDir,
         },
@@ -180,7 +180,7 @@ const role = (role: Role, group: string | undefined) => {
             label:
                 role.name.replace(separatorRegex, "") +
                 (group ? ` <${role.min},${role.max === Number.MAX_VALUE ? "Inf" : role.max}>` : ""),
-            role: true,
+            componentType: "role",
             parent: group,
         },
     }
