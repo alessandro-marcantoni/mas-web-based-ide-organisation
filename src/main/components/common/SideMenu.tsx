@@ -4,10 +4,12 @@ import { Option } from "scala-types/dist/option/option"
 import { Group, Role } from "../../utils/structural/entities"
 import { Close } from "@mui/icons-material"
 import { List } from "scala-types/dist/list/list"
-import RoleMenu from "./RoleMenu"
-import GroupMenu from "./GroupMenu"
+import RoleMenu from "../structural/RoleMenu"
+import GroupMenu from "../structural/GroupMenu"
 import { Component, DiagramEventHandler } from "../../utils/commons"
 import { ComponentDeletionEvent } from "../../utils/structural/events"
+import GoalMenu from "../functional/GoalMenu"
+import { Goal } from "../../utils/functional/entities"
 
 type SideMenuProps = {
     component: Option<Component>
@@ -28,6 +30,9 @@ const SideMenu = (p: SideMenuProps) => (
             )}
             {p.component.map(c => c.type === "group").getOrElse(false) && (
                 <GroupMenu component={p.component as Option<Group>} components={p.components} onEvent={p.onEvent} />
+            )}
+            {p.component.map(c => c.type === "goal").getOrElse(false) && (
+                <GoalMenu component={p.component as Option<Goal>} onEvent={p.onEvent} />
             )}
             <Grid item xs={12} sx={{ position: "fixed", bottom: 8, width: 468, mt: 3 }}>
                 <Button
