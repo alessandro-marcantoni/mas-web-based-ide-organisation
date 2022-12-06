@@ -8,6 +8,8 @@ export enum DiagramEventType {
     CardinalityConstraintAddition,
     RoleCardinalityChange,
     GoalCreation,
+    SubgoalRemoval,
+    DependencyRemoval,
 }
 
 export type DiagramEventHandler = (event: DiagramEvent) => void

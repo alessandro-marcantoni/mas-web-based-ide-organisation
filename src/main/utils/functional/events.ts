@@ -8,3 +8,16 @@ export class GoalCreationEvent extends DiagramEvent {
         this.name = name
     }
 }
+
+export class GoalRelationRemovalEvent extends DiagramEvent {
+    goal: string
+    other: string
+    relation: string
+
+    constructor(goal: string, other: string, relation: string) {
+        super(DiagramEventType.SubgoalRemoval)
+        this.goal = goal
+        this.other = other
+        this.relation = relation
+    }
+}
