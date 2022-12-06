@@ -25,7 +25,7 @@ const goal = (g: Goal) => {
         data: {
             id: g.name,
             label: g.name,
-            goal: true,
+            componentType: "goal",
         },
     }
 }
@@ -36,7 +36,7 @@ const relation = (goal: Goal, subGoal: Goal) => {
             id: `${goal.name}-${subGoal.name}`,
             source: subGoal.name,
             target: goal.name,
-            relation: true,
+            componentType: "relation",
             relationType: goal.operator === PlanOperator.AND ? "and" : "or",
         },
     }
@@ -48,7 +48,7 @@ const dependency = (from: Goal, to: Goal) => {
             id: `${from.name}-${to.name}`,
             source: from.name,
             target: to.name,
-            dependency: true,
+            componentType: "dependency",
         },
     }
 }
