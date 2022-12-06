@@ -1,6 +1,6 @@
 import React from "react"
 import Sidebar from "./Sidebar"
-import Diagram from "../Diagram"
+import Diagram from "../common/Diagram"
 import { Group, Role } from "../../utils/structural/entities"
 import { getAllRoles, getAllGroups } from "../../utils/structural/utils"
 import { Option, none } from "scala-types/dist/option/option"
@@ -15,7 +15,7 @@ import {
     createCardinality,
     changeRoleCardinality,
 } from "../../utils/structural/diagram"
-import SideMenu from "./SideMenu"
+import SideMenu from "../common/SideMenu"
 import {
     AdditionToGroupEvent,
     CardinalityConstraintAdditionEvent,
