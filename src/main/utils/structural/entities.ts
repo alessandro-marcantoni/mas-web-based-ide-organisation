@@ -23,7 +23,7 @@ export class Role extends AbstractComponent {
      * @param f A side effect function that can be applied on the component.
      * @returns The component
      */
-     also(f: ((o: Role) => void)): Role {
+    also(f: ((o: Role) => void)): Role {
         f(this)
         return this
     }
@@ -138,7 +138,7 @@ export class Group extends AbstractComponent {
      * @param f A side effect function that can be applied on the component.
      * @returns The component
      */
-     also(f: ((o: Group) => void)): Group {
+    also(f: ((o: Group) => void)): Group {
         f(this)
         return this
     }
