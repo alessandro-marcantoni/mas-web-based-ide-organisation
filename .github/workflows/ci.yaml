@@ -2,9 +2,16 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ develop ]
+    branches-ignore:
+      - "dependabot/**"
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+      - "LICENSE"
+      - "CHANGELOG.md"
+      - "renovate.json"
+      - ".husky/**"
   pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
   workflow_call:
 
@@ -15,7 +22,7 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        node-version: [ 16, 18, 19 ]
+        node-version: [ 18, 19 ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     name: Build and Test
     runs-on: ${{ matrix.os }}
