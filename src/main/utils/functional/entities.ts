@@ -1,4 +1,4 @@
-import { Option } from "scala-types"
+import { Option } from "scala-types/dist/option/option"
 import { list, List } from "scala-types/dist/list/list"
 import { AbstractComponent } from "../commons"
 import { option } from "../structural/utils"
