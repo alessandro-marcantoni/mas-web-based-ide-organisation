@@ -79,10 +79,10 @@ const InputBox = (p: InputBoxProps) => (
             <Autocomplete
                 size="small"
                 freeSolo
-                defaultValue=""
+                defaultValue={[""]}
                 options={p.options}
                 onInputChange={(e, value) => p.onChange(value)}
-                onChange={(e, value) => p.onChange(value)}
+                onChange={(e, value) => p.onChange(value[0])}
                 renderInput={params => <TextField {...params} label={p.label} variant="standard" size="small" />}
             />
         </Grid>
