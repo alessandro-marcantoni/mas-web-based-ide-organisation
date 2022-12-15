@@ -31,7 +31,7 @@ const RoleMenu = (p: RoleMenu) => {
     return (
         <>
             <Grid item xs={12}>
-                <Typography variant="h4" component="div">
+                <Typography variant="h4" component="div" sx={{ maxWidth: 400 }}>
                     {p.component.map(c => shortName(c.name)).getOrElse("")}
                 </Typography>
             </Grid>
@@ -44,6 +44,7 @@ const RoleMenu = (p: RoleMenu) => {
                     labelId="extendsLabel"
                     fullWidth
                     variant="standard"
+                    sx={{ width: 450 }}
                     value={p.component.map(c => (c.extends ? c.extends.name : noRole)).getOrElse(noRole)}
                     onChange={e =>
                         p.onEvent(new ExtensionChangeEvent(p.component.map(c => c.name).getOrElse(""), e.target.value))
