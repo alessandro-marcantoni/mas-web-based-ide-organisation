@@ -7,6 +7,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
     "no-case-declarations": "off",
   },
   ignorePatterns: ["*.config.js"],
