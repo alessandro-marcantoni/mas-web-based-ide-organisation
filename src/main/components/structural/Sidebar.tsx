@@ -56,7 +56,7 @@ const Sidebar = (p: SidebarProps) => (
         <Button
             variant="contained"
             sx={{ mt: 2, mx: 2 }}
-            onClick={() => loadSpec("http://localhost:8080/spec.xml").then(s => p.propertyChanged("added", s))}>
+            onClick={() => loadSpec(process.env.PUBLIC_URL + "/spec.xml").then(s => p.propertyChanged("added", s))}>
             Load
         </Button>
         <Button variant="contained" sx={{ mt: 2, mx: 2 }} onClick={() => console.log(serialize(p.components))}>
