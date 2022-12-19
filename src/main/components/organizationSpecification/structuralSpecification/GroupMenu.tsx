@@ -1,7 +1,7 @@
 import { Option } from "scala-types/dist/option/option"
-import { Cardinality, Compatibility, Constraint, Group, Role } from "../../utils/structural/entities"
+import { Cardinality, Compatibility, Constraint, Group, Role } from "../../../utils/structural/entities"
 import { List, toArray } from "scala-types/dist/list/list"
-import { fromSet, getAllGroups, getGlobalGroups, shortName } from "../../utils/structural/utils"
+import { fromSet, getAllGroups, getGlobalGroups, shortName } from "../../../utils/structural/utils"
 import {
     Button,
     Grid,
@@ -12,16 +12,16 @@ import {
     Input,
 } from "@mui/material"
 import React from "react"
-import { noGroup, noRole } from "../common/SideMenu"
+import { noGroup, noRole } from "../../common/SideMenu"
 import {
     AdditionToGroupEvent,
     CardinalityConstraintAdditionEvent,
     ComponentDeletionEvent,
     LinkCreationEvent,
     RemovalFromGroupEvent,
-} from "../../utils/structural/events"
-import { Component, DiagramEventHandler } from "../../utils/commons"
-import TableWithDeletion from "../common/TableWithDeletion"
+} from "../../../utils/structural/events"
+import { Component, DiagramEventHandler } from "../../../utils/commons"
+import TableWithDeletion from "../../common/TableWithDeletion"
 
 type GroupMenuProps = {
     component: Option<Group>

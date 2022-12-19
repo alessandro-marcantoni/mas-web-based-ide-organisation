@@ -2,9 +2,9 @@ import { Add } from "@mui/icons-material"
 import { Button, Drawer, Grid, Input, Paper, Toolbar, Typography } from "@mui/material"
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Component, DiagramEventHandler } from "../../utils/commons"
-import { GoalCreationEvent } from "../../utils/functional/events"
-import { loadFunctionalSpec } from "../../utils/functional/loader"
+import { Component, DiagramEventHandler } from "../../../utils/commons"
+import { GoalCreationEvent } from "../../../utils/functional/events"
+import { loadFunctionalSpec } from "../../../utils/functional/loader"
 
 type SidebarProps = {
     components: List<Component>

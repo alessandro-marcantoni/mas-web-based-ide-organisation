@@ -1,10 +1,10 @@
 import { Grid, Typography } from "@mui/material"
 import React from "react"
 import { Option } from "scala-types"
-import { DiagramEventHandler } from "../../utils/commons"
-import { Goal } from "../../utils/functional/entities"
-import { GoalRelationRemovalEvent } from "../../utils/functional/events"
-import TableWithDeletion from "../common/TableWithDeletion"
+import { DiagramEventHandler } from "../../../utils/commons"
+import { Goal } from "../../../utils/functional/entities"
+import { GoalRelationRemovalEvent } from "../../../utils/functional/events"
+import TableWithDeletion from "../../common/TableWithDeletion"
 
 type GoalMenuProps = {
     component: Option<Goal>

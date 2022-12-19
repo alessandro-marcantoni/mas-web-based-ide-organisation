@@ -2,10 +2,10 @@ import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import { getAllGroups, getAllRoles, shortName } from "../../utils/structural/utils"
-import { loadSpec } from "../../utils/structural/loader"
-import { serialize } from "../../utils/structural/serializer"
-import { Component } from "../../utils/commons"
+import { getAllGroups, getAllRoles, shortName } from "../../../utils/structural/utils"
+import { loadSpec } from "../../../utils/structural/loader"
+import { serialize } from "../../../utils/structural/serializer"
+import { Component } from "../../../utils/commons"
 
 type SidebarProps = {
     components: List<Component>
