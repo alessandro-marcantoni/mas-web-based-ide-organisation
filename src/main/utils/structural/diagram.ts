@@ -1,4 +1,4 @@
-import { StructuralState } from "../../components/structural/Structural"
+import { StructuralState } from "../../components/organizationSpecification/structuralSpecification/StructuralSpecification"
 import { none, Option, some } from "scala-types/dist/option/option"
 import { Cardinality, Compatibility, Constraint, Group, Role } from "./entities"
 import { list, List } from "scala-types/dist/list/list"
