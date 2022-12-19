@@ -73,7 +73,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                     variant="contained"
                     sx={{ mt: 2, mx: 2 }}
                     onClick={() =>
-                        loadFunctionalSpec("http://localhost:8080/spec.xml").then(s =>
+                        loadFunctionalSpec(process.env.PUBLIC_URL + "/spec.xml").then(s =>
                             this.props.onPropertyChange("components", s)
                         )
                     }>
