@@ -1,12 +1,12 @@
-import Header from "./components/Header"
+import Header from "./react/components/Header"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Structural from "./components/organizationSpecification/structuralSpecification/StructuralSpecification"
+import Structural from "./react/components/organizationSpecification/structuralSpecification/StructuralSpecification"
 import * as React from "react"
 import "./style/main.scss"
 import { Box, CssBaseline } from "@mui/material"
-import Loader from "./components/Loader"
-import Functional from "./components/organizationSpecification/functionalSpecification/FunctionalSpecification"
-import Entity from "./components/organizationEntity/OrganizationEntity"
+import Loader from "./react/components/Loader"
+import Functional from "./react/components/organizationSpecification/functionalSpecification/FunctionalSpecification"
+import Entity from "./react/components/organizationEntity/OrganizationEntity"
 
 function App() {
     return (

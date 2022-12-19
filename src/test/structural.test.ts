@@ -1,10 +1,10 @@
-import { StructuralState } from "../main/components/organizationSpecification/structuralSpecification/StructuralSpecification"
-import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/utils/structural/utils"
+import { StructuralState } from "../main/react/components/organizationSpecification/structuralSpecification/StructuralSpecification"
+import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/typescript/structural/utils"
 import { none } from "scala-types/dist/option/option"
-import { Group, Role } from "../main/utils/structural/entities"
+import { Group, Role } from "../main/typescript/domain/structural"
 import { List, list } from "scala-types/dist/list/list"
-import { add, addToGroup, createComponent, removeComponent, removeFromGroup } from "../main/utils/structural/diagram"
-import { Component } from "../main/utils/commons"
+import { add, addToGroup, createComponent, removeComponent, removeFromGroup } from "../main/typescript/structural/diagram"
+import { Component } from "../main/typescript/commons"
 
 let globalState: StructuralState = {
     added: list(),
