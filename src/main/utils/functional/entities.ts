@@ -8,6 +8,15 @@ export enum PlanOperator {
     OR,
 }
 
+export const stringOperator = (op: PlanOperator): string => {
+    switch (op) {
+        case PlanOperator.AND:
+            return "AND"
+        case PlanOperator.OR:
+            return "OR"
+    }
+}
+
 export class Goal extends AbstractComponent {
     name: string
     args: List<Argument<unknown>> = list()
