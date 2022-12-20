@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="os.xsl" type="text/xsl" ?>
+
+<organisational-specification
+
+        id="joj"
+        os-version="0.7"
+
+        xmlns='http://moise.sourceforge.net/os'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xsi:schemaLocation='http://moise.sourceforge.net/os
+                       http://moise.sourceforge.net/xml/os.xsd'>
+
+    <structural-specification>
+        <role-definitions>
+            <role id="Tractor Pilot" />
+            <role id="Drone Pilot" />
+            <role id="Product Collector" />
+            <role id="Soil Plower">
+                <extends role="Tractor Pilot"/>
+            </role>
+            <role id="Harvester">
+                <extends role="Tractor Pilot"/>
+            </role>
+            <role id="Pest Controller">
+                <extends role="Drone Pilot"/>
+            </role>
+            <role id="Humidity Checker">
+                <extends role="Drone Pilot"/>
+            </role>
+            <role id="Irrigator" />
+            <role id="Feeder" />
+            <role id="Vet" />
+            <role id="Egg Collector">
+                <extends role="Product Collector"/>
+            </role>
+            <role id="Milk Collector">
+                <extends role="Product Collector"/>
+            </role>
+        </role-definitions>
+    
+        <group-specification id="Farm Group">
+            <subgroups>
+                <group-specification id="Field Group">
+                    <roles>
+                        <role id="Soil Plower" min="1" max="1"/>
+                        <role id="Harvester" min="1" max="1"/>
+                        <role id="Irrigator" min="1" max="1"/>
+                        <role id="Humidity Checker" min="1" max="1"/>
+                        <role id="Pest Controller" min="1" max="1"/>
+                    </roles>
+                </group-specification>
+                <group-specification id="Animals Group">
+                    <roles>
+                        <role id="Feeder" min="1" max="1"/>
+                        <role id="Vet" min="1" max="1"/>
+                        <role id="Egg Collector" min="1" max="1"/>
+                        <role id="Milk Collector" min="1" max="1"/>
+                    </roles>
+                </group-specification>
+            </subgroups>
+        </group-specification>
+    </structural-specification>
+
+    <functional-specification>
+        <scheme id="Farm Scheme">
+            <goal id="Manage Farm">
+                <plan operator="parallel">
+                    <goal id="Manage Fields">
+                        <plan operator="parallel">
+                            <goal id="Irrigate Fields">
+                                <plan operator="sequence">
+                                    <goal id="Check Soil">
+                                        <plan operator="parallel">
+                                            <goal id="Check Temperature" />
+                                            <goal id="Check Humidity" />
+                                        </plan>
+                                    </goal>
+                                    <goal id="Calculate Water Needed" />
+                                </plan>
+                            </goal>
+                            <goal id="Harvest" />
+                            <goal id="Eliminate Haunters">
+                                <plan operator="parallel">
+                                    <goal id="Eliminate Moths" />
+                                    <goal id="Eliminate Bugs" />
+                                    <goal id="Spray Pesticides">
+                                        <depends-on goal="Harvest" />
+                                    </goal>
+                                </plan>
+                            </goal>
+                            <goal id="Plough">
+                                <plan operator="parallel">
+                                    <goal id="Set Waypoints">
+                                        <plan operator="choice">
+                                            <goal id="Compute Waypoints" />
+                                            <goal id="Input Waypoints" />
+                                        </plan>
+                                    </goal>
+                                </plan>
+                            </goal>
+                        </plan>
+                    </goal>
+                    <goal id="Manage Animals">
+                        <plan operator="parallel">
+                            <goal id="Feed Animals" />
+                            <goal id="Collect Products">
+                                <plan operator="parallel">
+                                    <goal id="Collect Eggs" />
+                                    <goal id="Collect Milk">
+                                        <depends-on goal="Feed Animals" />
+                                    </goal>
+                                </plan>
+                            </goal>
+                            <goal id="Health Check-Up">
+                                <depends-on goal="Feed Animals" />
+                            </goal>
+                        </plan>
+                    </goal>
+                </plan>
+            </goal>
+        </scheme>
+    </functional-specification>
+
+</organisational-specification>
