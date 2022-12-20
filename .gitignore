@@ -109,5 +109,3 @@ dist
 .DS_Store
 .idea
 .vscode
-
-*.xml
