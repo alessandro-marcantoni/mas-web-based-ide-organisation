@@ -14,49 +14,49 @@
 
     <structural-specification>
         <role-definitions>
-            <role id="Tractor Pilot" />
-            <role id="Drone Pilot" />
-            <role id="Product Collector" />
-            <role id="Soil Plower">
-                <extends role="Tractor Pilot"/>
+            <role id="TractorPilot" />
+            <role id="DronePilot" />
+            <role id="ProductCollector" />
+            <role id="SoilPlower">
+                <extends role="TractorPilot"/>
             </role>
             <role id="Harvester">
-                <extends role="Tractor Pilot"/>
+                <extends role="TractorPilot"/>
             </role>
-            <role id="Pest Controller">
-                <extends role="Drone Pilot"/>
+            <role id="PestController">
+                <extends role="DronePilot"/>
             </role>
-            <role id="Humidity Checker">
-                <extends role="Drone Pilot"/>
+            <role id="HumidityChecker">
+                <extends role="DronePilot"/>
             </role>
             <role id="Irrigator" />
             <role id="Feeder" />
             <role id="Vet" />
-            <role id="Egg Collector">
-                <extends role="Product Collector"/>
+            <role id="EggCollector">
+                <extends role="ProductCollector"/>
             </role>
-            <role id="Milk Collector">
-                <extends role="Product Collector"/>
+            <role id="MilkCollector">
+                <extends role="ProductCollector"/>
             </role>
         </role-definitions>
     
-        <group-specification id="Farm Group">
+        <group-specification id="FarmGroup">
             <subgroups>
-                <group-specification id="Field Group">
+                <group-specification id="FieldGroup">
                     <roles>
-                        <role id="Soil Plower" min="1" max="1"/>
+                        <role id="SoilPlower" min="1" max="1"/>
                         <role id="Harvester" min="1" max="1"/>
                         <role id="Irrigator" min="1" max="1"/>
-                        <role id="Humidity Checker" min="1" max="1"/>
-                        <role id="Pest Controller" min="1" max="1"/>
+                        <role id="HumidityChecker" min="1" max="1"/>
+                        <role id="PestController" min="1" max="1"/>
                     </roles>
                 </group-specification>
-                <group-specification id="Animals Group">
+                <group-specification id="AnimalsGroup">
                     <roles>
                         <role id="Feeder" min="1" max="1"/>
                         <role id="Vet" min="1" max="1"/>
-                        <role id="Egg Collector" min="1" max="1"/>
-                        <role id="Milk Collector" min="1" max="1"/>
+                        <role id="EggCollector" min="1" max="1"/>
+                        <role id="MilkCollector" min="1" max="1"/>
                     </roles>
                 </group-specification>
             </subgroups>
@@ -64,63 +64,70 @@
     </structural-specification>
 
     <functional-specification>
-        <scheme id="Farm Scheme">
-            <goal id="Manage Farm">
+        <scheme id="FarmScheme">
+            <goal id="ManageFarm">
                 <plan operator="parallel">
-                    <goal id="Manage Fields">
+                    <goal id="ManageFields">
                         <plan operator="parallel">
-                            <goal id="Irrigate Fields">
+                            <goal id="IrrigateFields">
                                 <plan operator="sequence">
-                                    <goal id="Check Soil">
+                                    <goal id="CheckSoil">
                                         <plan operator="parallel">
-                                            <goal id="Check Temperature" />
-                                            <goal id="Check Humidity" />
+                                            <goal id="CheckTemperature" />
+                                            <goal id="CheckHumidity" />
                                         </plan>
                                     </goal>
-                                    <goal id="Calculate Water Needed" />
+                                    <goal id="CalculateWaterNeeded" />
                                 </plan>
                             </goal>
                             <goal id="Harvest" />
-                            <goal id="Eliminate Haunters">
+                            <goal id="EliminateHaunters">
                                 <plan operator="parallel">
-                                    <goal id="Eliminate Moths" />
-                                    <goal id="Eliminate Bugs" />
-                                    <goal id="Spray Pesticides">
+                                    <goal id="EliminateMoths" />
+                                    <goal id="EliminateBugs" />
+                                    <goal id="SprayPesticides">
                                         <depends-on goal="Harvest" />
                                     </goal>
                                 </plan>
                             </goal>
                             <goal id="Plough">
                                 <plan operator="parallel">
-                                    <goal id="Set Waypoints">
+                                    <goal id="SetWaypoints">
                                         <plan operator="choice">
-                                            <goal id="Compute Waypoints" />
-                                            <goal id="Input Waypoints" />
+                                            <goal id="ComputeWaypoints" />
+                                            <goal id="InputWaypoints" />
                                         </plan>
                                     </goal>
                                 </plan>
                             </goal>
                         </plan>
                     </goal>
-                    <goal id="Manage Animals">
+                    <goal id="ManageAnimals">
                         <plan operator="parallel">
-                            <goal id="Feed Animals" />
-                            <goal id="Collect Products">
+                            <goal id="FeedAnimals" />
+                            <goal id="CollectProducts">
                                 <plan operator="parallel">
-                                    <goal id="Collect Eggs" />
-                                    <goal id="Collect Milk">
-                                        <depends-on goal="Feed Animals" />
+                                    <goal id="CollectEggs" />
+                                    <goal id="CollectMilk">
+                                        <depends-on goal="FeedAnimals" />
                                     </goal>
                                 </plan>
                             </goal>
-                            <goal id="Health Check-Up">
-                                <depends-on goal="Feed Animals" />
+                            <goal id="HealthCheckUp">
+                                <depends-on goal="FeedAnimals" />
                             </goal>
                         </plan>
                     </goal>
                 </plan>
             </goal>
+            <mission id="mission1">
+                <goal id="ManageFarm" />
+            </mission>
         </scheme>
     </functional-specification>
+
+    <normative-specification>
+        <norm id="norm1" role="TractorPilot" type="obligation" mission="mission1" />
+    </normative-specification>
 
 </organisational-specification>
