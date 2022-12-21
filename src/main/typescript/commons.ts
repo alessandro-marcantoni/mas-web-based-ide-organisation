@@ -1,5 +1,5 @@
 import { List } from "scala-types/dist/list/list"
-import { Group, Role } from "./domain/structural"
+import { Cardinality, Group, Role, Compatibility } from './domain/structural';
 
 export enum DiagramEventType {
     LinkCreation,
@@ -34,12 +34,33 @@ export interface Component {
 }
 
 export class Specification {
+    name: string
     structural: Structural
 }
 
-export class Structural {
+export class Entity {
     groups: List<Group>
+}
+
+export class EntityGroup {
+    name: string
+    type: string
+
+}
+
+export class Structural {
+    groups: List<SpecGroup>
     roles: List<Role>
+}
+
+export class SpecGroup {
+    name: string
+    min: number
+    max: number
+    subgroups: List<SpecGroup>
+    roles: List<Role>
+    cardinalities: List<Cardinality>
+    compatibilities: List<Compatibility>
 }
 
 export abstract class AbstractComponent implements Component {
