@@ -1,4 +1,4 @@
-import { StructuralState } from "../../react/components/organizationSpecification/structuralSpecification/StructuralSpecification"
+import { StructuralState } from "../../react/components/specification/structural/StructuralSpecification"
 import { none, Option, some } from "scala-types/dist/option/option"
 import { Cardinality, Compatibility, Constraint, Group, Role } from "../domain/structural"
 import { list, List } from "scala-types/dist/list/list"

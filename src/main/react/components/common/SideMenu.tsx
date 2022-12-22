@@ -4,12 +4,12 @@ import { Option } from "scala-types/dist/option/option"
 import { Group, Role } from "../../../typescript/domain/structural"
 import { Close } from "@mui/icons-material"
 import { List } from "scala-types/dist/list/list"
-import RoleMenu from "../organizationSpecification/structuralSpecification/RoleMenu"
-import GroupMenu from "../organizationSpecification/structuralSpecification/GroupMenu"
+import RoleMenu from "../specification/structural/RoleMenu"
+import GroupMenu from "../specification/structural/GroupMenu"
 import { Component, DiagramEventHandler } from "../../../typescript/commons"
 import { ComponentDeletionEvent } from "../../../typescript/structural/events"
 import { Goal } from "../../../typescript/domain/functional"
-import GoalMenu from '../organizationSpecification/functionalSpecification/GoalMenu';
+import GoalMenu from '../specification/functional/GoalMenu';
 
 type SideMenuProps = {
     component: Option<Component>
