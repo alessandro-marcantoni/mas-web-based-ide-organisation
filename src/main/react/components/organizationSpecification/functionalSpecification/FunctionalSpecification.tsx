@@ -7,7 +7,7 @@ import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEven
 import { presentation } from "../../../../typescript/functional/cytoscape"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
-import { cddOptions, config, ehOptions } from "../../../../typescript/structural/cytoscape"
+import { config } from "../../../../typescript/structural/cytoscape"
 import { SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
@@ -94,7 +94,7 @@ class Functional extends React.Component<unknown, FunctionalState> {
                     onPropertyChange={this.onPropertyChange}
                 />
                 <Diagram
-                    configuration={(cy, props) => config(cy, ehOptions(), cddOptions(props), props)}
+                    configuration={(cy, props) => config(cy, props)}
                     elements={this.state.components}
                     onDiagramEvent={this.onDiagramEvent}
                     presentation={presentation}

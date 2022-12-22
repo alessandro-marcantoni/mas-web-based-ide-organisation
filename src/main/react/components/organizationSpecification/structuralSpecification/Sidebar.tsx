@@ -3,7 +3,7 @@ import { List, toArray } from "scala-types/dist/list/list"
 import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import { getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
-import { loadSpec } from "../../../../typescript/structural/loader"
+import { loadSpec } from "../../../../typescript/io/deserialization/structural"
 import { serialize } from "../../../../typescript/io/serialization/structural"
 import { Component } from "../../../../typescript/commons"
 

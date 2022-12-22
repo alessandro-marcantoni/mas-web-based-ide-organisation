@@ -1,8 +1,8 @@
-import { Cardinality, Compatibility, Group, Role } from "../domain/structural"
+import { Cardinality, Compatibility, Group, Role } from "../../domain/structural"
 import convert from "xml-js"
-import { getAllRoles, option, separate, separator, shortName } from "./utils"
+import { getAllRoles, option, separate, separator, shortName } from "../../structural/utils"
 import { fromArray, List, list } from "scala-types/dist/list/list"
-import { Component, XMLElement } from "../commons"
+import { Component, XMLElement } from "../../commons"
 
 export const loadSpec: (path: string) => Promise<List<Component>> = async path => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
