@@ -4,7 +4,7 @@ import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Butt
 import { Add } from "@mui/icons-material"
 import { getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
 import { loadSpec } from "../../../../typescript/structural/loader"
-import { serialize } from "../../../../typescript/structural/serializer"
+import { serialize } from "../../../../typescript/io/serialization/structural"
 import { Component } from "../../../../typescript/commons"
 
 type SidebarProps = {

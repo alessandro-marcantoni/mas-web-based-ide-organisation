@@ -11,7 +11,7 @@ import { cddOptions, config, ehOptions } from "../../../../typescript/structural
 import { SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addGoal, dependencyRemover, removeGoalRelation, subgoalRemover } from "../../../../typescript/functional/diagram"
+import { addGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalState = {
@@ -53,7 +53,7 @@ class Functional extends React.Component<unknown, FunctionalState> {
                             state.components,
                             sre.goal,
                             sre.other,
-                            sre.relation === "subgoal" ? subgoalRemover : dependencyRemover
+                            dependencyRemover
                         ),
                         selected: state.selected.flatMap((g: Goal) =>
                             getAllGoals(state.components).find(c => c.name === g.name)

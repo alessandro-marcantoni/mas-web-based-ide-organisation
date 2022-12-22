@@ -20,8 +20,7 @@ export const stringOperator = (op: PlanOperator): string => {
 export class Goal extends AbstractComponent {
     name: string
     args: List<Argument<unknown>> = list()
-    dependsOn: Set<Goal> = new Set<Goal>()
-    subGoals: Set<Goal> = new Set<Goal>()
+    dependencies: Set<string> = new Set<string>()
     operator: PlanOperator = PlanOperator.AND
 
     constructor(
@@ -59,13 +58,8 @@ class GoalBuilder {
         return this
     }
 
-    withDependencies(deps: Set<Goal>) {
-        this.goal.dependsOn = deps
-        return this
-    }
-
-    withSubGoals(subGoals: Set<Goal>) {
-        this.goal.subGoals = subGoals
+    withDependencies(deps: Set<string>) {
+        this.goal.dependencies = deps
         return this
     }
 

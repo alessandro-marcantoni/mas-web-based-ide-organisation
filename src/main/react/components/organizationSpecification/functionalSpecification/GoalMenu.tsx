@@ -29,20 +29,6 @@ class GoalMenu extends React.Component<GoalMenuProps, unknown> {
                         Subgoals
                     </Typography>
                 </Grid>
-                <TableWithDeletion
-                    cols={["Goal"]}
-                    items={this.props.component.map((c: Goal) => Array.from(c.subGoals)).getOrElse([])}
-                    onDelete={c =>
-                        this.props.onEvent(
-                            new GoalRelationRemovalEvent(
-                                this.props.component.map((g: Goal) => g.name).getOrElse(""),
-                                c.getName(),
-                                "subgoal"
-                            )
-                        )
-                    }
-                    props={[(g: Goal) => g.name]}
-                />
                 <Grid item xs={12} sx={{ mt: 3 }}>
                     <Typography variant="h5" component="div">
                         Dependencies
@@ -50,7 +36,7 @@ class GoalMenu extends React.Component<GoalMenuProps, unknown> {
                 </Grid>
                 <TableWithDeletion
                     cols={["Goal"]}
-                    items={this.props.component.map((c: Goal) => Array.from(c.dependsOn)).getOrElse([])}
+                    items={this.props.component.map((c: Goal) => Array.from(c.dependencies)).getOrElse([])}
                     onDelete={c =>
                         this.props.onEvent(
                             new GoalRelationRemovalEvent(
