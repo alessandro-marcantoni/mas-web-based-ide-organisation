@@ -4,7 +4,7 @@ import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
-import { loadFunctionalSpec } from "../../../../typescript/functional/loader"
+import { loadFunctionalSpec } from "../../../../typescript/io/deserialization/functional"
 import { serialize } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {

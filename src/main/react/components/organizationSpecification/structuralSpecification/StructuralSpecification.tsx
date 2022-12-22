@@ -26,7 +26,7 @@ import {
     RoleCardinalityChangeEvent,
     SelectedComponentEvent,
 } from "../../../../typescript/structural/events"
-import { cddOptions, config, ehOptions, presentation } from "../../../../typescript/structural/cytoscape"
+import { config, presentation } from "../../../../typescript/structural/cytoscape"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
 
 export type StructuralState = {
@@ -193,7 +193,7 @@ class Structural extends React.Component<unknown, StructuralState> {
                     onDiagramEvent={this.onDiagramEvent}
                     elements={this.state.added}
                     presentation={presentation}
-                    configuration={(cy, props) => config(cy, ehOptions(), cddOptions(props), props)}
+                    configuration={(cy, props) => config(cy, props)}
                 />
                 <SideMenu
                     component={this.state.selected}
