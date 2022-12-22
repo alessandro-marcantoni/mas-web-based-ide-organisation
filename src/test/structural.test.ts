@@ -1,4 +1,4 @@
-import { StructuralState } from "../main/react/components/organizationSpecification/structuralSpecification/StructuralSpecification"
+import { StructuralState } from "../main/react/components/specification/structural/StructuralSpecification"
 import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/typescript/structural/utils"
 import { none } from "scala-types/dist/option/option"
 import { Group, Role } from "../main/typescript/domain/structural"
