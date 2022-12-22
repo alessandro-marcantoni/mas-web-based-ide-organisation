@@ -8,8 +8,8 @@ import RoleMenu from "../organizationSpecification/structuralSpecification/RoleM
 import GroupMenu from "../organizationSpecification/structuralSpecification/GroupMenu"
 import { Component, DiagramEventHandler } from "../../../typescript/commons"
 import { ComponentDeletionEvent } from "../../../typescript/structural/events"
-import GoalMenu from "../organizationSpecification/functionalSpecification/GoalMenu"
 import { Goal } from "../../../typescript/domain/functional"
+import GoalMenu from '../organizationSpecification/functionalSpecification/GoalMenu';
 
 type SideMenuProps = {
     component: Option<Component>
@@ -32,7 +32,7 @@ const SideMenu = (p: SideMenuProps) => (
                 <GroupMenu component={p.component as Option<Group>} components={p.components} onEvent={p.onEvent} />
             )}
             {p.component.map(c => c.type === "goal").getOrElse(false) && (
-                <GoalMenu component={p.component as Option<Goal>} onEvent={p.onEvent} />
+                <GoalMenu component={p.component as Option<Goal>} components={p.components} onEvent={p.onEvent} />
             )}
             <Grid item xs={12} sx={{ position: "fixed", bottom: 8, width: 468, mt: 3 }}>
                 <Button

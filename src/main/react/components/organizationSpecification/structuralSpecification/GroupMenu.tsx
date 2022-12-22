@@ -22,6 +22,7 @@ import {
 } from "../../../../typescript/structural/events"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import TableWithDeletion from "../../common/TableWithDeletion"
+import SelectWithLabel from '../../common/SelectWithLabel';
 
 type GroupMenuProps = {
     component: Option<Group>
@@ -116,14 +117,14 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                         Compatibilities
                     </Typography>
                 </Grid>
-                <GroupMenuSelect
+                <SelectWithLabel
                     value={this.state.compatibilityFrom}
                     label="From"
                     width={5}
                     valueChange={v => this.setState({ compatibilityFrom: v })}
                     options={this.props.component.map(g => Array.from(g.roles).map((r: Role) => r.name)).getOrElse([])}
                 />
-                <GroupMenuSelect
+                <SelectWithLabel
                     value={this.state.compatibilityTo}
                     label="To"
                     width={5}
@@ -173,14 +174,14 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
                         Cardinality constraints
                     </Typography>
                 </Grid>
-                <GroupMenuSelect
+                <SelectWithLabel
                     value={this.state.cardinalityRole}
                     label="Type"
                     width={3}
                     valueChange={v => this.setState({ cardinalityRole: v })}
                     options={["role", "group"]}
                 />
-                <GroupMenuSelect
+                <SelectWithLabel
                     value={this.state.cardinalitySubject}
                     label="Subject"
                     width={3}
@@ -262,38 +263,6 @@ class GroupMenu extends React.Component<GroupMenuProps, GroupMenuState> {
         )
     }
 }
-
-type GroupMenuSelectProps = {
-    width: number
-    label: string
-    value: string
-    valueChange: (v: string) => void
-    options: Array<string>
-}
-
-const GroupMenuSelect = (p: GroupMenuSelectProps) => (
-    <Grid item xs={p.width}>
-        <InputLabel id="compatibilityLabel" htmlFor="compatibility">
-            {p.label}
-        </InputLabel>
-        <Select
-            id="compatibility"
-            labelId="compatibilityLabel"
-            fullWidth
-            variant="standard"
-            value={p.value}
-            renderValue={v => (v === noRole ? "" : shortName(v))}
-            onChange={e => p.valueChange(e.target.value)}
-            sx={{ maxWidth: 200 }}>
-            <MenuItem value={noRole} />
-            {p.options.map((r: string) => (
-                <MenuItem key={r} value={r}>
-                    {shortName(r)}
-                </MenuItem>
-            ))}
-        </Select>
-    </Grid>
-)
 
 
 export default GroupMenu

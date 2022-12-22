@@ -21,3 +21,14 @@ export class GoalRelationRemovalEvent extends DiagramEvent {
         this.relation = relation
     }
 }
+
+export class GoalDependencyAdditionEvent extends DiagramEvent {
+    goal: string
+    other: string
+
+    constructor(goal: string, other: string) {
+        super(DiagramEventType.DependencyAddition)
+        this.goal = goal
+        this.other = other
+    }
+}
