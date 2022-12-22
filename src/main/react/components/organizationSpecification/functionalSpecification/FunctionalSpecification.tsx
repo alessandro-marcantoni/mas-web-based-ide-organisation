@@ -3,7 +3,7 @@ import { list } from "scala-types"
 import { List } from "scala-types/dist/list/list"
 import { none, Option } from "scala-types/dist/option/option"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
-import { GoalCreationEvent, GoalRelationRemovalEvent } from "../../../../typescript/functional/events"
+import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent } from '../../../../typescript/functional/events';
 import { presentation } from "../../../../typescript/functional/cytoscape"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
@@ -11,7 +11,7 @@ import { cddOptions, config, ehOptions } from "../../../../typescript/structural
 import { SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalState = {
@@ -55,6 +55,17 @@ class Functional extends React.Component<unknown, FunctionalState> {
                             sre.other,
                             dependencyRemover
                         ),
+                        selected: state.selected.flatMap((g: Goal) =>
+                            getAllGoals(state.components).find(c => c.name === g.name)
+                        ),
+                    }
+                })
+                break
+            case DiagramEventType.DependencyAddition:
+                const dae = event as GoalDependencyAdditionEvent
+                this.setState(state => {
+                    return {
+                        components: addDependency(state.components, dae.goal, dae.other),
                         selected: state.selected.flatMap((g: Goal) =>
                             getAllGoals(state.components).find(c => c.name === g.name)
                         ),
