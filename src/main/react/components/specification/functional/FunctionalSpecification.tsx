@@ -8,10 +8,10 @@ import { presentation } from "../../../../typescript/functional/cytoscape"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
 import { config } from "../../../../typescript/structural/cytoscape"
-import { SelectedComponentEvent } from "../../../../typescript/structural/events"
+import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addDependency, addGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalState = {
@@ -69,6 +69,15 @@ class Functional extends React.Component<unknown, FunctionalState> {
                         selected: state.selected.flatMap((g: Goal) =>
                             getAllGoals(state.components).find(c => c.name === g.name)
                         ),
+                    }
+                })
+                break
+            case DiagramEventType.ComponentDeletion:
+                const cde = event as ComponentDeletionEvent
+                this.setState(state => {
+                    return {
+                        components: deleteGoal(state.components, cde.component.getName()),
+                        selected: none(),
                     }
                 })
                 break

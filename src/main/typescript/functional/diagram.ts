@@ -29,3 +29,9 @@ export const addDependency: (components: List<Component>, goalName: string, othe
         .apply(g => g.dependencies.add(other))
     return components
 }
+
+export const deleteGoal: (components: List<Component>, goalName: string) => List<Component> = (components, goalName) => {
+    const c = getAllGoals(components).filter(g => g.name !== goalName)
+    c.foreach(g => g.dependencies.delete(goalName))
+    return c
+}
