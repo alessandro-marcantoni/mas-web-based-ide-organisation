@@ -64,65 +64,50 @@
     </structural-specification>
 
     <functional-specification>
-        <scheme id="FarmScheme">
-            <goal id="ManageFarm">
+        <scheme id="orgScheme">
+            <goal id="orgGoal">
                 <plan operator="parallel">
-                    <goal id="ManageFields">
-                        <plan operator="parallel">
-                            <goal id="IrrigateFields">
-                                <plan operator="sequence">
-                                    <goal id="CheckSoil">
-                                        <plan operator="parallel">
-                                            <goal id="CheckTemperature" />
-                                            <goal id="CheckHumidity" />
-                                        </plan>
-                                    </goal>
-                                    <goal id="CalculateWaterNeeded" />
-                                </plan>
-                            </goal>
-                            <goal id="Harvest" />
-                            <goal id="EliminateHaunters">
-                                <plan operator="parallel">
-                                    <goal id="EliminateMoths" />
-                                    <goal id="EliminateBugs" />
-                                    <goal id="SprayPesticides">
-                                        <depends-on goal="Harvest" />
-                                    </goal>
-                                </plan>
-                            </goal>
-                            <goal id="Plough">
-                                <plan operator="parallel">
-                                    <goal id="SetWaypoints">
-                                        <plan operator="choice">
-                                            <goal id="ComputeWaypoints" />
-                                            <goal id="InputWaypoints" />
-                                        </plan>
-                                    </goal>
-                                </plan>
-                            </goal>
-                        </plan>
+                    <goal id="IrrigateFields">
+                        <depends-on goal="CalculateWaterNeeded"/>
                     </goal>
-                    <goal id="ManageAnimals">
-                        <plan operator="parallel">
-                            <goal id="FeedAnimals" />
-                            <goal id="CollectProducts">
-                                <plan operator="parallel">
-                                    <goal id="CollectEggs" />
-                                    <goal id="CollectMilk">
-                                        <depends-on goal="FeedAnimals" />
-                                    </goal>
-                                </plan>
-                            </goal>
-                            <goal id="HealthCheckUp">
-                                <depends-on goal="FeedAnimals" />
-                            </goal>
-                        </plan>
+                    <goal id="CalculateWaterNeeded">
+                        <depends-on goal="CheckTemperature"/>
+                        <depends-on goal="CheckHumidity"/>
+                    </goal>
+                    <goal id="CheckTemperature">
+                    </goal>
+                    <goal id="CheckHumidity">
+                    </goal>
+                    <goal id="EliminateMoths">
+                    </goal>
+                    <goal id="EliminateBugs">
+                    </goal>
+                    <goal id="SprayPesticides">
+                        <depends-on goal="Harvest"/>
+                    </goal>
+                    <goal id="Harvest">
+                    </goal>
+                    <goal id="Plough">
+                        <depends-on goal="ComputeWaypoints"/>
+                        <depends-on goal="InputWaypoints"/>
+                    </goal>
+                    <goal id="ComputeWaypoints">
+                    </goal>
+                    <goal id="InputWaypoints">
+                    </goal>
+                    <goal id="FeedAnimals">
+                    </goal>
+                    <goal id="CollectEggs">
+                        <depends-on goal="FeedAnimals"/>
+                    </goal>
+                    <goal id="CollectMilk">
+                        <depends-on goal="FeedAnimals"/>
+                    </goal>
+                    <goal id="HealthCheckUp">
+                        <depends-on goal="FeedAnimals"/>
                     </goal>
                 </plan>
             </goal>
-            <mission id="mission1">
-                <goal id="ManageFarm" />
-            </mission>
         </scheme>
     </functional-specification>
 

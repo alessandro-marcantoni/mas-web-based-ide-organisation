@@ -93,9 +93,9 @@
 }, {
   "selector": "edge[componentType = 'dependency']",
   "style": {
-    "target-arrow-shape": "vee",
-    "target-arrow-color": "black",
-    "line-style": "dotted",
-    "label": "depends on"
+    "source-arrow-shape": "vee",
+    "source-arrow-color": "black",
+    "line-style": "solid",
+    "label": ""
   }
 }]

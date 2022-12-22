@@ -1,60 +1,56 @@
-import { fromArray, List, toArray } from "scala-types/dist/list/list"
+import { fromArray, List } from "scala-types/dist/list/list"
 import { Component, XMLElement } from "../commons"
 import convert from "xml-js"
 import { Argument, Goal, PlanOperator } from "../domain/functional"
-import { fromSet, option } from "../structural/utils"
-import { getAllGoals } from './utils';
+import { option } from "../structural/utils"
 
-const dependencyMap = new Map<string, Set<string>>()
+const dependencyGraph = new Map<Goal, Set<string>>()
 
 export const loadFunctionalSpec: (path: string) => Promise<List<Component>> = async path => {
     const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
-    const elems = fromArray<Component>(converter[orgSpec[1].name](orgSpec[1])[0])
-    dependencyMap.forEach((deps, goalName) => {
-        getAllGoals(elems).find(g => g.getName() === goalName)
-            .apply(g => g.dependsOn = new Set(toArray(fromSet(deps).map(d => getAllGoals(elems).find(g => g.getName() === d).get() as Goal))))
-    })
-    return elems
+    converter[orgSpec[1].name](orgSpec[1])[0]
+    dependencyGraph.forEach((v, k) => k.dependencies = v)
+    return fromArray(Array.from(dependencyGraph.keys())).filter(g => g.name !== "orgGoal")
 }
 
 const functionalSpecification = (element: XMLElement) => element.elements.map(e => converter[e.name](e))
 
-const scheme = (element: XMLElement) => element.elements.filter(e => e.name === "goal").map(goal)
+const scheme = (element: XMLElement) => element.elements.filter(e => e.name === "goal").forEach(goal)
 
 const goal = (element: XMLElement) => {
-    const g = Goal.named(element.attributes["id"])
+    const g = getKey(element.attributes["id"])
+    dependencyGraph.set(g, dependencyGraph.get(g) ?? new Set<string>())
     if (element.elements) {
         element.elements
             .filter(e => e.name === "depends-on")
-            .forEach(e => dependsOn(e.attributes["goal"], element.attributes["id"]))
-        return g
-            .withArguments(fromArray(element.elements.filter(e => e.name === "argument").map(argument)))
-            .withSubGoals(new Set(element.elements.filter(e => e.name === "plan").flatMap(plan)))
-            .withOperator(
-                getPlans(element).length > 0 ? op(getPlans(element)[0].attributes["operator"]) : PlanOperator.AND
-            )
-            .build()
+            .forEach(e => dependsOn(e.attributes["goal"], g))
+        fromArray(element.elements.filter(e => e.name === "argument").map(argument)).foreach(g.addArgument)
+        fromArray(element.elements.filter(e => e.name === "plan")).foreach(p => plan(p, g))
+        g.operator = getPlans(element).length > 0 ? op(getPlans(element)[0].attributes["operator"]) : PlanOperator.AND
     }
-    return g.build()
 }
 
 const argument = (element: XMLElement) => new Argument(element.attributes["id"], option(element.attributes["value"]))
 
-const dependsOn = (dependee: string, depender: string) =>
-    dependencyMap.get(depender)
-        ? dependencyMap.get(depender).add(dependee)
-        : dependencyMap.set(depender, new Set([dependee]))
+const dependsOn = (dependee: string, depender: Goal) =>
+    dependencyGraph.get(depender)
+        ? dependencyGraph.get(depender).add(dependee)
+        : dependencyGraph.set(depender, new Set([dependee]))
 
-const plan = (element: XMLElement) => {
+const plan = (element: XMLElement, root: Goal) => {
     const goals = element.elements.filter(e => e.name === "goal")
     if (element.attributes["operator"] === "sequence") {
         goals
             .slice(0, goals.length - 1)
             .map((g, i) => [g, goals[i + 1]])
-            .forEach(([g1, g2]) => dependsOn(g1.attributes["id"], g2.attributes["id"]))
+            .forEach(([g1, g2]) => dependsOn(g1.attributes["id"], getKey(g2.attributes["id"])))
     }
-    return goals.map(goal)
+    goals.forEach(goal)
+    goals.forEach(g => dependsOn(g.attributes["id"], root))
 }
+
+const getKey: (goalName: string) => Goal =
+    (goalName) => Array.from(dependencyGraph.keys()).find(g => g.getName() === goalName) ?? new Goal(goalName)
 
 const converter = {
     "functional-specification": functionalSpecification,
