@@ -19,10 +19,6 @@ export const removeGoalRelation: (
     return toRemove.isDefined() ? components.appended(toRemove.get() as Goal) : components
 }
 
-export const subgoalRemover: (other: string) => (g: Goal) => void = other => g => {
-    g.subGoals = new Set(Array.from(g.subGoals).filter(s => s.name !== other))
-}
-
 export const dependencyRemover: (other: string) => (g: Goal) => void = other => g => {
-    g.dependsOn = new Set(Array.from(g.dependsOn).filter(s => s.name !== other))
+    g.dependencies = new Set(Array.from(g.dependencies).filter(s => s !== other))
 }

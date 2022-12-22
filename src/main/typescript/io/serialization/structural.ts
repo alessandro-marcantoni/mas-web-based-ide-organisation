@@ -1,7 +1,8 @@
-import { Cardinality, Compatibility, Constraint, Group, Role } from "../domain/structural"
-import { getAllRoles, getGlobalGroups, option, shortName } from "./utils"
+import { Cardinality, Compatibility, Constraint, Group, Role } from "../../domain/structural"
+import { getAllRoles, getGlobalGroups, option, shortName } from "../../structural/utils"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Component } from "../commons"
+import { Component } from "../../commons"
+import { formatXml } from "./common"
 
 export const serialize: (diagram: List<Component>) => string = diagram =>
     formatXml(
@@ -69,19 +70,4 @@ const groupElements = {
     roles: roles,
     subgroups: subgroups,
     constraints: constraints,
-}
-
-function formatXml(xml: string, tab: string = "\t") {
-    let formatted = ""
-    let indent = ""
-    xml.split(/>\s*</).forEach(node => {
-        if (node.match(/^\/\w/)) {
-            indent = indent.substring(tab.length)
-        }
-        formatted += indent + "<" + node + ">\r\n"
-        if (node.match(/^<?\w[^>]*[^/]$/)) {
-            indent += tab
-        }
-    })
-    return formatted.substring(1, formatted.length - 3)
 }

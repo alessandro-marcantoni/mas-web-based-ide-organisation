@@ -5,6 +5,7 @@ import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
 import { loadFunctionalSpec } from "../../../../typescript/functional/loader"
+import { serialize } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
     components: List<Component>
@@ -78,6 +79,12 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                         )
                     }>
                     Load
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{ mt: 2, mx: 2 }}
+                    onClick={() => console.log(serialize(this.props.components))}>
+                    Serialize
                 </Button>
             </Drawer>
         )
