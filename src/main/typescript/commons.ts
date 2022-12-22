@@ -13,6 +13,7 @@ export enum DiagramEventType {
     GoalCreation,
     SubgoalRemoval,
     DependencyRemoval,
+    DependencyAddition,
 }
 
 export type DiagramEventHandler = (event: DiagramEvent) => void

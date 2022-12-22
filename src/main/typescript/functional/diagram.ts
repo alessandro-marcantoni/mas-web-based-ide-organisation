@@ -22,3 +22,10 @@ export const removeGoalRelation: (
 export const dependencyRemover: (other: string) => (g: Goal) => void = other => g => {
     g.dependencies = new Set(Array.from(g.dependencies).filter(s => s !== other))
 }
+
+export const addDependency: (components: List<Component>, goalName: string, other: string) => List<Component> = (components, goalName, other) => {
+    getAllGoals(components)
+        .find(g => g.name === goalName)
+        .apply(g => g.dependencies.add(other))
+    return components
+}
