@@ -1,12 +1,9 @@
 import { Compatibility, Constraint, Group, Role } from "../domain/structural"
 import { list, List } from "scala-types/dist/list/list"
-import cytoscape, { Core, ElementDefinition } from "cytoscape"
-import { defined, fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
-import dblclick from "cytoscape-dblclick"
-import edgehandles from "cytoscape-edgehandles"
-import compoundDragAndDrop from "cytoscape-compound-drag-and-drop"
+import { Core, ElementDefinition } from "cytoscape"
+import { fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
 import { DiagramProps } from "../../react/components/common/Diagram"
-import { AdditionToGroupEvent, RemovalFromGroupEvent, SelectedComponentEvent } from "../structural/events"
+import { SelectedComponentEvent } from "../structural/events"
 import { Component } from "../commons"
 
 /**
@@ -59,77 +56,16 @@ export function presentation(
     }
 }
 
-export const ehOptions = () => {
-    return {
-        canConnect: (source, target) =>
-            (source._private.data && source._private.data.parent) ||
-            (target._private.data && target._private.data.parent),
-    }
-}
-
-export const cddOptions = (props: DiagramProps) => {
-    return {
-        grabbedNode: node =>
-            !defined(props.elements)
-                .collect(
-                    list(e => e.type === "group"),
-                    list(e => e as Group)
-                )
-                .flatMap(g => fromSet(g.subgroups))
-                .map(g => g.name)
-                .contains(node._private.data.parent),
-        dropTarget: node => node._private.data.group,
-        dropSibling: () => true,
-        newParentNode: (grabbedNode, dropSibling) => dropSibling,
-        overThreshold: 1,
-        outThreshold: 50,
-    }
-}
-
 export const config: (
     cy: Core,
-    ehOptions: Record<string, unknown>,
-    cddOption: Record<string, unknown>,
     props: DiagramProps
-) => void = (cy, ehOptions, cddOption, props) => {
-    cytoscape.use(edgehandles)
-    cytoscape.use(compoundDragAndDrop)
-    cytoscape.use(dblclick)
-    //@ts-ignore
-    //const eh = cy.edgehandles(ehOptions)
-    // @ts-ignore
-    cy.compoundDragAndDrop(cddOption)
+) => void = (cy, props) => {
     cy.center()
 
     const handlers = {
-        /*"ehcomplete": (ev, s, t, e) => {
-                props.onLinkCreation(s._private.data.id, t._private.data.id)
-                cy.remove(e)
-            },*/
         add: () => {
-            cy.layout({ name: "breadthfirst" }).run()
             cy.center()
         },
-        //"dblclick": (e) => eh.start(e.target),
-        cdnddrop: (event, dropTarget) => {
-            if (dropTarget._private.data) {
-                props.onDiagramEvent(
-                    new AdditionToGroupEvent(
-                        event.target._private.data.id,
-                        event.target._private.data.componentType,
-                        dropTarget._private.data.id
-                    )
-                )
-            }
-        },
-        cdndout: (event, dropTarget) =>
-            props.onDiagramEvent(
-                new RemovalFromGroupEvent(
-                    event.target._private.data.id,
-                    event.target._private.data.componentType,
-                    dropTarget._private.data.id
-                )
-            ),
         tap: e => {
             if (e.target._private.data.id) {
                 props.onDiagramEvent(
