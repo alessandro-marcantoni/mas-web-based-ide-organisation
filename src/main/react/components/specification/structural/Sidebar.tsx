@@ -1,10 +1,9 @@
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button } from "@mui/material"
+import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button, Box } from '@mui/material';
 import { Add } from "@mui/icons-material"
 import { getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
 import { loadSpec } from "../../../../typescript/io/deserialization/structural"
-import { serialize } from "../../../../typescript/io/serialization/structural"
 import { Component } from "../../../../typescript/commons"
 
 type SidebarProps = {
@@ -20,9 +19,9 @@ const Sidebar = (p: SidebarProps) => (
         variant="permanent"
         sx={{ width: 300, flexShrink: 0, zIndex: 0, [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" } }}>
         <Toolbar />
-        <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid container spacing={2}>
             <Grid item xs={12}>
-                <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
+                <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
                     <Typography variant="h5" component="div" sx={{ mb: 2 }}>
                         Roles
                     </Typography>
@@ -50,18 +49,14 @@ const Sidebar = (p: SidebarProps) => (
                 </Paper>
             </Grid>
         </Grid>
-        <Button variant="contained" sx={{ mt: 2, mx: 2 }} onClick={() => console.log(toArray(p.components))}>
-            Show state
-        </Button>
-        <Button
-            variant="contained"
-            sx={{ mt: 2, mx: 2 }}
-            onClick={() => loadSpec(process.env.PUBLIC_URL + "/spec.xml").then(s => p.propertyChanged("added", s))}>
-            Load
-        </Button>
-        <Button variant="contained" sx={{ mt: 2, mx: 2 }} onClick={() => console.log(serialize(p.components))}>
-            Serialize
-        </Button>
+        <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
+            <Button
+                variant="contained"
+                sx={{ mb: 2 }}
+                onClick={() => loadSpec(process.env.PUBLIC_URL + "/spec.xml").then(s => p.propertyChanged("added", s))}>
+                Load
+            </Button>
+        </Box>
     </Drawer>
 )
 
