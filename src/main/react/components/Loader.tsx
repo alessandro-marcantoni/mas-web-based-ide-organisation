@@ -1,15 +1,35 @@
-import { Box, Button, Toolbar } from "@mui/material"
+import { Box, Button, Grid, TextField, Toolbar } from "@mui/material"
 import axios from "axios"
-import React, { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import React from "react"
 import config from "../../typescript/config"
+import { useNavigate } from 'react-router-dom';
 
-function Loader() {
+type LoaderState = {
+    organizationName: string
+}
+
+type LoaderProps = {
+    setOrg: (name: string, org: string) => void
+}
+
+const Loader = (p: LoaderProps) => {
     const navigate = useNavigate()
 
-    useEffect(() => {
-        axios.get(config.BACKEND_URL + "/specifications").then(r => console.log(r.data))
+    const [state, setState] = React.useState<LoaderState>({
+        organizationName: "",
     })
+
+    const setOrganization: (option: string) => void = (option) => {
+        if (option === "new") {
+            p.setOrg(state.organizationName, "")
+            navigate("/functional")
+        } else {
+            axios.get(`${config.BACKEND_URL}/specifications/${state.organizationName}`).then(response => {
+                p.setOrg(state.organizationName, response.data)
+                navigate("/functional")
+            })
+        }
+    }
 
     return (
         <>
@@ -28,12 +48,34 @@ function Loader() {
                     src="/img/interactions-logo-reduced.png"
                     alt="Interactions Research Group, University of St.Gallen"
                 />
-                <Button variant="contained" onClick={() => navigate("/structural")} sx={{mt: 2, width: 200}}>
-                    New organization
-                </Button>
-                <Button variant="contained" onClick={() => navigate("/structural")} sx={{mt: 2, width: 200}}>
-                    Load organization
-                </Button>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{ mt: 2, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    <Grid item xs={4}></Grid>
+                    <Grid item xs={4} sx={{ p: 0 }}>
+                        <TextField
+                            fullWidth
+                            label="Organization Name"
+                            variant="filled"
+                            onChange={e => setState({ organizationName: e.target.value })}
+                        />
+                    </Grid>
+                    <Grid item xs={4}></Grid>
+
+                    <Grid item xs={4}></Grid>
+                    <Grid item xs={2} sx={{ p: 0 }}>
+                        <Button variant="outlined" fullWidth onClick={() => setOrganization("load")}>
+                            Load organization
+                        </Button>
+                    </Grid>
+                    <Grid item xs={2} sx={{ p: 0 }}>
+                        <Button variant="contained" fullWidth onClick={() => setOrganization("new")}>
+                            New organization
+                        </Button>
+                    </Grid>
+                    <Grid item xs={4}></Grid>
+                </Grid>
             </Box>
         </>
     )

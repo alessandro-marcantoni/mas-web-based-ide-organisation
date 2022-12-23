@@ -13,17 +13,18 @@ import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
 import { addDependency, addGoal, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
+import { loadFunctionalSpec } from "../../../../typescript/io/deserialization/functional"
 
 type FunctionalState = {
     components: List<Component>
     selected: Option<Component>
 }
 
-class Functional extends React.Component<unknown, FunctionalState> {
+class Functional extends React.Component<{ name: string, org: string }, FunctionalState> {
     constructor(props) {
         super(props)
         this.state = {
-            components: list<Component>(),
+            components: this.props.org ? loadFunctionalSpec(this.props.org) : list<Component>(),
             selected: none(),
         }
         this.onDiagramEvent = this.onDiagramEvent.bind(this)

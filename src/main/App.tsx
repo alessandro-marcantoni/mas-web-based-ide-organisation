@@ -8,7 +8,21 @@ import Loader from "./react/components/Loader"
 import Functional from "./react/components/specification/functional/FunctionalSpecification"
 import Entity from "./react/components/entity/OrganizationEntity"
 
-function App() {
+type AppState = {
+    organizationName: string
+    organization: string
+}
+
+const App = () => {
+    const [state, setState] = React.useState<AppState>({
+        organizationName: "",
+        organization: "",
+    })
+
+    const changeState: (name: string, org: string) => void = (name, org) => {
+        setState({ organizationName: name, organization: org })
+    }
+
     return (
         <div className="App">
             <CssBaseline />
@@ -16,9 +30,14 @@ function App() {
                 <Box sx={{ height: "100vh" }}>
                     <Header />
                     <Routes>
-                        <Route path="/" element={<Loader />} />
+                        <Route path="/" element={<Loader setOrg={changeState} />} />
                         <Route path="/structural" element={<Structural />} />
-                        <Route path="/functional" element={<Functional />} />
+                        <Route
+                            path="/functional"
+                            element={
+                                <Functional name={state.organizationName} org={state.organization} />
+                            }
+                        />
                         <Route path="/entity" element={<Entity />} />
                     </Routes>
                 </Box>
