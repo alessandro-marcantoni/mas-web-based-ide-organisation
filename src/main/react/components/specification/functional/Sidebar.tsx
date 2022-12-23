@@ -4,7 +4,7 @@ import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
-import { loadFunctionalSpec } from "../../../../typescript/io/deserialization/functional"
+import { loadFunctionalFromFile } from "../../../../typescript/io/deserialization/functional"
 import { serialize } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
@@ -74,7 +74,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                     variant="contained"
                     sx={{ mt: 2, mx: 2 }}
                     onClick={() =>
-                        loadFunctionalSpec(process.env.PUBLIC_URL + "/spec.xml").then(s =>
+                        loadFunctionalFromFile(process.env.PUBLIC_URL + "/spec.xml").then(s =>
                             this.props.onPropertyChange("components", s)
                         )
                     }>
