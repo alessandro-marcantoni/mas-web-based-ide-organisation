@@ -76,7 +76,7 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                         this.props.onEvent(
                             new GoalRelationRemovalEvent(
                                 this.props.component.map((g: Goal) => g.name).getOrElse(""),
-                                c.getName(),
+                                c.toString(),
                                 "dependency"
                             )
                         )
