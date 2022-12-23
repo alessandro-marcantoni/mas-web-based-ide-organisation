@@ -1,11 +1,9 @@
 import { Add } from "@mui/icons-material"
-import { Button, Drawer, Grid, Input, Paper, Toolbar, Typography } from "@mui/material"
+import { Box, Button, Drawer, Grid, Input, Paper, Toolbar, Typography } from "@mui/material"
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
-import { loadFunctionalFromFile } from "../../../../typescript/io/deserialization/functional"
-import { serialize } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
     components: List<Component>
@@ -36,9 +34,9 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                     [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" },
                 }}>
                 <Toolbar />
-                <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
+                        <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
                             <Typography variant="h5" component="div" sx={{ mb: 2 }}>
                                 Goals
                             </Typography>
@@ -64,28 +62,15 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                         </Paper>
                     </Grid>
                 </Grid>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2, mx: 2 }}
-                    onClick={() => console.log(toArray(this.props.components))}>
-                    Show state
-                </Button>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2, mx: 2 }}
-                    onClick={() =>
-                        loadFunctionalFromFile(process.env.PUBLIC_URL + "/spec.xml").then(s =>
-                            this.props.onPropertyChange("components", s)
-                        )
-                    }>
-                    Load
-                </Button>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2, mx: 2 }}
-                    onClick={() => console.log(serialize(this.props.components))}>
-                    Serialize
-                </Button>
+                <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{ mb: 2 }}
+                        onClick={() => console.log(toArray(this.props.components))}>
+                        Show state
+                    </Button>
+                </Box>
             </Drawer>
         )
     }
