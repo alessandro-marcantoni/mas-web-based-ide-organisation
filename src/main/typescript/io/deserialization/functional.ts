@@ -6,11 +6,15 @@ import { option } from "../../structural/utils"
 
 const dependencyGraph = new Map<Goal, Set<string>>()
 
-export const loadFunctionalSpec: (path: string) => Promise<List<Component>> = async path => {
-    const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
+export const loadFunctionalSpec: (spec: string) => List<Component> = spec => {
+    const orgSpec = convert.xml2js(spec).elements[1].elements
     converter[orgSpec[1].name](orgSpec[1])[0]
     dependencyGraph.forEach((v, k) => k.dependencies = v)
     return fromArray(Array.from(dependencyGraph.keys())).filter(g => g.name !== "orgGoal")
+}
+
+export const loadFunctionalFromFile: (path: string) => Promise<List<Component>> = async path => {
+    return loadFunctionalSpec(await (await fetch(path)).text())
 }
 
 const functionalSpecification = (element: XMLElement) => element.elements.map(e => converter[e.name](e))
