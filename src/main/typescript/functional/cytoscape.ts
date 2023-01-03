@@ -2,7 +2,7 @@ import { ElementDefinition } from "cytoscape"
 import { list, List } from "scala-types/dist/list/list"
 import { Component } from "../commons"
 import { fromSet } from "../structural/utils"
-import { Goal, stringOperator } from "../domain/functional"
+import { Goal, PlanOperator } from '../domain/functional';
 
 export const presentation: (c: Component, cs: List<Component>) => List<ElementDefinition> = (c, cs) => {
     switch (c.type) {
@@ -20,7 +20,7 @@ const goal = (g: Goal) => {
     return {
         data: {
             id: g.name,
-            label: g.name + (g.dependencies.size > 1 ? "\n\n" + "<" + stringOperator(g.operator) + ">" : ""),
+            label: g.name + (g.dependencies.size > 1 ? "\n\n" + "<" + PlanOperator.toString(g.operator) + ">" : ""),
             componentType: "goal",
         },
     }

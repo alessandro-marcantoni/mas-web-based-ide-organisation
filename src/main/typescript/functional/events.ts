@@ -1,4 +1,5 @@
 import { DiagramEvent, DiagramEventType } from "../commons"
+import { PlanOperator } from '../domain/functional';
 
 export class GoalCreationEvent extends DiagramEvent {
     name: string
@@ -30,5 +31,16 @@ export class GoalDependencyAdditionEvent extends DiagramEvent {
         super(DiagramEventType.DependencyAddition)
         this.goal = goal
         this.other = other
+    }
+}
+
+export class OperatorChangeEvent extends DiagramEvent {
+    goal: string
+    operator: PlanOperator
+
+    constructor(goal: string, operator: PlanOperator) {
+        super(DiagramEventType.OperatorChange)
+        this.goal = goal
+        this.operator = operator
     }
 }
