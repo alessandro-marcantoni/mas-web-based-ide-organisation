@@ -4,76 +4,85 @@ import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
+import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
     components: List<Component>
     onEvent: DiagramEventHandler
     onPropertyChange: (property: string, value: unknown) => void
+    save: (c: List<Component>) => void
 }
 
 type SidebarState = {
     goalName: string
 }
 
-class Sidebar extends React.Component<SidebarProps, SidebarState> {
-    constructor(props: SidebarProps) {
-        super(props)
-        this.state = {
-            goalName: "",
-        }
-    }
+const Sidebar = (p: SidebarProps) => {
+    const navigate = useNavigate()
 
-    render() {
-        return (
-            <Drawer
-                variant="permanent"
-                sx={{
-                    width: 300,
-                    flexShrink: 0,
-                    zIndex: 0,
-                    [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" },
-                }}>
-                <Toolbar />
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
-                            <Typography variant="h5" component="div" sx={{ mb: 2 }}>
-                                Goals
-                            </Typography>
-                            <Grid container spacing={1}>
-                                <Grid item xs={8}>
-                                    <Input
-                                        fullWidth
-                                        type="text"
-                                        onChange={e => this.setState({ goalName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <Button
-                                        variant="contained"
-                                        sx={{ height: "100%" }}
-                                        fullWidth={true}
-                                        disabled={this.state.goalName === ""}
-                                        onClick={() => this.props.onEvent(new GoalCreationEvent(this.state.goalName))}>
-                                        <Add />
-                                    </Button>
-                                </Grid>
+    const [state, setState] = React.useState<SidebarState>({
+        goalName: ""
+    })
+
+    return (
+        <Drawer
+            variant="permanent"
+            sx={{
+                width: 300,
+                flexShrink: 0,
+                zIndex: 0,
+                [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" },
+            }}>
+            <Toolbar />
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
+                        <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+                            Goals
+                        </Typography>
+                        <Grid container spacing={1}>
+                            <Grid item xs={8}>
+                                <Input
+                                    fullWidth
+                                    type="text"
+                                    onChange={e => setState({ goalName: e.target.value })}
+                                />
                             </Grid>
-                        </Paper>
-                    </Grid>
+                            <Grid item xs={4}>
+                                <Button
+                                    variant="contained"
+                                    sx={{ height: "100%" }}
+                                    fullWidth={true}
+                                    disabled={state.goalName === ""}
+                                    onClick={() => p.onEvent(new GoalCreationEvent(state.goalName))}>
+                                    <Add />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Paper>
                 </Grid>
-                <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{ mb: 2 }}
-                        onClick={() => console.log(toArray(this.props.components))}>
-                        Show state
-                    </Button>
-                </Box>
-            </Drawer>
-        )
-    }
+            </Grid>
+            <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => {
+                        p.save(p.components)
+                        navigate("/structural")
+                    }}>
+                    Back
+                </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => console.log(toArray(p.components))}>
+                    Show state
+                </Button>
+            </Box>
+        </Drawer>
+    )
 }
 
 export default Sidebar

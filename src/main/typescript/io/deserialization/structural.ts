@@ -4,8 +4,8 @@ import { getAllRoles, option, separate, separator, shortName } from "../../struc
 import { fromArray, List, list } from "scala-types/dist/list/list"
 import { Component, XMLElement } from "../../commons"
 
-export const loadSpec: (path: string) => Promise<List<Component>> = async path => {
-    const orgSpec = convert.xml2js(await (await fetch(path)).text()).elements[1].elements
+export const loadStructuralSpec: (spec: string) => List<Component> = spec => {
+    const orgSpec = convert.xml2js(spec).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
     getAllRoles(list(elems[1])).foreach(
         r =>
@@ -23,6 +23,9 @@ export const loadSpec: (path: string) => Promise<List<Component>> = async path =
         )
     )
 }
+
+export const loadStructuralSpecFromFile: (path: string) => Promise<List<Component>> = async path =>
+    loadStructuralSpec(await (await fetch(path)).text())
 
 const structuralSpecification = (element: XMLElement) => element.elements.map(e => converter[e.name](e))
 
