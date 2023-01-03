@@ -69,10 +69,11 @@
     "shape": "round-rectangle",
     "text-valign": "center",
     "text-halign": "center",
-    "width": 150,
+    "width": 180,
     "height": 80,
     "text-wrap": "wrap",
-    "text-max-width": 90
+    "text-max-width": 90,
+    "background-color": "#00A8A8"
   }
 }, {
   "selector": "edge[relationType = 'and']",
