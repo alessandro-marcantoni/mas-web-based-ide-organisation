@@ -22,6 +22,7 @@ export class Goal extends AbstractComponent {
     args: List<Argument<unknown>> = list()
     dependencies: Set<string> = new Set<string>()
     operator: PlanOperator = PlanOperator.AND
+    responsibles: Set<string> = new Set<string>()
 
     constructor(
         name: string,
