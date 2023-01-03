@@ -8,13 +8,13 @@ export enum PlanOperator {
     OR,
 }
 
-export const stringOperator = (op: PlanOperator): string => {
-    switch (op) {
-        case PlanOperator.AND:
-            return "AND"
-        case PlanOperator.OR:
-            return "OR"
-    }
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace PlanOperator {
+    export const fromString: (s: string) => PlanOperator = s => 
+        s === "OR" ? PlanOperator.OR : PlanOperator.AND
+
+    export const toString: (op: PlanOperator) => string = op => 
+        op === PlanOperator.OR ? "OR" : "AND"
 }
 
 export class Goal extends AbstractComponent {

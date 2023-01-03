@@ -2,7 +2,7 @@ import React from "react"
 import { List } from "scala-types/dist/list/list"
 import { none, Option } from "scala-types/dist/option/option"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
-import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent } from '../../../../typescript/functional/events';
+import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent } from '../../../../typescript/functional/events';
 import { presentation } from "../../../../typescript/functional/cytoscape"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
@@ -10,7 +10,7 @@ import { config } from "../../../../typescript/structural/cytoscape"
 import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addDependency, addGoal, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalProps = {
@@ -83,6 +83,17 @@ class Functional extends React.Component<FunctionalProps, FunctionalState> {
                     return {
                         components: deleteGoal(state.components, cde.component.getName()),
                         selected: none(),
+                    }
+                })
+                break
+            case DiagramEventType.OperatorChange:
+                const oce = event as OperatorChangeEvent
+                this.setState(state => {
+                    return {
+                        components: changeOperator(state.components, oce.goal, oce.operator),
+                        selected: state.selected.flatMap((g: Goal) =>
+                            getAllGoals(state.components).find(c => c.name === g.name)
+                        ),
                     }
                 })
                 break

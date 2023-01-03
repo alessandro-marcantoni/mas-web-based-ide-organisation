@@ -1,9 +1,9 @@
-import { Button, Grid, Typography } from "@mui/material"
+import { Button, FormControlLabel, Grid, Radio, RadioGroup, Typography } from "@mui/material"
 import React from "react"
 import { Option } from "scala-types"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
-import { Goal } from "../../../../typescript/domain/functional"
-import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent } from '../../../../typescript/functional/events';
+import { Goal, PlanOperator } from '../../../../typescript/domain/functional';
+import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent } from '../../../../typescript/functional/events';
 import TableWithDeletion from "../../common/TableWithDeletion"
 import SelectWithLabel from "../../common/SelectWithLabel"
 import { List, toArray } from "scala-types/dist/list/list"
@@ -37,13 +37,18 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 3 }}>
                     <Typography variant="h5" component="div">
-                        Subgoals
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} sx={{ mt: 3 }}>
-                    <Typography variant="h5" component="div">
                         Dependencies
                     </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <RadioGroup
+                        name="controlled-radio-buttons-group"
+                        value={this.props.component.map((c: Goal) => PlanOperator.toString(c.operator)).getOrElse("AND")}
+                        onChange={(e) => this.props.onEvent(new OperatorChangeEvent(this.props.component.map(c => c.name).getOrElse(""), PlanOperator.fromString(e.target.value)))}
+                    >
+                        <FormControlLabel value="AND" control={<Radio />} label="AND" />
+                        <FormControlLabel value="OR" control={<Radio />} label="OR" />
+                    </RadioGroup>
                 </Grid>
                 <SelectWithLabel
                     width={10}

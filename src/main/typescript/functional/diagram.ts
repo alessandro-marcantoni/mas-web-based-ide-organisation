@@ -1,6 +1,6 @@
 import { List } from "scala-types/dist/list/list"
 import { Component } from "../commons"
-import { Goal } from "../domain/functional"
+import { Goal, PlanOperator } from "../domain/functional"
 import { getAllGoals } from "./utils"
 
 export const addGoal: (components: List<Component>, goalName: string) => List<Component> = (components, goalName) =>
@@ -34,4 +34,11 @@ export const deleteGoal: (components: List<Component>, goalName: string) => List
     const c = getAllGoals(components).filter(g => g.name !== goalName)
     c.foreach(g => g.dependencies.delete(goalName))
     return c
+}
+
+export const changeOperator: (components: List<Component>, goalName: string, op: PlanOperator) => List<Component> = (components, goalName, op) => {
+    getAllGoals(components)
+        .find(g => g.name === goalName)
+        .apply(g => g.operator = op)
+    return components
 }
