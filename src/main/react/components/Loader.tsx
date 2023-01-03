@@ -3,13 +3,17 @@ import axios from "axios"
 import React from "react"
 import config from "../../typescript/config"
 import { useNavigate } from 'react-router-dom';
+import { List, list } from "scala-types/dist/list/list";
+import { Component } from "../../typescript/commons";
+import { loadStructuralSpec } from '../../typescript/io/deserialization/structural';
+import { loadFunctionalSpec } from '../../typescript/io/deserialization/functional';
 
 type LoaderState = {
     organizationName: string
 }
 
 type LoaderProps = {
-    setOrg: (name: string, org: string) => void
+    setOrg: (name: string, structural: List<Component>, functional: List<Component>) => void
 }
 
 const Loader = (p: LoaderProps) => {
@@ -21,12 +25,12 @@ const Loader = (p: LoaderProps) => {
 
     const setOrganization: (option: string) => void = (option) => {
         if (option === "new") {
-            p.setOrg(state.organizationName, "")
-            navigate("/functional")
+            p.setOrg(state.organizationName, list(), list())
+            navigate("/structural")
         } else {
             axios.get(`${config.BACKEND_URL}/specifications/${state.organizationName}`).then(response => {
-                p.setOrg(state.organizationName, response.data)
-                navigate("/functional")
+                p.setOrg(state.organizationName, loadStructuralSpec(response.data), loadFunctionalSpec(response.data))
+                navigate("/structural")
             })
         }
     }

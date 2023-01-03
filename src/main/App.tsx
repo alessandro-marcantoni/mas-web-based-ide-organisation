@@ -7,20 +7,32 @@ import { Box, CssBaseline } from "@mui/material"
 import Loader from "./react/components/Loader"
 import Functional from "./react/components/specification/functional/FunctionalSpecification"
 import Entity from "./react/components/entity/OrganizationEntity"
+import { Component } from "./typescript/commons"
+import { List, list } from "scala-types/dist/list/list"
 
 type AppState = {
     organizationName: string
-    organization: string
+    structural: List<Component>
+    functional: List<Component>
 }
 
 const App = () => {
     const [state, setState] = React.useState<AppState>({
         organizationName: "",
-        organization: "",
+        structural: list(),
+        functional: list(),
     })
 
-    const changeState: (name: string, org: string) => void = (name, org) => {
-        setState({ organizationName: name, organization: org })
+    const changeState: (name: string, s: List<Component>, f: List<Component>) => void = (name, s, f) => {
+        setState({ organizationName: name, structural: s, functional: f })
+    }
+
+    const saveStructure: (s: List<Component>) => void = (s) => {
+        setState({ ...state, structural: s })
+    }
+
+    const saveFunctional: (f: List<Component>) => void = (f) => {
+        setState({ ...state, functional: f })
     }
 
     return (
@@ -31,12 +43,13 @@ const App = () => {
                     <Header />
                     <Routes>
                         <Route path="/" element={<Loader setOrg={changeState} />} />
-                        <Route path="/structural" element={<Structural />} />
+                        <Route
+                            path="/structural"
+                            element={<Structural name={state.organizationName} org={state.structural} save={saveStructure} />}
+                        />
                         <Route
                             path="/functional"
-                            element={
-                                <Functional name={state.organizationName} org={state.organization} />
-                            }
+                            element={<Functional name={state.organizationName} org={state.functional} save={saveFunctional} />}
                         />
                         <Route path="/entity" element={<Entity />} />
                     </Routes>

@@ -1,5 +1,4 @@
 import React from "react"
-import { list } from "scala-types"
 import { List } from "scala-types/dist/list/list"
 import { none, Option } from "scala-types/dist/option/option"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
@@ -13,18 +12,23 @@ import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
 import { addDependency, addGoal, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
-import { loadFunctionalSpec } from "../../../../typescript/io/deserialization/functional"
+
+type FunctionalProps = {
+    name: string
+    org: List<Component>
+    save: (org: List<Component>) => void
+}
 
 type FunctionalState = {
     components: List<Component>
     selected: Option<Component>
 }
 
-class Functional extends React.Component<{ name: string, org: string }, FunctionalState> {
+class Functional extends React.Component<FunctionalProps, FunctionalState> {
     constructor(props) {
         super(props)
         this.state = {
-            components: this.props.org ? loadFunctionalSpec(this.props.org) : list<Component>(),
+            components: this.props.org,
             selected: none(),
         }
         this.onDiagramEvent = this.onDiagramEvent.bind(this)
@@ -102,6 +106,7 @@ class Functional extends React.Component<{ name: string, org: string }, Function
                     components={this.state.components}
                     onEvent={this.onDiagramEvent}
                     onPropertyChange={this.onPropertyChange}
+                    save={this.props.save}
                 />
                 <Diagram
                     configuration={(cy, props) => config(cy, props)}

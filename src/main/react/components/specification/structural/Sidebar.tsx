@@ -1,10 +1,10 @@
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button, Box } from '@mui/material';
+import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button, Box } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import { getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
-import { loadSpec } from "../../../../typescript/io/deserialization/structural"
 import { Component } from "../../../../typescript/commons"
+import { useNavigate } from "react-router-dom"
 
 type SidebarProps = {
     components: List<Component>
@@ -12,53 +12,66 @@ type SidebarProps = {
     group: string
     addComponent: (c: string) => void
     propertyChanged: (p: string, v: unknown) => void
+    save: (c: List<Component>) => void
 }
 
-const Sidebar = (p: SidebarProps) => (
-    <Drawer
-        variant="permanent"
-        sx={{ width: 300, flexShrink: 0, zIndex: 0, [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" } }}>
-        <Toolbar />
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
-                    <Typography variant="h5" component="div" sx={{ mb: 2 }}>
-                        Roles
-                    </Typography>
-                    <InputBox
-                        options={toArray(getAllRoles(p.components).map(r => shortName(r.name)))}
-                        onChange={v => p.propertyChanged("role", v)}
-                        label={"Role"}
-                        value={p.role}
-                        onButtonClick={() => p.addComponent("role")}
-                    />
-                </Paper>
+const Sidebar = (p: SidebarProps) => {
+    const navigate = useNavigate()
+
+    return (
+        <Drawer
+            variant="permanent"
+            sx={{
+                width: 300,
+                flexShrink: 0,
+                zIndex: 0,
+                [`& .MuiDrawer-paper`]: { width: 300, boxSizing: "border-box" },
+            }}>
+            <Toolbar />
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Paper variant="outlined" sx={{ mt: 2, mx: 2, p: 2 }}>
+                        <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+                            Roles
+                        </Typography>
+                        <InputBox
+                            options={toArray(getAllRoles(p.components).map(r => shortName(r.name)))}
+                            onChange={v => p.propertyChanged("role", v)}
+                            label={"Role"}
+                            value={p.role}
+                            onButtonClick={() => p.addComponent("role")}
+                        />
+                    </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
+                        <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+                            Groups
+                        </Typography>
+                        <InputBox
+                            options={toArray(getAllGroups(p.components).map(g => g.name))}
+                            onChange={v => p.propertyChanged("group", v)}
+                            label={"Group"}
+                            value={p.group}
+                            onButtonClick={() => p.addComponent("group")}
+                        />
+                    </Paper>
+                </Grid>
             </Grid>
-            <Grid item xs={12}>
-                <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
-                    <Typography variant="h5" component="div" sx={{ mb: 2 }}>
-                        Groups
-                    </Typography>
-                    <InputBox
-                        options={toArray(getAllGroups(p.components).map(g => g.name))}
-                        onChange={v => p.propertyChanged("group", v)}
-                        label={"Group"}
-                        value={p.group}
-                        onButtonClick={() => p.addComponent("group")}
-                    />
-                </Paper>
-            </Grid>
-        </Grid>
-        <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
-            <Button
-                variant="contained"
-                sx={{ mb: 2 }}
-                onClick={() => loadSpec(process.env.PUBLIC_URL + "/spec.xml").then(s => p.propertyChanged("added", s))}>
-                Load
-            </Button>
-        </Box>
-    </Drawer>
-)
+            <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
+                <Button
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => {
+                        p.save(p.components)
+                        navigate("/functional")
+                    }}>
+                    Next
+                </Button>
+            </Box>
+        </Drawer>
+    )
+}
 
 type InputBoxProps = {
     options: Array<string>

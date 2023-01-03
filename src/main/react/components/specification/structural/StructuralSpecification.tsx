@@ -29,6 +29,12 @@ import {
 import { config, presentation } from "../../../../typescript/structural/cytoscape"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
 
+type StructuralProps = {
+    name: string
+    org: List<Component>
+    save: (org: List<Component>) => void
+}
+
 export type StructuralState = {
     added: List<Component>
     role: string
@@ -36,11 +42,11 @@ export type StructuralState = {
     selected: Option<Component>
 }
 
-class Structural extends React.Component<unknown, StructuralState> {
+class Structural extends React.Component<StructuralProps, StructuralState> {
     constructor(props) {
         super(props)
         this.state = {
-            added: list<Component>(),
+            added: this.props.org,
             role: "",
             group: "",
             selected: none(),
@@ -188,6 +194,7 @@ class Structural extends React.Component<unknown, StructuralState> {
                     components={this.state.added}
                     propertyChanged={this.onPropertyChange}
                     addComponent={c => this.addComponent(c, "", "", "")}
+                    save={this.props.save}
                 />
                 <Diagram
                     onDiagramEvent={this.onDiagramEvent}
