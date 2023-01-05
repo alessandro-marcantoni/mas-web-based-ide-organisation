@@ -2,7 +2,7 @@ import React from "react"
 import { List } from "scala-types/dist/list/list"
 import { none, Option } from "scala-types/dist/option/option"
 import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
-import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent } from '../../../../typescript/functional/events';
+import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent } from '../../../../typescript/functional/events';
 import { presentation } from "../../../../typescript/functional/cytoscape"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
@@ -10,12 +10,13 @@ import { config } from "../../../../typescript/structural/cytoscape"
 import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addDependency, addGoal, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, addResponsible, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalProps = {
     name: string
     org: List<Component>
+    roles: List<string>
     save: (org: List<Component>) => void
 }
 
@@ -97,6 +98,16 @@ class Functional extends React.Component<FunctionalProps, FunctionalState> {
                     }
                 })
                 break
+            case DiagramEventType.ResponsibleAddition:
+                const rae = event as ResponsibleAdditionEvent
+                this.setState(state => {
+                    return {
+                        components: addResponsible(state.components, rae.goal, rae.responsible),
+                        selected: state.selected.flatMap((g: Goal) =>
+                            getAllGoals(state.components).find(c => c.name === g.name)
+                        ),
+                    }
+                })
         }
     }
 
@@ -130,6 +141,7 @@ class Functional extends React.Component<FunctionalProps, FunctionalState> {
                     components={this.state.components}
                     onClose={() => this.setState({ selected: none() })}
                     onEvent={this.onDiagramEvent}
+                    roles={this.props.roles}
                 />
             </>
         )

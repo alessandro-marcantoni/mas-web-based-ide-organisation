@@ -1,10 +1,11 @@
 import { Compatibility, Constraint, Group, Role } from "../domain/structural"
 import { list, List } from "scala-types/dist/list/list"
-import { Core, ElementDefinition } from "cytoscape"
+import cytoscape, { Core, ElementDefinition } from "cytoscape"
 import { fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
 import { DiagramProps } from "../../react/components/common/Diagram"
 import { SelectedComponentEvent } from "../structural/events"
 import { Component } from "../commons"
+import cytoscapeDomNode from "cytoscape-dom-node";
 
 /**
  * Convert a {@link Component} into an {@link ElementDefinition} to be displayed in cytoscape.
@@ -60,6 +61,9 @@ export const config: (
     cy: Core,
     props: DiagramProps
 ) => void = (cy, props) => {
+    cytoscape.use(cytoscapeDomNode)
+    // @ts-ignore
+    cy.domNode()
     cy.center()
 
     const handlers = {
