@@ -42,3 +42,10 @@ export const changeOperator: (components: List<Component>, goalName: string, op:
         .apply(g => g.operator = op)
     return components
 }
+
+export const addResponsible: (components: List<Component>, goalName: string, r: string) => List<Component> = (components, goalName, r) => {
+    getAllGoals(components)
+        .find(g => g.name === goalName)
+        .apply((g: Goal) => g.responsibles.add(r))
+    return components
+}

@@ -3,7 +3,7 @@ import React from "react"
 import { Option } from "scala-types"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { Goal, PlanOperator } from '../../../../typescript/domain/functional';
-import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent } from '../../../../typescript/functional/events';
+import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent } from '../../../../typescript/functional/events';
 import TableWithDeletion from "../../common/TableWithDeletion"
 import SelectWithLabel from "../../common/SelectWithLabel"
 import { List, toArray } from "scala-types/dist/list/list"
@@ -13,10 +13,12 @@ type GoalMenuProps = {
     component: Option<Goal>
     components: List<Component>
     onEvent: DiagramEventHandler
+    roles: List<string>
 }
 
 type GoalMenuState = {
     dependency: string
+    responsible: string
 }
 
 class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
@@ -24,6 +26,7 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
         super(props)
         this.state = {
             dependency: "",
+            responsible: "",
         }
     }
 
@@ -88,6 +91,35 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                     }
                     props={[g => g]}
                 />
+                <Grid item xs={12} sx={{ mt: 3 }}>
+                    <Typography variant="h5" component="div">
+                        Responsible Roles
+                    </Typography>
+                </Grid>
+                <SelectWithLabel
+                    width={10}
+                    label={"Responsible"}
+                    value={this.state.responsible}
+                    valueChange={v => this.setState({ responsible: v })}
+                    options={toArray(this.props.roles)}
+                />
+                <Grid
+                    item
+                    xs={2}
+                    sx={{
+                        display: "flex",
+                        direction: "column",
+                        justifyContent: "flex-end",
+                        alignItems: "flex-end",
+                        maxWidth: 100,
+                    }}>
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => this.props.onEvent(new ResponsibleAdditionEvent(this.props.component.map(c => c.name).getOrElse(""), this.state.responsible))}>
+                            Add
+                    </Button>
+                </Grid>
             </>
         )
     }

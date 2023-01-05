@@ -67,28 +67,16 @@
   "selector": "node[componentType = 'goal']",
   "style": {
     "shape": "round-rectangle",
-    "text-valign": "center",
-    "text-halign": "center",
-    "width": 180,
-    "height": 80,
-    "text-wrap": "wrap",
-    "text-max-width": 90,
-    "background-color": "#00A8A8"
+    "background-opacity": "0"
   }
 }, {
-  "selector": "edge[relationType = 'and']",
+  "selector": "edge[relationType = 'AND']",
   "style": {
-    "target-arrow-shape": "triangle",
-    "target-arrow-color": "black",
-    "target-arrow-fill": "hollow",
     "line-style": "solid"
   }
 }, {
-  "selector": "edge[relationType = 'or']",
+  "selector": "edge[relationType = 'OR']",
   "style": {
-    "target-arrow-shape": "triangle",
-    "target-arrow-color": "black",
-    "target-arrow-fill": "hollow",
     "line-style": "dashed"
   }
 }, {
@@ -96,7 +84,6 @@
   "style": {
     "source-arrow-shape": "vee",
     "source-arrow-color": "black",
-    "line-style": "solid",
     "label": ""
   }
 }]
