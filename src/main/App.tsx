@@ -9,6 +9,7 @@ import Functional from "./react/components/specification/functional/FunctionalSp
 import Entity from "./react/components/entity/OrganizationEntity"
 import { Component } from "./typescript/commons"
 import { List, list } from "scala-types/dist/list/list"
+import { getAllRoles } from './typescript/structural/utils';
 
 type AppState = {
     organizationName: string
@@ -49,7 +50,7 @@ const App = () => {
                         />
                         <Route
                             path="/functional"
-                            element={<Functional name={state.organizationName} org={state.functional} save={saveFunctional} />}
+                            element={<Functional name={state.organizationName} org={state.functional} save={saveFunctional} roles={getAllRoles(state.structural).map(r => r.getName())} />}
                         />
                         <Route path="/entity" element={<Entity />} />
                     </Routes>

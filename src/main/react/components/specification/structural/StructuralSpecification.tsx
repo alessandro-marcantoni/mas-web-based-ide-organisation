@@ -207,6 +207,7 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
                     components={this.state.added}
                     onClose={() => this.setState({ selected: none() })}
                     onEvent={this.onDiagramEvent}
+                    roles={list()}
                 />
             </>
         )

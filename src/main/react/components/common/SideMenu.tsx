@@ -16,6 +16,7 @@ type SideMenuProps = {
     components: List<Component>
     onClose: () => void
     onEvent: DiagramEventHandler
+    roles: List<string>
 }
 
 const SideMenu = (p: SideMenuProps) => (
@@ -32,7 +33,7 @@ const SideMenu = (p: SideMenuProps) => (
                 <GroupMenu component={p.component as Option<Group>} components={p.components} onEvent={p.onEvent} />
             )}
             {p.component.map(c => c.type === "goal").getOrElse(false) && (
-                <GoalMenu component={p.component as Option<Goal>} components={p.components} onEvent={p.onEvent} />
+                <GoalMenu component={p.component as Option<Goal>} components={p.components} onEvent={p.onEvent} roles={p.roles}/>
             )}
             <Grid item xs={12} sx={{ position: "fixed", bottom: 8, width: 468, mt: 3 }}>
                 <Button
