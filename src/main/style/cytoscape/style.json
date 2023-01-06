@@ -70,8 +70,9 @@
     "background-color": "#00A8A8",
     "text-valign": "center",
     "text-halign": "center",
-    "width": 150,
-    "height": 80,
+    "width": "label",
+    "height": 60,
+    "padding": 10,
     "text-wrap": "wrap",
     "text-max-width": 90
   }
@@ -102,9 +103,9 @@
 }, {
   "selector": "node[withResponsibles = 'yes']",
   "style": {
-    "width": 150,
-    "height": 80,
     "text-valign": "top",
-    "text-halign": "center"
+    "text-halign": "center",
+    "min-width": 130,
+    "min-height": 60
   }
 }]
