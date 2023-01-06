@@ -1,65 +1,46 @@
 import { ElementDefinition } from "cytoscape"
 import { list, List } from "scala-types/dist/list/list"
 import { Component } from "../commons"
-import { fromSet } from "../structural/utils"
-import { Goal, PlanOperator } from '../domain/functional';
+import { fromSet, separate, shortName } from '../structural/utils';
+import { Goal, PlanOperator } from "../domain/functional"
 
 export const presentation: (c: Component, cs: List<Component>) => List<ElementDefinition> = (c, cs) => {
     switch (c.type) {
         case "goal":
             const g = c as Goal
-            return list(goal(g))
-                // @ts-ignore
-                .appendedAll(fromSet(g.dependencies).map(e => dependency(g, cs.find(c => c.name === e).get() as Goal)))
+            return (
+                goal(g)
+                    // @ts-ignore
+                    .appendedAll(
+                        fromSet(g.dependencies).map(e => dependency(g, cs.find(c => c.getName() === e).get() as Goal))
+                    )
+            )
         default:
             return list()
     }
 }
 
-const goal = (g: Goal) => {
-    return {
+const goal: (g: Goal) => List<ElementDefinition> = (g) =>
+    list<ElementDefinition>({
         data: {
             id: g.name,
-            dom: createDiv(g),
+            label: g.name,
             componentType: "goal",
+            withResponsibles: g.responsibles.size > 0 ? "yes" : "no"
         },
-    }
-}
+    }).appendedAll(responsibles(g))
 
-const createDiv = (g: Goal) => {
-    const node = document.createElement("div")
-    const label = document.createElement("div")
-    const roles = document.createElement("div")
-    roles.style.display = "flex"
-    roles.style.flexWrap = "no-wrap"
-    roles.style.justifyContent = "space-around"
-    addResponsibles(g, roles)
-    label.innerHTML = g.name
-    label.style.textAlign = "center"
-    node.appendChild(label)
-    node.appendChild(roles)
-    node.style.padding = "20px"
-    node.style.borderRadius = "10px"
-    node.style.backgroundColor = "#2EB5E0"
-    return node
-}
-
-const addResponsibles = (g: Goal, div: HTMLDivElement) => {
-    g.responsibles.forEach(r => {
-        const role = document.createElement("div")
-        role.style.width = "35px"
-        role.style.height = "35px"
-        role.style.backgroundColor = "red"
-        role.style.borderRadius = "50px"
-        role.innerHTML = r.charAt(0)
-        role.style.textAlign = "center"
-        role.style.verticalAlign = "middle"
-        role.style.lineHeight = "35px"
-        role.style.backgroundColor = "#00A8A8"
-        div.appendChild(role)
-        console.log(r);
+const responsibles: (g: Goal) => List<ElementDefinition> = (g) =>
+    fromSet(g.responsibles).map(r => {
+        return {
+            data: {
+                id: separate(g.name)(r),
+                label: shortName(r).charAt(0),
+                componentType: "responsible",
+                parent: g.name
+            },
+        }
     })
-}
 
 const dependency = (from: Goal, to: Goal) => {
     return {
