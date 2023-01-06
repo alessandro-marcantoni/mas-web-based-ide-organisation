@@ -10,7 +10,7 @@ import { config } from "../../../../typescript/structural/cytoscape"
 import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/structural/events"
 import { getAllGoals } from "../../../../typescript/functional/utils"
 import SideMenu from "../../common/SideMenu"
-import { addDependency, addGoal, addResponsible, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, addResponsible, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation, removeResponsible } from "../../../../typescript/functional/diagram"
 import { Goal } from "../../../../typescript/domain/functional"
 
 type FunctionalProps = {
@@ -102,12 +102,24 @@ class Functional extends React.Component<FunctionalProps, FunctionalState> {
                 const rae = event as ResponsibleAdditionEvent
                 this.setState(state => {
                     return {
-                        components: addResponsible(state.components, rae.goal, rae.responsible),
+                        components: addResponsible(state.components, rae.goal, rae.responsible, rae.modality),
                         selected: state.selected.flatMap((g: Goal) =>
                             getAllGoals(state.components).find(c => c.name === g.name)
                         ),
                     }
                 })
+                break
+            case DiagramEventType.ResponsibleRemoval:
+                const rre = event as ResponsibleAdditionEvent
+                this.setState(state => {
+                    return {
+                        components: removeResponsible(state.components, rre.goal, rre.responsible),
+                        selected: state.selected.flatMap((g: Goal) =>
+                            getAllGoals(state.components).find(c => c.name === g.name)
+                        ),
+                    }
+                })
+                break
         }
     }
 

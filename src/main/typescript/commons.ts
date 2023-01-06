@@ -16,6 +16,7 @@ export enum DiagramEventType {
     DependencyAddition,
     OperatorChange,
     ResponsibleAddition,
+    ResponsibleRemoval,
 }
 
 export type DiagramEventHandler = (event: DiagramEvent) => void
