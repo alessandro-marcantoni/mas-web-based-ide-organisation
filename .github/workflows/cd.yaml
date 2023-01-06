@@ -1,0 +1,53 @@
+name: Release and Deliver
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+      - "LICENSE"
+      - "CHANGELOG.md"
+      - "renovate.json"
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+  
+  release:
+    needs:
+      - build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Semantic Versioning
+        uses: anitvam/conventionalcommit-semantic-releasing@v0.3.6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  deliver:
+    needs:
+      - release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Registry Authentication
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Docker Image
+        run: |
+          docker build . --tag ghcr.io/alessandro-marcantoni/mas-organization-web-ide
+          docker push ghcr.io/alessandro-marcantoni/mas-organization-web-ide
