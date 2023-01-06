@@ -48,9 +48,22 @@ export class OperatorChangeEvent extends DiagramEvent {
 export class ResponsibleAdditionEvent extends DiagramEvent {
     goal: string
     responsible: string
+    modality: string
 
-    constructor(goal: string, responsible: string)  {
+    constructor(goal: string, responsible: string, modality: string) {
         super(DiagramEventType.ResponsibleAddition)
+        this.goal = goal
+        this.responsible = responsible
+        this.modality = modality
+    }
+}
+
+export class ResponsibleRemovalEvent extends DiagramEvent {
+    goal: string
+    responsible: string
+
+    constructor(goal: string, responsible: string) {
+        super(DiagramEventType.ResponsibleRemoval)
         this.goal = goal
         this.responsible = responsible
     }

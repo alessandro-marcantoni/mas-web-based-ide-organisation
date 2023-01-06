@@ -1,5 +1,5 @@
 import { ElementDefinition } from "cytoscape"
-import { list, List } from "scala-types/dist/list/list"
+import { list, List, fromArray } from 'scala-types/dist/list/list';
 import { Component } from "../commons"
 import { fromSet, separate, shortName } from '../structural/utils';
 import { Goal, PlanOperator } from "../domain/functional"
@@ -31,7 +31,7 @@ const goal: (g: Goal) => List<ElementDefinition> = (g) =>
     }).appendedAll(responsibles(g))
 
 const responsibles: (g: Goal) => List<ElementDefinition> = (g) =>
-    fromSet(g.responsibles).map(r => {
+    fromArray(Array.from(g.responsibles.keys()).map((r) => {
         return {
             data: {
                 id: separate(g.name)(r),
@@ -40,7 +40,7 @@ const responsibles: (g: Goal) => List<ElementDefinition> = (g) =>
                 parent: g.name
             },
         }
-    })
+    }))
 
 const dependency = (from: Goal, to: Goal) => {
     return {
