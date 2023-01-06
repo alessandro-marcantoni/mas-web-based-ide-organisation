@@ -3,6 +3,7 @@ import { Component, XMLElement } from "../../commons"
 import convert from "xml-js"
 import { Argument, Goal, PlanOperator } from "../../domain/functional"
 import { option } from "../../structural/utils"
+import { OR_TOKEN } from '../serialization/functional';
 
 const dependencyGraph = new Map<Goal, Set<string>>()
 
@@ -22,6 +23,13 @@ const functionalSpecification = (element: XMLElement) => element.elements.map(e 
 const scheme = (element: XMLElement) => element.elements.filter(e => e.name === "goal").forEach(goal)
 
 const goal = (element: XMLElement) => {
+    if ((element.attributes["id"] as string).includes(OR_TOKEN)) {
+        const g = getKey((element.attributes["id"] as string).replace(OR_TOKEN, ""))
+        dependencyGraph.set(g, dependencyGraph.get(g) ?? new Set<string>())
+        element.elements[0].elements.forEach(e => dependsOn(e.attributes["id"], g))
+        g.operator = PlanOperator.OR
+        return
+    }
     const g = getKey(element.attributes["id"])
     dependencyGraph.set(g, dependencyGraph.get(g) ?? new Set<string>())
     if (element.elements) {
@@ -36,13 +44,19 @@ const goal = (element: XMLElement) => {
 
 const argument = (element: XMLElement) => new Argument(element.attributes["id"], option(element.attributes["value"]))
 
-const dependsOn = (dependee: string, depender: Goal) =>
-    dependencyGraph.get(depender)
-        ? dependencyGraph.get(depender).add(dependee)
-        : dependencyGraph.set(depender, new Set([dependee]))
+const dependsOn = (dependee: string, depender: Goal) => {
+    if (!dependee.includes(OR_TOKEN)) {
+        dependencyGraph.get(depender)
+            ? dependencyGraph.get(depender).add(dependee)
+            : dependencyGraph.set(depender, new Set([dependee]))
+    }
+}
 
 const plan = (element: XMLElement, root: Goal) => {
     const goals = element.elements.filter(e => e.name === "goal")
+    if (element.attributes["operator"] === "choice") {
+        root.operator = PlanOperator.OR
+    }
     if (element.attributes["operator"] === "sequence") {
         goals
             .slice(0, goals.length - 1)

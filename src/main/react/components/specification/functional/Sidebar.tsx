@@ -5,6 +5,8 @@ import { List, toArray } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
 import { useNavigate } from 'react-router-dom';
+import { loadFunctionalFromFile } from '../../../../typescript/io/deserialization/functional';
+import { serialize } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
     components: List<Component>
@@ -79,6 +81,20 @@ const Sidebar = (p: SidebarProps) => {
                     sx={{ mb: 2 }}
                     onClick={() => console.log(toArray(p.components))}>
                     Show state
+                </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => loadFunctionalFromFile("http://localhost/spec.xml").then(c => p.onPropertyChange("components", c))}>
+                    LOAD
+                </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => console.log(serialize(p.components))}>
+                    SERIALIZE
                 </Button>
             </Box>
         </Drawer>
