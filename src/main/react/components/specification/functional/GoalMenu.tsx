@@ -1,4 +1,4 @@
-import { Button, FormControlLabel, Grid, Radio, RadioGroup, Typography } from "@mui/material"
+import { Button, FormControlLabel, Grid, Radio, RadioGroup, Typography, Toolbar } from '@mui/material';
 import React from "react"
 import { Option } from "scala-types"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
@@ -104,7 +104,7 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                     label={"Responsible"}
                     value={this.state.responsible}
                     valueChange={v => this.setState({ responsible: v })}
-                    options={toArray(this.props.roles)}
+                    options={toArray(this.props.roles.map(shortName).distinctBy(r => r))}
                 />
                 <SelectWithLabel
                     width={5}
@@ -143,6 +143,7 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                     }
                     props={[r => shortName(r[0]), r => r[1]]}
                 />
+                <Toolbar/>
             </>
         )
     }
