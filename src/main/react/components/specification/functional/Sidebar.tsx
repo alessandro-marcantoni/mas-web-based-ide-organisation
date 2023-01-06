@@ -86,7 +86,7 @@ const Sidebar = (p: SidebarProps) => {
                     fullWidth
                     variant="contained"
                     sx={{ mb: 2 }}
-                    onClick={() => loadFunctionalFromFile("http://localhost/spec.xml").then(c => p.onPropertyChange("components", c))}>
+                    onClick={() => loadFunctionalFromFile("http://localhost/write-paper.xml").then(c => p.onPropertyChange("components", c))}>
                     LOAD
                 </Button>
                 <Button
