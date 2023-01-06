@@ -3,11 +3,12 @@ import React from "react"
 import { Option } from "scala-types"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { Goal, PlanOperator } from '../../../../typescript/domain/functional';
-import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent } from '../../../../typescript/functional/events';
+import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent, ResponsibleRemovalEvent } from '../../../../typescript/functional/events';
 import TableWithDeletion from "../../common/TableWithDeletion"
 import SelectWithLabel from "../../common/SelectWithLabel"
 import { List, toArray } from "scala-types/dist/list/list"
 import { getAllGoals } from "../../../../typescript/functional/utils"
+import { shortName } from "../../../../typescript/structural/utils";
 
 type GoalMenuProps = {
     component: Option<Goal>
@@ -19,6 +20,7 @@ type GoalMenuProps = {
 type GoalMenuState = {
     dependency: string
     responsible: string
+    modality: string
 }
 
 class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
@@ -27,6 +29,7 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
         this.state = {
             dependency: "",
             responsible: "",
+            modality: "obligation",
         }
     }
 
@@ -91,17 +94,24 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                     }
                     props={[g => g]}
                 />
-                <Grid item xs={12} sx={{ mt: 3 }}>
+                <Grid item xs={12} sx={{ mt: 5 }}>
                     <Typography variant="h5" component="div">
                         Responsible Roles
                     </Typography>
                 </Grid>
                 <SelectWithLabel
-                    width={10}
+                    width={5}
                     label={"Responsible"}
                     value={this.state.responsible}
                     valueChange={v => this.setState({ responsible: v })}
                     options={toArray(this.props.roles)}
+                />
+                <SelectWithLabel
+                    width={5}
+                    label={"Modality"}
+                    value={this.state.modality}
+                    valueChange={v => this.setState({ modality: v })}
+                    options={["obligation", "permission"]}
                 />
                 <Grid
                     item
@@ -116,10 +126,23 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                     <Button
                         variant="contained"
                         fullWidth
-                        onClick={() => this.props.onEvent(new ResponsibleAdditionEvent(this.props.component.map(c => c.name).getOrElse(""), this.state.responsible))}>
+                        onClick={() => this.props.onEvent(new ResponsibleAdditionEvent(this.props.component.map(c => c.name).getOrElse(""), this.state.responsible, this.state.modality))}>
                             Add
                     </Button>
                 </Grid>
+                <TableWithDeletion
+                    cols={["Responsibles", "Modality"]}
+                    items={this.props.component.map((c: Goal) => Array.from(c.responsibles.entries())).getOrElse([])}
+                    onDelete={c =>
+                        this.props.onEvent(
+                            new ResponsibleRemovalEvent(
+                                this.props.component.map((g: Goal) => g.name).getOrElse(""),
+                                c[0],
+                            )
+                        )
+                    }
+                    props={[r => shortName(r[0]), r => r[1]]}
+                />
             </>
         )
     }
