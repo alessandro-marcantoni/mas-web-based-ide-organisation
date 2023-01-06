@@ -81,7 +81,7 @@ const normativeSpecification = (element: XMLElement) =>
     element.elements.filter(e => e.name === "norm").forEach(norm)
 
 const norm = (element: XMLElement) =>
-    missions.get(element.attributes["mission"]).forEach(g => {
+    missions.get(element.attributes["mission"])?.forEach(g => {
         const goal = getKey(g)
         goal.responsibles.set(element.attributes["role"], element.attributes["type"])
     })
