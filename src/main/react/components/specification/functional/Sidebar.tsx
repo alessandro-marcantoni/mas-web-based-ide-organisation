@@ -6,7 +6,7 @@ import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
 import { useNavigate } from 'react-router-dom';
 import { loadFunctionalFromFile } from '../../../../typescript/io/deserialization/functional';
-import { serialize } from "../../../../typescript/io/serialization/functional"
+import { serializeFunctional } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
     components: List<Component>
@@ -67,7 +67,7 @@ const Sidebar = (p: SidebarProps) => {
             <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
                 <Button
                     fullWidth
-                    variant="contained"
+                    variant="outlined"
                     sx={{ mb: 2 }}
                     onClick={() => {
                         p.save(p.components)
@@ -93,7 +93,7 @@ const Sidebar = (p: SidebarProps) => {
                     fullWidth
                     variant="contained"
                     sx={{ mb: 2 }}
-                    onClick={() => console.log(serialize(p.components))}>
+                    onClick={() => console.log(serializeFunctional(p.components))}>
                     SERIALIZE
                 </Button>
             </Box>

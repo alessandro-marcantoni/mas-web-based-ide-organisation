@@ -4,7 +4,7 @@ import { List, toArray } from "scala-types/dist/list/list"
 import { Component } from "../../commons"
 import { formatXml } from "./common"
 
-export const serialize: (diagram: List<Component>) => string = diagram =>
+export const serializeStructural: (diagram: List<Component>) => string = diagram =>
     formatXml(
         "<structural-specification>" +
             "<role-definitions>" +

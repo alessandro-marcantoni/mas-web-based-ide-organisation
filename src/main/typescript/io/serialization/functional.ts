@@ -16,7 +16,7 @@ class Norm {
     }
 }
 
-export const serialize: (diagram: List<Component>) => string = diagram =>
+export const serializeFunctional: (diagram: List<Component>) => string = diagram =>
     formatXml(
         "<functional-specification>" +
             "<scheme id=\"orgScheme\">" +
