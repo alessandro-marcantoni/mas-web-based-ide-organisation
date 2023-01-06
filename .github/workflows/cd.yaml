@@ -11,6 +11,11 @@ on:
       - "CHANGELOG.md"
       - "renovate.json"
 
+env:
+  GENERATE_SOURCEMAP: false
+  PORT: 80
+  PUBLIC_URL: http://localhost:80
+
 jobs:
   build-and-test:
     uses: ./.github/workflows/ci.yaml
