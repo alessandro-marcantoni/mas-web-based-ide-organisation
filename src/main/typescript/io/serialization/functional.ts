@@ -4,6 +4,18 @@ import { Component } from "../../commons"
 import { getAllGoals } from '../../functional/utils';
 import { Goal, PlanOperator } from '../../domain/functional';
 
+class Norm {
+    type: string
+    role: string
+    mission: string
+
+    constructor(type: string, role: string, goal: string) {
+        this.type = type
+        this.role = role
+        this.mission = MISSION_TOKEN + goal
+    }
+}
+
 export const serialize: (diagram: List<Component>) => string = diagram =>
     formatXml(
         "<functional-specification>" +
@@ -13,12 +25,26 @@ export const serialize: (diagram: List<Component>) => string = diagram =>
                     toArray(getAllGoals(diagram).map(goal)).join("\n") +
                     "</plan>" +
                 "</goal>" +
+                toArray(getAllGoals(diagram).map(mission)).join("\n") +
             "</scheme>" +
-        "</functional-specification>"
+        "</functional-specification>" +
+        "<normative-specification>" +
+            norms(getAllGoals(diagram)) +
+        "</normative-specification>"
     )
 
 const goal: (goal: Goal) => string = goal =>
     (goal.operator === PlanOperator.OR && goal.dependencies.size >= 2) ? orGoal(goal) : andGoal(goal)
+
+const mission: (goal: Goal) => string = goal =>
+    "<mission id=\"" + MISSION_TOKEN + goal.name + "\">" +
+        "<goal id=\"" + goal.name + "\"/>" +
+    "</mission>"
+
+const norms: (goals: List<Goal>) => string = goals =>
+    toArray(goals)
+        .flatMap(goal => Array.from(goal.responsibles.entries()).map(([mod, resp]) => new Norm(mod, resp, goal.name)))
+        .map(norm => "<norm type=\"" + norm.type + "\" role=\"" + norm.role + "\" mission=\"" + norm.mission + "\"/>").join("\n")
 
 const orGoal: (goal: Goal) => string = goal =>
     "<goal id=\"" + goal.name + "\">" +
@@ -36,3 +62,4 @@ const andGoal: (goal: Goal) => string = goal =>
     "</goal>"
 
 export const OR_TOKEN = "OR__"
+export const MISSION_TOKEN = "MISSION__"
