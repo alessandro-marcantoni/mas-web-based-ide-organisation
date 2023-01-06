@@ -67,7 +67,13 @@
   "selector": "node[componentType = 'goal']",
   "style": {
     "shape": "round-rectangle",
-    "background-opacity": "0"
+    "background-color": "#00A8A8",
+    "text-valign": "center",
+    "text-halign": "center",
+    "width": 150,
+    "height": 80,
+    "text-wrap": "wrap",
+    "text-max-width": 90
   }
 }, {
   "selector": "edge[relationType = 'AND']",
@@ -85,5 +91,20 @@
     "source-arrow-shape": "vee",
     "source-arrow-color": "black",
     "label": ""
+  }
+}, {
+  "selector": "node[componentType = 'responsible']",
+  "style": {
+    "text-valign": "center",
+    "text-halign": "center",
+    "background-color": "#2EB5E0"
+  }
+}, {
+  "selector": "node[withResponsibles = 'yes']",
+  "style": {
+    "width": 150,
+    "height": 80,
+    "text-valign": "top",
+    "text-halign": "center"
   }
 }]
