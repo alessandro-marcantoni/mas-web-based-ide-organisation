@@ -48,7 +48,7 @@ const norms: (goals: List<Goal>) => string = goals =>
 
 const orGoal: (goal: Goal) => string = goal =>
     "<goal id=\"" + goal.name + "\">" +
-        "<depends-on goal=\"OR" + goal.name + "\"/>" +
+        "<depends-on goal=\"" + OR_TOKEN + goal.name + "\"/>" +
     "</goal>" +
     "<goal id=\"" + OR_TOKEN + goal.name + "\">" +
         "<plan operator=\"choice\">" +
