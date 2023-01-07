@@ -7,6 +7,7 @@ import { GoalCreationEvent } from "../../../../typescript/functional/events"
 import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
+    name: string
     components: List<Component>
     onEvent: DiagramEventHandler
     onPropertyChange: (property: string, value: unknown) => void
@@ -36,7 +37,12 @@ const Sidebar = (p: SidebarProps) => {
             <Toolbar />
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Paper variant="outlined" sx={{ mt:2, mx: 2, p: 2 }}>
+                    <Typography variant="h4" component="div" sx={{ mx: 2, mt: 2 }}>
+                        {p.name ?? "New org"}
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
                         <Typography variant="h5" component="div" sx={{ mb: 2 }}>
                             Goals
                         </Typography>

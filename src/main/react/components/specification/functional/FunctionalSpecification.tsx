@@ -137,6 +137,7 @@ class Functional extends React.Component<FunctionalProps, FunctionalState> {
         return (
             <>
                 <Sidebar
+                    name={this.props.name}
                     components={this.state.components}
                     onEvent={this.onDiagramEvent}
                     onPropertyChange={this.onPropertyChange}
