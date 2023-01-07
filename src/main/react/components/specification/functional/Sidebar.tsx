@@ -1,18 +1,16 @@
 import { Add } from "@mui/icons-material"
 import { Box, Button, Drawer, Grid, Input, Paper, Toolbar, Typography } from "@mui/material"
 import React from "react"
-import { List, toArray } from "scala-types/dist/list/list"
+import { List } from "scala-types/dist/list/list"
 import { Component, DiagramEventHandler } from "../../../../typescript/commons"
 import { GoalCreationEvent } from "../../../../typescript/functional/events"
 import { useNavigate } from 'react-router-dom';
-import { loadFunctionalFromFile } from '../../../../typescript/io/deserialization/functional';
-import { serializeFunctional } from "../../../../typescript/io/serialization/functional"
 
 type SidebarProps = {
     components: List<Component>
     onEvent: DiagramEventHandler
     onPropertyChange: (property: string, value: unknown) => void
-    save: (c: List<Component>) => void
+    save: (c: List<Component>, backend?: boolean) => void
 }
 
 type SidebarState = {
@@ -63,6 +61,17 @@ const Sidebar = (p: SidebarProps) => {
                         </Grid>
                     </Paper>
                 </Grid>
+                <Grid item xs={12} sx={{ mx: 2 }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="success"
+                        onClick={() => {
+                            p.save(p.components, true)
+                        }}>
+                        Save
+                    </Button>
+                </Grid>
             </Grid>
             <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
                 <Button
@@ -79,22 +88,11 @@ const Sidebar = (p: SidebarProps) => {
                     fullWidth
                     variant="contained"
                     sx={{ mb: 2 }}
-                    onClick={() => console.log(toArray(p.components))}>
-                    Show state
-                </Button>
-                <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ mb: 2 }}
-                    onClick={() => loadFunctionalFromFile("http://localhost/write-paper.xml").then(c => p.onPropertyChange("components", c))}>
-                    LOAD
-                </Button>
-                <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ mb: 2 }}
-                    onClick={() => console.log(serializeFunctional(p.components))}>
-                    SERIALIZE
+                    onClick={() => {
+                        p.save(p.components, true)
+                        navigate("/entity")
+                    }}>
+                    Deploy
                 </Button>
             </Box>
         </Drawer>
