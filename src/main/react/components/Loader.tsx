@@ -25,8 +25,15 @@ const Loader = (p: LoaderProps) => {
 
     const setOrganization: (option: string) => void = (option) => {
         if (option === "new") {
-            p.setOrg(state.organizationName, list(), list())
-            navigate("/structural")
+            axios.post(`${config.BACKEND_URL}/specifications/${state.organizationName}`, "",
+            {
+                headers : {
+                  "Content-Type" : "application/xml"
+                },
+            }).then(() => {
+                p.setOrg(state.organizationName, list(), list())
+                navigate("/structural")
+            })
         } else {
             axios.get(`${config.BACKEND_URL}/specifications/${state.organizationName}`).then(response => {
                 p.setOrg(state.organizationName, loadStructuralSpec(response.data), loadFunctionalSpec(response.data))
