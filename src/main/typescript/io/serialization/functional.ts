@@ -1,8 +1,8 @@
-import { List, toArray } from 'scala-types/dist/list/list';
+import { List, toArray } from "scala-types/dist/list/list"
 import { formatXml } from "./common"
 import { Component } from "../../commons"
-import { getAllGoals } from '../../functional/utils';
-import { Goal, PlanOperator } from '../../domain/functional';
+import { getAllGoals } from "../../functional/utils"
+import { Goal, PlanOperator } from "../../domain/functional"
 
 class Norm {
     type: string
@@ -19,46 +19,72 @@ class Norm {
 export const serializeFunctional: (diagram: List<Component>) => string = diagram =>
     formatXml(
         "<functional-specification>" +
-            "<scheme id=\"orgScheme\">" +
-                "<goal id=\"orgGoal\">" +
-                    "<plan operator=\"parallel\">" +
-                    toArray(getAllGoals(diagram).map(goal)).join("\n") +
-                    "</plan>" +
-                "</goal>" +
-                toArray(getAllGoals(diagram).map(mission)).join("\n") +
+            '<scheme id="orgScheme">' +
+            '<goal id="orgGoal">' +
+            '<plan operator="parallel">' +
+            toArray(getAllGoals(diagram).map(goal)).join("\n") +
+            "</plan>" +
+            "</goal>" +
+            toArray(getAllGoals(diagram).map(mission)).join("\n") +
             "</scheme>" +
-        "</functional-specification>" +
-        "<normative-specification>" +
+            "</functional-specification>" +
+            "<normative-specification>" +
             norms(getAllGoals(diagram)) +
-        "</normative-specification>"
+            "</normative-specification>"
     )
 
 const goal: (goal: Goal) => string = goal =>
-    (goal.operator === PlanOperator.OR && goal.dependencies.size >= 2) ? orGoal(goal) : andGoal(goal)
+    goal.operator === PlanOperator.OR && goal.dependencies.size >= 2 ? orGoal(goal) : andGoal(goal)
 
 const mission: (goal: Goal) => string = goal =>
-    "<mission id=\"" + MISSION_TOKEN + goal.name + "\">" +
-        "<goal id=\"" + goal.name + "\"/>" +
-    "</mission>"
+    '<mission id="' + MISSION_TOKEN + goal.name + '">' + '<goal id="' + goal.name + '"/>' + "</mission>"
 
 const norms: (goals: List<Goal>) => string = goals =>
     toArray(goals)
-        .flatMap(goal => Array.from(goal.responsibles.entries()).map(([mod, resp]) => new Norm(mod, resp, goal.name)))
-        .map(norm => "<norm type=\"" + norm.type + "\" role=\"" + norm.role + "\" mission=\"" + norm.mission + "\"/>").join("\n")
+        .flatMap(goal => Array.from(goal.responsibles.entries()).map(([resp, mod]) => new Norm(mod, resp, goal.name)))
+        .map(
+            norm =>
+                '<norm id="' +
+                norm.type +
+                norm.role +
+                norm.mission +
+                '" type="' +
+                norm.type +
+                '" role="' +
+                norm.role +
+                '" mission="' +
+                norm.mission +
+                '"/>'
+        )
+        .join("\n")
 
 const orGoal: (goal: Goal) => string = goal =>
-    "<goal id=\"" + goal.name + "\">" +
-        "<depends-on goal=\"" + OR_TOKEN + goal.name + "\"/>" +
+    '<goal id="' +
+    goal.name +
+    '">' +
+    '<depends-on goal="' +
+    OR_TOKEN +
+    goal.name +
+    '"/>' +
     "</goal>" +
-    "<goal id=\"" + OR_TOKEN + goal.name + "\">" +
-        "<plan operator=\"choice\">" +
-            Array.from(goal.dependencies).map(dep => "<goal id=\"" + dep + "\"/>").join("\n") +
-        "</plan>" +
+    '<goal id="' +
+    OR_TOKEN +
+    goal.name +
+    '">' +
+    '<plan operator="choice">' +
+    Array.from(goal.dependencies)
+        .map(dep => '<goal id="' + dep + '"/>')
+        .join("\n") +
+    "</plan>" +
     "</goal>"
 
 const andGoal: (goal: Goal) => string = goal =>
-    "<goal id=\"" + goal.name + "\">" +
-    Array.from(goal.dependencies).map(dep => "<depends-on goal=\"" + dep + "\"/>").join("\n") +
+    '<goal id="' +
+    goal.name +
+    '">' +
+    Array.from(goal.dependencies)
+        .map(dep => '<depends-on goal="' + dep + '"/>')
+        .join("\n") +
     "</goal>"
 
 export const OR_TOKEN = "OR__"
