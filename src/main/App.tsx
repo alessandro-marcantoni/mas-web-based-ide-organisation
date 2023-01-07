@@ -33,14 +33,18 @@ const App = () => {
         setState({ organizationName: name, structural: s, functional: f })
     }
 
-    const saveStructure: (s: List<Component>) => void = s => {
+    function saveStructure(s: List<Component>, backend: boolean = false) {
         setState({ ...state, structural: s })
-        saveOrganization()
+        if (backend) {
+            saveOrganization()
+        }
     }
 
-    const saveFunctional: (f: List<Component>) => void = f => {
+    function saveFunctional(f: List<Component>, backend: boolean = false) {
         setState({ ...state, functional: f })
-        saveOrganization()
+        if (backend) {
+            saveOrganization()
+        }
     }
 
     const saveOrganization: () => void = () => {
