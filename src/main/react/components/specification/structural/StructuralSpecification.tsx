@@ -189,6 +189,7 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
         return (
             <>
                 <Sidebar
+                    name={this.props.name}
                     role={this.state.role}
                     group={this.state.group}
                     components={this.state.added}

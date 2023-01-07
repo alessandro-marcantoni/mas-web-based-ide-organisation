@@ -7,12 +7,13 @@ import { Component } from "../../../../typescript/commons"
 import { useNavigate } from "react-router-dom"
 
 type SidebarProps = {
+    name: string
     components: List<Component>
     role: string
     group: string
     addComponent: (c: string) => void
     propertyChanged: (p: string, v: unknown) => void
-    save: (c: List<Component>) => void
+    save: (c: List<Component>, backend?: boolean) => void
 }
 
 const Sidebar = (p: SidebarProps) => {
@@ -30,7 +31,12 @@ const Sidebar = (p: SidebarProps) => {
             <Toolbar />
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Paper variant="outlined" sx={{ mt: 2, mx: 2, p: 2 }}>
+                    <Typography variant="h4" component="div" sx={{ mx: 2, mt: 2 }}>
+                        {p.name ?? "New org"}
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper variant="outlined" sx={{ mx: 2, p: 2 }}>
                         <Typography variant="h5" component="div" sx={{ mb: 2 }}>
                             Roles
                         </Typography>
@@ -56,6 +62,17 @@ const Sidebar = (p: SidebarProps) => {
                             onButtonClick={() => p.addComponent("group")}
                         />
                     </Paper>
+                </Grid>
+                <Grid item xs={12} sx={{ mx: 2 }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="success"
+                        onClick={() => {
+                            p.save(p.components, true)
+                        }}>
+                        Save
+                    </Button>
                 </Grid>
             </Grid>
             <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
