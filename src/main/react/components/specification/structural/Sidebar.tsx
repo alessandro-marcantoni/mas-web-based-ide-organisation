@@ -1,10 +1,10 @@
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Drawer, Toolbar, Typography, Autocomplete, TextField, Grid, Paper, Button, Box } from "@mui/material"
-import { Add } from "@mui/icons-material"
+import { Drawer, Toolbar, Typography, Grid, Paper, Button, Box } from "@mui/material"
 import { getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
 import { Component } from "../../../../typescript/commons"
 import { useNavigate } from "react-router-dom"
+import InputBox from "../../common/InputBox"
 
 type SidebarProps = {
     name: string
@@ -41,10 +41,11 @@ const Sidebar = (p: SidebarProps) => {
                             Roles
                         </Typography>
                         <InputBox
-                            options={toArray(getAllRoles(p.components).map(r => shortName(r.name)))}
-                            onChange={v => p.propertyChanged("role", v)}
-                            label={"Role"}
-                            value={p.role}
+                            space={[8]}
+                            options={[toArray(getAllRoles(p.components).map(r => shortName(r.name)))]}
+                            onChange={[v => p.propertyChanged("role", v)]}
+                            label={["Role"]}
+                            value={[p.role]}
                             onButtonClick={() => p.addComponent("role")}
                         />
                     </Paper>
@@ -55,10 +56,11 @@ const Sidebar = (p: SidebarProps) => {
                             Groups
                         </Typography>
                         <InputBox
-                            options={toArray(getAllGroups(p.components).map(g => g.name))}
-                            onChange={v => p.propertyChanged("group", v)}
-                            label={"Group"}
-                            value={p.group}
+                            space={[8]}
+                            options={[toArray(getAllGroups(p.components).map(g => g.name))]}
+                            onChange={[v => p.propertyChanged("group", v)]}
+                            label={["Group"]}
+                            value={[p.group]}
                             onButtonClick={() => p.addComponent("group")}
                         />
                     </Paper>
@@ -89,38 +91,5 @@ const Sidebar = (p: SidebarProps) => {
         </Drawer>
     )
 }
-
-type InputBoxProps = {
-    options: Array<string>
-    onChange: (value: string) => void
-    label: string
-    value: string
-    onButtonClick: () => void
-}
-
-const InputBox = (p: InputBoxProps) => (
-    <Grid container spacing={1}>
-        <Grid item xs={8}>
-            <Autocomplete
-                size="small"
-                freeSolo
-                options={p.options}
-                onInputChange={(e, value) => p.onChange(value)}
-                onChange={(e, value) => p.onChange(value instanceof Array<string> ? value.join() : value)}
-                renderInput={params => <TextField {...params} label={p.label} variant="standard" size="small" />}
-            />
-        </Grid>
-        <Grid item xs={4}>
-            <Button
-                variant="contained"
-                sx={{ height: "100%" }}
-                fullWidth={true}
-                disabled={!p.value || p.value === ""}
-                onClick={p.onButtonClick}>
-                <Add />
-            </Button>
-        </Grid>
-    </Grid>
-)
 
 export default Sidebar
