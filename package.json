@@ -35,6 +35,8 @@
     "cytoscape-compound-drag-and-drop": "1.1.0",
     "cytoscape-dblclick": "0.3.1",
     "cytoscape-edgehandles": "4.0.1",
+    "n3": "^1.16.3",
+    "rdf-parse": "^2.1.1",
     "react": "18.2.0",
     "react-cytoscapejs": "2.0.0",
     "react-dom": "18.2.0",
@@ -43,6 +45,7 @@
     "sass": "1.56.1",
     "scala-types": "1.4.0",
     "stream": "0.0.2",
+    "streamify-string": "^1.0.1",
     "timers": "0.1.1",
     "ts-loader": "9.4.1",
     "xml-js": "1.6.11"

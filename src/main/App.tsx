@@ -84,7 +84,7 @@ const App = () => {
                                 />
                             }
                         />
-                        <Route path="/entity" element={<Entity />} />
+                        <Route path="/entity" element={<Entity name={state.organizationName} structural={state.structural} functional={state.functional} />} />
                     </Routes>
                 </Box>
             </BrowserRouter>
