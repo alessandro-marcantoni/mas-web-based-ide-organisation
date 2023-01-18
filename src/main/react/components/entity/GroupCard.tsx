@@ -78,35 +78,36 @@ const GroupCard = (p: { group: EntityGroup; onEvent: DiagramEventHandler, agents
                             }
                         />
                         {Array.from(p.group.group.roles).map((r: Role) => (
-                            <Box key={r.name} sx={{ mt: 3 }}>
-                                <Typography variant="h6" component="div">
-                                    {shortName(r.name)}
-                                </Typography>
-                                <List dense>
-                                    {(Array.from(p.group.players.get(shortName(r.name))) ?? []).map(a => (
-                                        <ListItem
-                                            key={a}
-                                            secondaryAction={
-                                                <IconButton
-                                                    edge="end"
-                                                    aria-label="delete"
-                                                    onClick={() =>
-                                                        p.onEvent(
-                                                            new PlayerRemovalEvent(
-                                                                p.group.group.name,
-                                                                a,
-                                                                shortName(r.name)
+                            Array.from(p.group.players.get(shortName(r.name))).length > 0 && (
+                                <Box key={r.name} sx={{ mt: 3 }}>
+                                    <Typography variant="h6" component="div">
+                                        {shortName(r.name)}
+                                    </Typography>
+                                    <List dense>
+                                        {(Array.from(p.group.players.get(shortName(r.name))) ?? []).map(a => (
+                                            <ListItem
+                                                key={a}
+                                                secondaryAction={
+                                                    <IconButton
+                                                        edge="end"
+                                                        aria-label="delete"
+                                                        onClick={() =>
+                                                            p.onEvent(
+                                                                new PlayerRemovalEvent(
+                                                                    p.group.group.name,
+                                                                    a,
+                                                                    shortName(r.name)
+                                                                )
                                                             )
-                                                        )
-                                                    }>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            }>
-                                            <ListItemText primary={a} />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Box>
+                                                        }>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                }>
+                                                <ListItemText primary={a} />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Box>)
                         ))}
                     </>
                 )}
