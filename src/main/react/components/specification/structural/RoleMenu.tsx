@@ -1,5 +1,5 @@
 import { Option } from "scala-types/dist/option/option"
-import { Role } from "../../../../typescript/domain/structural"
+import { Role, RoleType } from "../../../../typescript/domain/structural"
 import { List, toArray } from "scala-types/dist/list/list"
 import { fromSet, getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
 import { Grid, Input, InputLabel, MenuItem, Select, Typography } from "@mui/material"
@@ -45,49 +45,50 @@ const RoleMenu = (p: RoleMenu) => {
                     fullWidth
                     variant="standard"
                     sx={{ width: 450 }}
-                    value={p.component.map(c => (c.extends ? c.extends.name : noRole)).getOrElse(noRole)}
+                    value={p.component.map(c => (c.extends ?? noRole)).getOrElse(noRole)}
                     onChange={e =>
                         p.onEvent(new ExtensionChangeEvent(p.component.map(c => c.name).getOrElse(""), e.target.value))
                     }>
                     <MenuItem value={noRole}>None</MenuItem>
-                    {Array.from(new Set(toArray(getAllRoles(p.components)).map(r => shortName(r.name)))).map(r => (
+                    {toArray(getAllRoles(p.components).filter((r: Role) => r.roleType === RoleType.ABSTRACT).map(r => shortName(r.name))).map(r => (
                         <MenuItem key={r} value={r}>
                             {r}
                         </MenuItem>
                     ))}
                 </Select>
             </Grid>
-            <Grid item xs={12} sx={{ mt: 3 }}>
-                <InputLabel id="inGroupLabel" htmlFor="inGroup">
-                    In group
-                </InputLabel>
-                <Select
-                    id="inGroup"
-                    labelId="subGroupOfLabel"
-                    fullWidth
-                    variant="standard"
-                    value={inGroup}
-                    onChange={e => {
-                        e.target.value === noGroup
-                            ? p.onEvent(
-                                  new RemovalFromGroupEvent(p.component.map(c => c.name).getOrElse(""), "role", inGroup)
-                              )
-                            : p.onEvent(
-                                  new AdditionToGroupEvent(
-                                      p.component.map(c => c.name).getOrElse(""),
-                                      "role",
-                                      e.target.value
-                                  )
-                              )
-                    }}>
-                    <MenuItem value={noGroup}>None</MenuItem>
-                    {Array.from(new Set(toArray(getAllGroups(p.components)).map(g => g.name))).map(g => (
-                        <MenuItem key={g} value={g}>
-                            {g}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Grid>
+            {p.component.map((c: Role) => c.roleType === RoleType.CONCRETE).getOrElse(false) && (
+                <Grid item xs={12} sx={{ mt: 3 }}>
+                    <InputLabel id="inGroupLabel" htmlFor="inGroup">
+                        In group
+                    </InputLabel>
+                    <Select
+                        id="inGroup"
+                        labelId="subGroupOfLabel"
+                        fullWidth
+                        variant="standard"
+                        value={inGroup}
+                        onChange={e => {
+                            e.target.value === noGroup
+                                ? p.onEvent(
+                                    new RemovalFromGroupEvent(p.component.map(c => c.name).getOrElse(""), "role", inGroup)
+                                )
+                                : p.onEvent(
+                                    new AdditionToGroupEvent(
+                                        p.component.map(c => c.name).getOrElse(""),
+                                        "role",
+                                        e.target.value
+                                    )
+                                )
+                        }}>
+                        <MenuItem value={noGroup}>None</MenuItem>
+                        {Array.from(new Set(toArray(getAllGroups(p.components)).map(g => g.name))).map(g => (
+                            <MenuItem key={g} value={g}>
+                                {g}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>)}
             {inGroup !== noGroup && (
                 <>
                     <Grid item xs={6} sx={{ mt: 3 }}>

@@ -1,7 +1,7 @@
 import React from "react"
 import Sidebar from "./Sidebar"
 import Diagram from "../../common/Diagram"
-import { Group, Role } from "../../../../typescript/domain/structural"
+import { Group, Role, Compatibility } from '../../../../typescript/domain/structural';
 import { getAllRoles, getAllGroups } from "../../../../typescript/structural/utils"
 import { Option, none } from "scala-types/dist/option/option"
 import { list, List } from "scala-types/dist/list/list"
@@ -37,8 +37,6 @@ type StructuralProps = {
 
 export type StructuralState = {
     added: List<Component>
-    role: string
-    group: string
     selected: Option<Component>
 }
 
@@ -47,12 +45,9 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
         super(props)
         this.state = {
             added: this.props.org,
-            role: "",
-            group: "",
             selected: none(),
         }
         this.addComponent = this.addComponent.bind(this)
-        this.onPropertyChange = this.onPropertyChange.bind(this)
         this.onAdditionToGroup = this.onAdditionToGroup.bind(this)
         this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
         this.onSelectedComponent = this.onSelectedComponent.bind(this)
@@ -63,8 +58,8 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
         this.onDiagramEvent = this.onDiagramEvent.bind(this)
     }
 
-    addComponent(c: string, l: string = "", from: string = "", to: string = "") {
-        createComponent(this.state, c, l, from, to).apply((comp: Component) =>
+    addComponent(c: Component) {
+        createComponent(this.state.added, c).apply((comp: Component) =>
             this.setState((state: StructuralState) => add(state, comp))
         )
     }
@@ -109,18 +104,6 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
         })
     }
 
-    onPropertyChange(property: string, value: unknown): void {
-        this.setState(state => {
-            return {
-                added: state.added,
-                group: state.group,
-                role: state.role,
-                selected: state.selected,
-                [property]: value,
-            }
-        })
-    }
-
     onAdditionToGroup(component: string, type: string, group: string): void {
         this.setState(state => {
             return {
@@ -152,7 +135,7 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
         switch (event.type) {
             case DiagramEventType.LinkCreation:
                 const lce = event as LinkCreationEvent
-                this.addComponent("link", lce.linkType, lce.from, lce.to)
+                this.addComponent(new Compatibility(lce.from, lce.to))
                 break
             case DiagramEventType.AdditionToGroup:
                 const ae = event as AdditionToGroupEvent
@@ -190,11 +173,8 @@ class Structural extends React.Component<StructuralProps, StructuralState> {
             <>
                 <Sidebar
                     name={this.props.name}
-                    role={this.state.role}
-                    group={this.state.group}
                     components={this.state.added}
-                    propertyChanged={this.onPropertyChange}
-                    addComponent={c => this.addComponent(c, "", "", "")}
+                    addComponent={c => this.addComponent(c)}
                     save={this.props.save}
                 />
                 <Diagram

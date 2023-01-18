@@ -16,6 +16,14 @@
     "background-color": "#C4DBE0"
   }
 }, {
+  "selector": "node[roleType = 'abstract']",
+  "style": {
+    "border-color": "grey",
+    "border-width": 1,
+    "background-color": "white",
+    "background-opacity": 0.8
+  }
+}, {
   "selector": "node[componentType = 'group']:orphan, node[componentType = 'group']:orphan > node[componentType = 'role']",
   "style": {
     "background-color": "#2EB5E0"
@@ -47,15 +55,16 @@
   "style": {
     "target-arrow-shape": "diamond",
     "target-arrow-color": "black",
-    "line-style": "dashed"
+    "line-style": "solid"
   }
 }, {
   "selector": "edge[arrow = 'extends']",
   "style": {
     "target-arrow-shape": "triangle",
     "target-arrow-fill": "hollow",
-    "target-arrow-color": "black",
-    "line-style": "solid"
+    "target-arrow-color": "grey",
+    "line-color": "grey",
+    "line-style": "dashed"
   }
 }, {
   "selector": "edge[?biDir]",

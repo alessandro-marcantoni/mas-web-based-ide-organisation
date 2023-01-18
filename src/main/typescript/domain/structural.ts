@@ -1,18 +1,14 @@
 import { AbstractComponent } from "../commons"
 
-export class Role extends AbstractComponent {
-    name: string
-    extends: Role | undefined
-    min: number
-    max: number
+export enum RoleType {
+    ABSTRACT = "abstract",
+    CONCRETE = "concrete"
+}
 
-    constructor(name: string, extension: Role | undefined, min: number = 0, max: number = Number.MAX_VALUE) {
-        super("role")
-        this.name = name
-        this.extends = extension
-        this.min = min
-        this.max = max
-    }
+export abstract class Role extends AbstractComponent {
+    name: string
+    roleType: RoleType
+    extends: string | undefined
 
     getName(): string {
         return this.name
@@ -26,6 +22,30 @@ export class Role extends AbstractComponent {
     also(f: ((o: Role) => void)): Role {
         f(this)
         return this
+    }
+}
+
+export class AbstractRole extends Role {
+    constructor(name: string, extension: string | undefined) {
+        super("role")
+        this.roleType = RoleType.ABSTRACT
+        this.name = name
+        this.extends = extension
+    }
+}
+
+export class ConcreteRole extends Role {
+    name: string
+    min: number
+    max: number
+
+    constructor(name: string, extension: string | undefined, min: number = 0, max: number = Number.MAX_VALUE) {
+        super("role")
+        this.roleType = RoleType.CONCRETE
+        this.name = name
+        this.extends = extension
+        this.min = min
+        this.max = max
     }
 }
 
@@ -89,7 +109,7 @@ export class Group extends AbstractComponent {
     min: number
     max: number
     subgroups: Set<Group>
-    roles: Set<Role>
+    roles: Set<ConcreteRole>
     constraints: Set<Constraint>
 
     constructor(
@@ -97,7 +117,7 @@ export class Group extends AbstractComponent {
         min: number = 0,
         max: number = Number.MAX_VALUE,
         subgroups: Set<Group> = new Set<Group>(),
-        roles: Set<Role> = new Set<Role>(),
+        roles: Set<ConcreteRole> = new Set<ConcreteRole>(),
         constraints: Set<Constraint> = new Set<Constraint>()
     ) {
         super("group")
@@ -113,11 +133,11 @@ export class Group extends AbstractComponent {
         return this.name
     }
 
-    addRole(r: Role) {
+    addRole(r: ConcreteRole) {
         this.roles.add(r)
     }
 
-    removeRole(r: Role) {
+    removeRole(r: ConcreteRole) {
         this.roles.delete(r)
     }
 
