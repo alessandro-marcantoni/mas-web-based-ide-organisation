@@ -1,27 +1,31 @@
-import { Cardinality, Compatibility, Group, Role } from "../../domain/structural"
+import { Cardinality, Compatibility, ConcreteRole, Group, Role, AbstractRole } from "../../domain/structural"
 import convert from "xml-js"
 import { getAllRoles, option, separate, separator, shortName } from "../../structural/utils"
 import { fromArray, List, list } from "scala-types/dist/list/list"
 import { Component, XMLElement } from "../../commons"
 
+let roleTopography: List<AbstractRole> = list()
+
 export const loadStructuralSpec: (spec: string) => List<Component> = spec => {
     const orgSpec = convert.xml2js(spec).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
-    getAllRoles(list(elems[1])).foreach(
-        r =>
-            (r.extends = fromArray<Role>(elems[0])
-                .find(or => or.name === shortName(r.name))
-                .map(or => or.extends)
-                .getOrElse(null))
-    )
-    return list(elems[1]).appendedAll(
-        fromArray<Role>(elems[0]).filter(
-            r =>
-                !getAllRoles(list(elems[1]))
-                    .map(ar => shortName(ar.name))
-                    .contains(r.name)
+
+    return list(elems[1])
+        .appendedAll(
+            fromArray<Role>(elems[0]).filter(
+                r =>
+                    !getAllRoles(list(elems[1]))
+                        .map(ar => shortName(ar.name))
+                        .contains(r.name)
+            )
         )
-    )
+        .appendedAll(
+            roleTopography
+                .filter(r => r.extends !== undefined)
+                .map(r => r.extends)
+                .distinctBy(r => r)
+                .map(r => new AbstractRole(r, undefined))
+        )
 }
 
 export const loadStructuralSpecFromFile: (path: string) => Promise<List<Component>> = async path =>
@@ -29,16 +33,27 @@ export const loadStructuralSpecFromFile: (path: string) => Promise<List<Componen
 
 const structuralSpecification = (element: XMLElement) => element.elements.map(e => converter[e.name](e))
 
-const roleDefinitions = (element: XMLElement) => element.elements.map(e => converter[e.name](e))
+const roleDefinitions = (element: XMLElement) => {
+    element.elements.forEach(e => abstractRole(e))
+    return list()
+}
+
+const abstractRole = (element: XMLElement) =>
+    (roleTopography = roleTopography.appended(
+        new AbstractRole(
+            element.attributes["id"],
+            option(element.elements)
+                .map(e => e[0].attributes.role)
+                .getOrElse(undefined)
+        )
+    ))
 
 const role = (element: XMLElement, g: Group = undefined) =>
-    new Role(
+    new ConcreteRole(
         `${option(g)
             .map(o => o.name + separator)
             .getOrElse("")}${element.attributes["id"]}`,
-        option(element.elements)
-            .map(e => new Role(e[0].attributes.role, null))
-            .getOrElse(null),
+        roleTopography.find(rt => rt.name === element.attributes["id"]).map(rt => rt.extends).getOrElse(undefined),
         option(parseInt(element.attributes["min"])).getOrElse(0),
         option(parseInt(element.attributes["max"])).getOrElse(Number.MAX_VALUE)
     )
@@ -54,7 +69,13 @@ const groupSpecification = (element: XMLElement) => {
 }
 
 const roles = (element: XMLElement, g: Group) =>
-    element.elements.map(e => converter[e.name](e, g)).forEach(r => g.addRole(r))
+    element.elements
+        .map(e => converter[e.name](e, g))
+        .forEach(r => {
+            console.log(r)
+
+            g.addRole(r)
+        })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const links = (element: XMLElement, g: Group) => []

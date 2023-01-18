@@ -1,4 +1,4 @@
-import { Compatibility, Constraint, Group, Role } from "../domain/structural"
+import { Compatibility, ConcreteRole, Constraint, Group, RoleType } from '../domain/structural';
 import { list, List } from "scala-types/dist/list/list"
 import { Core, ElementDefinition } from "cytoscape"
 import { fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
@@ -21,13 +21,14 @@ export function presentation(
     if (!c) return list()
     switch (c.type) {
         case "role":
-            const r = c as Role
+            const r = c as ConcreteRole
+            console.log(r)
             return list(role(r, group)).appendedAll(
                 // @ts-ignore
                 !r.extends
                     ? list()
                     : getAllRoles(cs)
-                          .filter(rc => shortName(rc.name) === r.extends.name)
+                          .filter(rc => shortName(rc.name) === r.extends)
                           .map(rc => extensionLink(r.name, rc.name))
             )
         case "group":
@@ -109,7 +110,17 @@ const compatibilityLink = (com: Compatibility) => {
     }
 }
 
-const role = (role: Role, group: string | undefined) => {
+const role = (role: ConcreteRole, group: string | undefined) => {
+    console.log({
+        id: role.name,
+        label:
+            role.name.replace(separatorRegex, "") +
+            (group ? ` <${role.min},${role.max === Number.MAX_VALUE ? "Inf" : role.max}>` : ""),
+        componentType: "role",
+        parent: group,
+        roleType: RoleType.ABSTRACT,
+    });
+    
     return {
         data: {
             id: role.name,
@@ -118,6 +129,7 @@ const role = (role: Role, group: string | undefined) => {
                 (group ? ` <${role.min},${role.max === Number.MAX_VALUE ? "Inf" : role.max}>` : ""),
             componentType: "role",
             parent: group,
+            roleType: role.roleType,
         },
     }
 }

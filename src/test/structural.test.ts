@@ -1,47 +1,41 @@
 import { StructuralState } from "../main/react/components/specification/structural/StructuralSpecification"
 import { fromSet, getAllRoles, getCompatibilities, getGlobalGroups, separate } from "../main/typescript/structural/utils"
 import { none } from "scala-types/dist/option/option"
-import { Group, Role } from "../main/typescript/domain/structural"
+import { Group, Role, ConcreteRole } from '../main/typescript/domain/structural';
 import { List, list } from "scala-types/dist/list/list"
 import { add, addToGroup, createComponent, removeComponent, removeFromGroup } from "../main/typescript/structural/diagram"
 import { Component } from "../main/typescript/commons"
 
 let globalState: StructuralState = {
     added: list(),
-    role: "",
-    group: "",
     selected: none(),
 }
 
 describe("create a structural specification", () => {
     describe("add components", () => {
         test("add a role", () => {
-            globalState.role = "Role1"
-            createComponent(globalState, "role", "", "", "").apply(c => {
+            createComponent(globalState.added, new ConcreteRole("Role1", undefined)).apply(c => {
                 const newState = add(globalState, c)
                 additionAssertions(globalState, newState, "role", "Role1")
                 globalState = newState
             })
         })
         test("add a second role", () => {
-            globalState.role = "Role2"
-            createComponent(globalState, "role", "", "", "").apply(c => {
+            createComponent(globalState.added, new ConcreteRole("Role2", undefined)).apply(c => {
                 const newState = add(globalState, c)
                 additionAssertions(globalState, newState, "role", "Role2")
                 globalState = newState
             })
         })
         test("add a group", () => {
-            globalState.group = "Group1"
-            createComponent(globalState, "group", "", "", "").apply(c => {
+            createComponent(globalState.added, new Group("Group1")).apply(c => {
                 const newState = add(globalState, c)
                 additionAssertions(globalState, newState, "group", "Group1")
                 globalState = newState
             })
         })
         test("add a second group", () => {
-            globalState.group = "Group2"
-            createComponent(globalState, "group", "", "", "").apply(c => {
+            createComponent(globalState.added, new Group("Group2")).apply(c => {
                 const newState = add(globalState, c)
                 additionAssertions(globalState, newState, "group", "Group2")
                 globalState = newState

@@ -15,6 +15,7 @@ export const getAgentsInWorkspace = async (workspaceId: string) => {
         .map(a => axios.get(a)))
     return artifacts
         .map((a, i) => [artifactsNames[i], parse(a.data)])
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, a]) => a.some(q => q._object.id === `http://example.org/Body`))
         .flatMap(([n, a]) => a
             .filter(q => q._predicate.id === `https://www.w3.org/2019/wot/td#title`)

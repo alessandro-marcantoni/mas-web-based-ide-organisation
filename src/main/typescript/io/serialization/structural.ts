@@ -1,4 +1,4 @@
-import { Cardinality, Compatibility, Constraint, Group, Role } from "../../domain/structural"
+import { Cardinality, Compatibility, ConcreteRole, Constraint, Group, Role } from "../../domain/structural"
 import { getAllRoles, getGlobalGroups, option, shortName } from "../../structural/utils"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Component } from "../../commons"
@@ -21,7 +21,7 @@ export const serializeStructural: (diagram: List<Component>) => string = diagram
 
 export const role: (role: Role) => string = role =>
     `<role id="${shortName(role.name)}">${option(role.extends)
-        .map(e => ` <extends role="${e.name}"/> `)
+        .map(e => ` <extends role="${e}"/> `)
         .getOrElse("")}</role>`
 
 export const group: (group: Group) => string = group =>
@@ -31,7 +31,7 @@ export const group: (group: Group) => string = group =>
         .map(e => (group[e[0]].size > 0 ? e[1](group[e[0]]) : ""))
         .join("\n")}</group-specification>`
 
-export const roles: (roles: Set<Role>) => string = roles =>
+export const roles: (roles: Set<ConcreteRole>) => string = roles =>
     "<roles>\n" +
     Array.from(roles)
         .map(

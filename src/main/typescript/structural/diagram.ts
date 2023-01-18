@@ -1,6 +1,6 @@
 import { StructuralState } from "../../react/components/specification/structural/StructuralSpecification"
 import { none, Option, some } from "scala-types/dist/option/option"
-import { Cardinality, Compatibility, Constraint, Group, Role } from "../domain/structural"
+import { Cardinality, Compatibility, ConcreteRole, Constraint, Group, Role, RoleType } from "../domain/structural"
 import { list, List } from "scala-types/dist/list/list"
 import {
     defined,
@@ -9,7 +9,6 @@ import {
     getAllRoles,
     getGlobalGroups,
     isInGroup,
-    option,
     removeDuplicates,
     separate,
     shortName,
@@ -26,36 +25,28 @@ import { Component } from "../commons"
  * @param to The role the link goes to.
  * @returns An {@link Option} containing the new structural component if it could be created.
  */
-export const createComponent: (
-    state: StructuralState,
-    type: string,
-    linkType: string,
-    from: string,
-    to: string
-) => Option<Component> = (state, type, linkType, from, to) => {
-    switch (type) {
+export const createComponent: (components: List<Component>, c: Component) => Option<Component> = (components, c) => {
+    switch (c.type) {
         case "role":
-            if (getAllRoles(state.added).exists(r => r.name === state.role)) return none()
-            return some(
-                new Role(
-                    state.role,
-                    getAllRoles(state.added)
-                        .find(r => shortName(r.name) === state.role)
-                        .flatMap(r => option(r.extends))
-                        .getOrElse(undefined)
-                )
-            )
-        case "group":
-            if (getAllGroups(state.added).exists(g => g.name === state.group)) return none()
-            return some(new Group(state.group))
-        case "link":
+            const r = c as Role
+            if (getAllRoles(components).exists(r => r.name === c.getName())) return none()
             if (
-                !getAllRoles(state.added).exists(r => r.name === from) ||
-                !getAllRoles(state.added).exists(r => r.name === to) ||
-                linkType !== "compatibility"
+                r.roleType === RoleType.ABSTRACT &&
+                getAllRoles(components).exists(r => shortName(r.name) === c.getName())
             )
                 return none()
-            return some(new Compatibility(from, to))
+            return some(c)
+        case "group":
+            if (getAllGroups(components).exists(g => g.name === c.getName())) return none()
+            return some(c)
+        case "link":
+            const link = c as Compatibility
+            if (
+                !getAllRoles(components).exists(r => r.name === link.from) ||
+                !getAllRoles(components).exists(r => r.name === link.to)
+            )
+                return none()
+            return some(c)
         default:
             return none()
     }
@@ -86,7 +77,7 @@ export const changeRoleCardinality: (
 ) => List<Component> = (state, role, property, value) => {
     getAllRoles(state.added)
         .find(r => r.name === role)
-        .apply((r: Role) => {
+        .apply((r: ConcreteRole) => {
             if (property === "min") r.min = value
             if (property === "max") r.max = value
         })
@@ -197,7 +188,7 @@ export const addToGroup: (state: StructuralState, component: string, type: strin
             .apply(([g, r]) => {
                 state.added = state.added.filter(c => c !== r)
                 getAllGroups(state.added).foreach(c => c.roles.delete(r))
-                g.addRole(new Role(separate(group)(shortName(r.name)), r.extends, r.min, r.max))
+                g.addRole(new ConcreteRole(separate(group)(shortName(r.name)), r.extends, r.min, r.max))
                 g.roles = removeDuplicates<Role>(g.roles, c => c.name)
             })
     }
@@ -282,7 +273,7 @@ export const changeExtension: (state: StructuralState, role: string, extended: s
         .foreach(r => {
             r.extends = getAllRoles(state.added)
                 .find(r => shortName(r.name) === extended)
-                .map((r: Role) => new Role(shortName(r.name), r.extends, r.min, r.max))
+                .map((r: ConcreteRole) => r.name)
                 .getOrElse(undefined)
         })
     return state.added
