@@ -1,12 +1,12 @@
 import React, { useEffect } from "react"
-import { Component, DiagramEvent, DiagramEventType } from '../../../typescript/commons';
+import { Component, DiagramEvent, DiagramEventType } from '../../../typescript/domain/commons';
 import { List, list, toArray } from "scala-types/dist/list/list"
 import Sidebar from "./Sidebar"
 import { Box, Grid, Toolbar } from "@mui/material"
 import { Group } from "../../../typescript/domain/structural"
 import GroupCard from "./GroupCard"
-import { getAllGroups } from "../../../typescript/structural/utils"
-import { EntityGroupAdditionEvent, PlayerAdditionEvent } from '../../../typescript/entity/events';
+import { getAllGroups } from "../../../typescript/utils/utils"
+import { EntityGroupAdditionEvent, PlayerAdditionEvent } from '../../../typescript/domain/events/entity';
 import { EntityGroup } from "../../../typescript/domain/entity";
 import { getAgentsInWorkspace } from '../../../typescript/io/rdf';
 

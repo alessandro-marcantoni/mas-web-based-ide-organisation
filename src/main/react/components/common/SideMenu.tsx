@@ -6,8 +6,8 @@ import { Close } from "@mui/icons-material"
 import { List } from "scala-types/dist/list/list"
 import RoleMenu from "../specification/structural/RoleMenu"
 import GroupMenu from "../specification/structural/GroupMenu"
-import { Component, DiagramEventHandler } from "../../../typescript/commons"
-import { ComponentDeletionEvent } from "../../../typescript/structural/events"
+import { Component, DiagramEventHandler } from "../../../typescript/domain/commons"
+import { ComponentDeletionEvent } from "../../../typescript/domain/events/structural"
 import { Goal } from "../../../typescript/domain/functional"
 import GoalMenu from '../specification/functional/GoalMenu';
 

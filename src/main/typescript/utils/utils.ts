@@ -1,7 +1,8 @@
 import { Compatibility, Constraint, Group, Role } from "../domain/structural"
 import { Option, none, some } from "scala-types/dist/option/option"
 import { fromArray, list, List, toArray } from "scala-types/dist/list/list"
-import { Component } from "../commons"
+import { Component } from "../domain/commons"
+import { Goal } from "../domain/functional"
 
 /**
  * Retrieve all the {@link Role}s among the {@link Component}s recursively.
@@ -84,3 +85,9 @@ export const defined: <T>(l: List<T>) => List<T> = l => l.filter(e => e !== unde
 
 export const removeDuplicates: <T>(s: Set<T>, f: (e: T) => string) => Set<T> = <T>(s, f) =>
     new Set<T>(toArray(fromSet<T>(s).distinctBy(f)))
+
+const onlyGoals: (components: List<Component>) => List<Goal> = components =>
+    components.collect(list(c => c.type === "goal"), list(c => c as Goal))
+
+export const getAllGoals: (l: List<Component>) => List<Goal> = (l: List<Component>) =>
+    onlyGoals(l)

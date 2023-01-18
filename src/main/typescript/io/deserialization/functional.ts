@@ -1,8 +1,8 @@
 import { fromArray, List } from "scala-types/dist/list/list"
-import { Component, XMLElement } from "../../commons"
+import { Component, XMLElement } from "../../domain/commons"
 import convert from "xml-js"
 import { Argument, Goal, PlanOperator } from "../../domain/functional"
-import { option } from "../../structural/utils"
+import { option } from "../../utils/utils"
 import { OR_TOKEN } from '../serialization/functional';
 
 const dependencyGraph = new Map<Goal, Set<string>>()

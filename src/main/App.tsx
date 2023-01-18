@@ -7,14 +7,14 @@ import { Box, CssBaseline } from "@mui/material"
 import Loader from "./react/components/Loader"
 import Functional from "./react/components/specification/functional/FunctionalSpecification"
 import Entity from "./react/components/entity/OrganizationEntity"
-import { Component } from "./typescript/commons"
+import { Component } from "./typescript/domain/commons"
 import { List, list } from "scala-types/dist/list/list"
-import { getAllRoles } from "./typescript/structural/utils"
+import { getAllRoles } from "./typescript/utils/utils"
 import { addHeader } from "./typescript/io/serialization/common"
 import { serializeStructural } from "./typescript/io/serialization/structural"
 import { serializeFunctional } from "./typescript/io/serialization/functional"
 import axios from "axios"
-import config from "./typescript/config"
+import config from "./typescript/utils/config"
 
 type AppState = {
     organizationName: string

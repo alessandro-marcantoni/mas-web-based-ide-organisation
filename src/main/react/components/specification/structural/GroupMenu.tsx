@@ -1,7 +1,7 @@
 import { Option } from "scala-types/dist/option/option"
 import { Cardinality, Compatibility, Constraint, Group, Role } from "../../../../typescript/domain/structural"
 import { List, toArray } from "scala-types/dist/list/list"
-import { fromSet, getAllGroups, getGlobalGroups, shortName } from "../../../../typescript/structural/utils"
+import { fromSet, getAllGroups, getGlobalGroups, shortName } from "../../../../typescript/utils/utils"
 import {
     Button,
     Grid,
@@ -19,8 +19,8 @@ import {
     ComponentDeletionEvent,
     LinkCreationEvent,
     RemovalFromGroupEvent,
-} from "../../../../typescript/structural/events"
-import { Component, DiagramEventHandler } from "../../../../typescript/commons"
+} from "../../../../typescript/domain/events/structural"
+import { Component, DiagramEventHandler } from "../../../../typescript/domain/commons"
 import TableWithDeletion from "../../common/TableWithDeletion"
 import SelectWithLabel from '../../common/SelectWithLabel';
 

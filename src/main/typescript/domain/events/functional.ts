@@ -1,5 +1,5 @@
 import { DiagramEvent, DiagramEventType } from "../commons"
-import { PlanOperator } from '../domain/functional';
+import { PlanOperator } from '../functional';
 
 export class GoalCreationEvent extends DiagramEvent {
     name: string

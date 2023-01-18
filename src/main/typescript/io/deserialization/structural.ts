@@ -1,8 +1,8 @@
 import { Cardinality, Compatibility, ConcreteRole, Group, Role, AbstractRole } from "../../domain/structural"
 import convert from "xml-js"
-import { getAllRoles, option, separate, separator, shortName } from "../../structural/utils"
+import { getAllRoles, option, separate, separator, shortName } from "../../utils/utils"
 import { fromArray, List, list } from "scala-types/dist/list/list"
-import { Component, XMLElement } from "../../commons"
+import { Component, XMLElement } from "../../domain/commons"
 
 let roleTopography: List<AbstractRole> = list()
 

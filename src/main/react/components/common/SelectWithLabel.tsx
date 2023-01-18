@@ -1,7 +1,7 @@
 import { Grid, InputLabel, MenuItem, Select } from "@mui/material"
 import React from "react"
 import { noRole } from "./SideMenu"
-import { shortName } from "../../../typescript/structural/utils"
+import { shortName } from "../../../typescript/utils/utils"
 
 type SelectWithLabelProps = {
     width: number

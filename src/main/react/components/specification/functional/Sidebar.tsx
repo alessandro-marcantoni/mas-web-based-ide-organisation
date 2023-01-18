@@ -2,8 +2,8 @@ import { Add } from "@mui/icons-material"
 import { Box, Button, Drawer, Grid, Input, Paper, Toolbar, Typography } from "@mui/material"
 import React from "react"
 import { List } from "scala-types/dist/list/list"
-import { Component, DiagramEventHandler } from "../../../../typescript/commons"
-import { GoalCreationEvent } from "../../../../typescript/functional/events"
+import { Component, DiagramEventHandler } from "../../../../typescript/domain/commons"
+import { GoalCreationEvent } from "../../../../typescript/domain/events/functional"
 import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {

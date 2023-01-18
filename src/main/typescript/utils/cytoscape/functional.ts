@@ -1,8 +1,8 @@
 import { ElementDefinition } from "cytoscape"
 import { list, List, fromArray } from 'scala-types/dist/list/list';
-import { Component } from "../commons"
-import { fromSet, separate, shortName } from '../structural/utils';
-import { Goal, PlanOperator } from "../domain/functional"
+import { Component } from "../../domain/commons"
+import { fromSet, separate, shortName } from '../utils';
+import { Goal, PlanOperator } from "../../domain/functional"
 
 export const presentation: (c: Component, cs: List<Component>) => List<ElementDefinition> = (c, cs) => {
     switch (c.type) {
