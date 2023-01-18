@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../commons"
+import { AbstractComponent } from "./commons"
 
 export enum RoleType {
     ABSTRACT = "abstract",

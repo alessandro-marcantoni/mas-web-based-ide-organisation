@@ -2,9 +2,9 @@ import { Drawer, Grid, Paper, Toolbar, Typography } from '@mui/material';
 import React from "react"
 import InputBox from '../common/InputBox';
 import { List, toArray } from 'scala-types/dist/list/list';
-import { Component, DiagramEventHandler } from '../../../typescript/commons';
+import { Component, DiagramEventHandler } from '../../../typescript/domain/commons';
 import { Group } from '../../../typescript/domain/structural';
-import { EntityGroupAdditionEvent } from '../../../typescript/entity/events';
+import { EntityGroupAdditionEvent } from '../../../typescript/domain/events/entity';
 
 type SidebarProps = {
     name: string

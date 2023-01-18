@@ -1,7 +1,7 @@
 import { Option } from "scala-types/dist/option/option"
 import { Role, RoleType } from "../../../../typescript/domain/structural"
 import { List, toArray } from "scala-types/dist/list/list"
-import { fromSet, getAllGroups, getAllRoles, shortName } from "../../../../typescript/structural/utils"
+import { fromSet, getAllGroups, getAllRoles, shortName } from "../../../../typescript/utils/utils"
 import { Grid, Input, InputLabel, MenuItem, Select, Typography } from "@mui/material"
 import React from "react"
 import { noGroup, noRole } from "../../common/SideMenu"
@@ -10,8 +10,8 @@ import {
     ExtensionChangeEvent,
     RemovalFromGroupEvent,
     RoleCardinalityChangeEvent,
-} from "../../../../typescript/structural/events"
-import { Component, DiagramEventHandler } from "../../../../typescript/commons"
+} from "../../../../typescript/domain/events/structural"
+import { Component, DiagramEventHandler } from "../../../../typescript/domain/commons"
 
 type RoleMenu = {
     component: Option<Role>

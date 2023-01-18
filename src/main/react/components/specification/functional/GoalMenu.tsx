@@ -1,14 +1,13 @@
 import { Button, FormControlLabel, Grid, Radio, RadioGroup, Typography, Toolbar } from '@mui/material';
 import React from "react"
 import { Option } from "scala-types"
-import { Component, DiagramEventHandler } from "../../../../typescript/commons"
+import { Component, DiagramEventHandler } from "../../../../typescript/domain/commons"
 import { Goal, PlanOperator } from '../../../../typescript/domain/functional';
-import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent, ResponsibleRemovalEvent } from '../../../../typescript/functional/events';
+import { GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent, ResponsibleRemovalEvent } from '../../../../typescript/domain/events/functional';
 import TableWithDeletion from "../../common/TableWithDeletion"
 import SelectWithLabel from "../../common/SelectWithLabel"
 import { List, toArray } from "scala-types/dist/list/list"
-import { getAllGoals } from "../../../../typescript/functional/utils"
-import { shortName } from "../../../../typescript/structural/utils";
+import { getAllGoals, shortName } from "../../../../typescript/utils/utils";
 
 type GoalMenuProps = {
     component: Option<Goal>

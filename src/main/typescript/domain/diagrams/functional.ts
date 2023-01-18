@@ -1,7 +1,7 @@
 import { List } from "scala-types/dist/list/list"
 import { Component } from "../commons"
-import { Goal, PlanOperator } from "../domain/functional"
-import { getAllGoals } from "./utils"
+import { Goal, PlanOperator } from "../functional"
+import { getAllGoals } from "../../utils/utils"
 
 export const addGoal: (components: List<Component>, goalName: string) => List<Component> = (components, goalName) =>
     components.appended(new Goal(goalName))

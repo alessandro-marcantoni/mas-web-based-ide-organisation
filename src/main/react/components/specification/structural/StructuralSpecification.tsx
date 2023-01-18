@@ -2,7 +2,7 @@ import React from "react"
 import Sidebar from "./Sidebar"
 import Diagram from "../../common/Diagram"
 import { Group, Role, Compatibility } from '../../../../typescript/domain/structural';
-import { getAllRoles, getAllGroups } from "../../../../typescript/structural/utils"
+import { getAllRoles, getAllGroups } from "../../../../typescript/utils/utils"
 import { Option, none } from "scala-types/dist/option/option"
 import { list, List } from "scala-types/dist/list/list"
 import {
@@ -14,7 +14,7 @@ import {
     changeExtension,
     createCardinality,
     changeRoleCardinality,
-} from "../../../../typescript/structural/diagram"
+} from "../../../../typescript/domain/diagrams/structural"
 import SideMenu from "../../common/SideMenu"
 import {
     AdditionToGroupEvent,
@@ -25,9 +25,9 @@ import {
     RemovalFromGroupEvent,
     RoleCardinalityChangeEvent,
     SelectedComponentEvent,
-} from "../../../../typescript/structural/events"
-import { config, presentation } from "../../../../typescript/structural/cytoscape"
-import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
+} from "../../../../typescript/domain/events/structural"
+import { config, presentation } from "../../../../typescript/utils/cytoscape/structural"
+import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/domain/commons"
 
 type StructuralProps = {
     name: string

@@ -1,10 +1,10 @@
-import { Compatibility, ConcreteRole, Constraint, Group, RoleType } from '../domain/structural';
+import { Compatibility, ConcreteRole, Constraint, Group, RoleType } from '../../domain/structural';
 import { list, List } from "scala-types/dist/list/list"
 import { Core, ElementDefinition } from "cytoscape"
-import { fromSet, getAllRoles, separatorRegex, shortName } from "./utils"
-import { DiagramProps } from "../../react/components/common/Diagram"
-import { SelectedComponentEvent } from "../structural/events"
-import { Component } from "../commons"
+import { fromSet, getAllRoles, separatorRegex, shortName } from "../utils"
+import { DiagramProps } from "../../../react/components/common/Diagram"
+import { SelectedComponentEvent } from "../../domain/events/structural"
+import { Component } from "../../domain/commons"
 
 /**
  * Convert a {@link Component} into an {@link ElementDefinition} to be displayed in cytoscape.

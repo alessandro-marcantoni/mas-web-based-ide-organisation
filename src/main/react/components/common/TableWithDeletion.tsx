@@ -1,7 +1,7 @@
 import { Delete } from "@mui/icons-material"
 import { Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import React from "react"
-import { Component } from "../../../typescript/commons"
+import { Component } from "../../../typescript/domain/commons"
 
 type TableProps<T> = {
     cols: Array<string>

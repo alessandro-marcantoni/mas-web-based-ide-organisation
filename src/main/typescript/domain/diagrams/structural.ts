@@ -1,6 +1,6 @@
-import { StructuralState } from "../../react/components/specification/structural/StructuralSpecification"
+import { StructuralState } from "../../../react/components/specification/structural/StructuralSpecification"
 import { none, Option, some } from "scala-types/dist/option/option"
-import { Cardinality, Compatibility, ConcreteRole, Constraint, Group, Role, RoleType } from "../domain/structural"
+import { Cardinality, Compatibility, ConcreteRole, Constraint, Group, Role, RoleType } from "../structural"
 import { list, List } from "scala-types/dist/list/list"
 import {
     defined,
@@ -13,7 +13,7 @@ import {
     separate,
     shortName,
     splitName,
-} from "./utils"
+} from "../../utils/utils"
 import { Component } from "../commons"
 
 /**

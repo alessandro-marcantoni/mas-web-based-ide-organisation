@@ -1,4 +1,4 @@
-import { shortName } from "../structural/utils"
+import { shortName } from "../utils/utils"
 import { Group } from "./structural"
 
 export class EntityGroup {

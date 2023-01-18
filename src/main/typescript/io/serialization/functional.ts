@@ -1,7 +1,7 @@
 import { List, toArray } from "scala-types/dist/list/list"
 import { formatXml } from "./common"
-import { Component } from "../../commons"
-import { getAllGoals } from "../../functional/utils"
+import { Component } from "../../domain/commons"
+import { getAllGoals } from "../../utils/utils"
 import { Goal, PlanOperator } from "../../domain/functional"
 
 class Norm {

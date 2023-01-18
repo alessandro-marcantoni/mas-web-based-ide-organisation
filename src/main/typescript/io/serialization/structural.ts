@@ -1,7 +1,7 @@
 import { Cardinality, Compatibility, ConcreteRole, Constraint, Group, Role } from "../../domain/structural"
-import { getAllRoles, getGlobalGroups, option, shortName } from "../../structural/utils"
+import { getAllRoles, getGlobalGroups, option, shortName } from "../../utils/utils"
 import { List, toArray } from "scala-types/dist/list/list"
-import { Component } from "../../commons"
+import { Component } from "../../domain/commons"
 import { formatXml } from "./common"
 
 export const serializeStructural: (diagram: List<Component>) => string = diagram =>

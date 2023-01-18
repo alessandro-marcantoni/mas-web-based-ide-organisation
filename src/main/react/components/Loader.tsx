@@ -1,10 +1,10 @@
 import { Box, Button, Grid, TextField, Toolbar } from "@mui/material"
 import axios from "axios"
 import React from "react"
-import config from "../../typescript/config"
+import config from "../../typescript/utils/config"
 import { useNavigate } from 'react-router-dom';
 import { List, list } from "scala-types/dist/list/list";
-import { Component } from "../../typescript/commons";
+import { Component } from "../../typescript/domain/commons";
 import { loadStructuralSpec } from '../../typescript/io/deserialization/structural';
 import { loadFunctionalSpec } from '../../typescript/io/deserialization/functional';
 

@@ -1,8 +1,8 @@
 import React from "react"
 import { List, toArray } from "scala-types/dist/list/list"
 import { Drawer, Toolbar, Typography, Grid, Paper, Button, Box, FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material"
-import { getAllGroups, getAllRoles, option, shortName } from "../../../../typescript/structural/utils"
-import { Component } from "../../../../typescript/commons"
+import { getAllGroups, getAllRoles, option, shortName } from "../../../../typescript/utils/utils"
+import { Component } from "../../../../typescript/domain/commons"
 import { useNavigate } from "react-router-dom"
 import InputBox from "../../common/InputBox"
 import { RoleType, Group, ConcreteRole, Role, AbstractRole } from '../../../../typescript/domain/structural';

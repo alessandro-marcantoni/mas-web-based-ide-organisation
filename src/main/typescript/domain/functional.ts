@@ -1,7 +1,7 @@
 import { Option } from "scala-types/dist/option/option"
 import { list, List } from "scala-types/dist/list/list"
-import { AbstractComponent } from "../commons"
-import { option } from "../structural/utils"
+import { AbstractComponent } from "./commons"
+import { option } from "../utils/utils"
 
 export enum PlanOperator {
     AND,

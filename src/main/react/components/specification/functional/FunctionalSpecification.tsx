@@ -1,17 +1,17 @@
 import React from "react"
 import { List } from "scala-types/dist/list/list"
 import { none, Option } from "scala-types/dist/option/option"
-import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/commons"
-import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent } from '../../../../typescript/functional/events';
-import { presentation } from "../../../../typescript/functional/cytoscape"
+import { Component, DiagramEvent, DiagramEventType } from "../../../../typescript/domain/commons"
+import { GoalCreationEvent, GoalRelationRemovalEvent, GoalDependencyAdditionEvent, OperatorChangeEvent, ResponsibleAdditionEvent } from '../../../../typescript/domain/events/functional';
+import { presentation } from "../../../../typescript/utils/cytoscape/functional"
 import Diagram from "../../common/Diagram"
 import Sidebar from "./Sidebar"
-import { config } from "../../../../typescript/structural/cytoscape"
-import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/structural/events"
-import { getAllGoals } from "../../../../typescript/functional/utils"
+import { config } from "../../../../typescript/utils/cytoscape/structural"
+import { ComponentDeletionEvent, SelectedComponentEvent } from "../../../../typescript/domain/events/structural"
 import SideMenu from "../../common/SideMenu"
-import { addDependency, addGoal, addResponsible, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation, removeResponsible } from "../../../../typescript/functional/diagram"
+import { addDependency, addGoal, addResponsible, changeOperator, deleteGoal, dependencyRemover, removeGoalRelation, removeResponsible } from "../../../../typescript/domain/diagrams/functional"
 import { Goal } from "../../../../typescript/domain/functional"
+import { getAllGoals } from "../../../../typescript/utils/utils";
 
 type FunctionalProps = {
     name: string

@@ -2,16 +2,16 @@ import React from "react"
 import { Role } from "../../../typescript/domain/structural"
 import { Card, CardContent, CardHeader, IconButton, List, ListItem, ListItemText, Typography, Box } from "@mui/material"
 import InputBox from "../common/InputBox"
-import { DiagramEventHandler } from "../../../typescript/commons"
+import { DiagramEventHandler } from "../../../typescript/domain/commons"
 import {
     EntityGroupAdditionEvent,
     EntityGroupRemovalEvent,
     PlayerAdditionEvent,
     PlayerRemovalEvent,
-} from "../../../typescript/entity/events"
+} from "../../../typescript/domain/events/entity"
 import CloseIcon from "@mui/icons-material/Close"
 import DeleteIcon from "@mui/icons-material/Delete"
-import { shortName } from "../../../typescript/structural/utils"
+import { shortName } from "../../../typescript/utils/utils"
 import { EntityGroup } from "../../../typescript/domain/entity"
 
 type GroupCardState = {
