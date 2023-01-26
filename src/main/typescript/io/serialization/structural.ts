@@ -20,8 +20,8 @@ export const serializeStructural: (diagram: List<Component>) => string = diagram
     )
 
 export const role: (role: Role) => string = role =>
-    `<role id="${shortName(role.name)}">${option(role.extends)
-        .map(e => ` <extends role="${e}"/> `)
+    `<role id="role_${shortName(role.name)}">${option(role.extends)
+        .map(e => ` <extends role="role_${e}"/> `)
         .getOrElse("")}</role>`
 
 export const group: (group: Group) => string = group =>
@@ -36,7 +36,7 @@ export const roles: (roles: Set<ConcreteRole>) => string = roles =>
     Array.from(roles)
         .map(
             r =>
-                `<role id="${shortName(r.name)}" ${r.min === 0 ? "" : `min="${r.min}"`} ${
+                `<role id="role_${shortName(r.name)}" ${r.min === 0 ? "" : `min="${r.min}"`} ${
                     r.max === Number.MAX_VALUE ? "" : `max="${r.max}"`
                 }/>`
         )
@@ -55,10 +55,10 @@ export const constraint: (constraint: Constraint) => string = constraint => {
             const ca = constraint as Cardinality
             return `<cardinality ${ca.min === 0 ? "" : `min="${ca.min}"`} ${
                 ca.max === Number.MAX_VALUE ? "" : `max="${ca.max}"`
-            } object="${ca.object}" id="${shortName(ca.id)}"/>`
+            } object="${ca.object}" id="${ca.object === "role" ? "role_" : ""}${shortName(ca.id)}"/>`
         case "compatibility":
             const co = constraint as Compatibility
-            return `<compatibility from="${shortName(co.from)}" to="${shortName(co.to)}" type="${
+            return `<compatibility from="role_${shortName(co.from)}" to="role_${shortName(co.to)}" type="${
                 co.constraint
             }" scope="${co.scope}" extends-subgroups="${co.extendsSubgroups}" bi-dir="${co.biDir}"/>`
         default:

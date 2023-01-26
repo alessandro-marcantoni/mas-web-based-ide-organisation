@@ -12,7 +12,12 @@ export const loadFunctionalSpec: (spec: string) => List<Component> = spec => {
     const orgSpec = convert.xml2js(spec).elements[1].elements
     converter[orgSpec[1].name](orgSpec[1])[0]
     converter[orgSpec[2].name](orgSpec[2])
-    dependencyGraph.forEach((v, k) => k.dependencies = v)
+    dependencyGraph.forEach((v, k) => {
+        k.name = k.name.replaceAll("goal_", "")
+    })
+    dependencyGraph.forEach((v, k) => k.dependencies = new Set(Array.from(v).map(d => d.replaceAll("goal_", ""))))
+    console.log(missions);
+    
     return fromArray(Array.from(dependencyGraph.keys())).filter(g => g.name !== "orgGoal")
 }
 
@@ -73,17 +78,19 @@ const plan = (element: XMLElement, root: Goal) => {
 }
 
 const mission = (element: XMLElement) => {
-    missions.set(element.attributes["id"], new Set<string>())
+    missions.set((element.attributes["id"] as string).replaceAll("_goal", ""), new Set<string>())
     element.elements.filter(e => e.name === "goal").forEach(e => missions.get(element.attributes["id"]).add(e.attributes["id"]))
 }
 
 const normativeSpecification = (element: XMLElement) =>
-    element.elements.filter(e => e.name === "norm").forEach(norm)
+    element.elements?.filter(e => e.name === "norm").forEach(norm)
 
 const norm = (element: XMLElement) =>
     missions.get(element.attributes["mission"])?.forEach(g => {
         const goal = getKey(g)
-        goal.responsibles.set(element.attributes["role"], element.attributes["type"])
+        goal.responsibles.set((element.attributes["role"] as string).replaceAll("role_", ""), element.attributes["type"])
+        console.log(goal);
+        
     })
 
 const getKey: (goalName: string) => Goal =
