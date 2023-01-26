@@ -45,16 +45,18 @@ class GoalMenu extends React.Component<GoalMenuProps, GoalMenuState> {
                         Dependencies
                     </Typography>
                 </Grid>
-                <Grid item xs={12}>
-                    <RadioGroup
-                        name="controlled-radio-buttons-group"
-                        value={this.props.component.map((c: Goal) => PlanOperator.toString(c.operator)).getOrElse("AND")}
-                        onChange={(e) => this.props.onEvent(new OperatorChangeEvent(this.props.component.map(c => c.name).getOrElse(""), PlanOperator.fromString(e.target.value)))}
-                    >
-                        <FormControlLabel value="AND" control={<Radio />} label="AND" />
-                        <FormControlLabel value="OR" control={<Radio />} label="OR" />
-                    </RadioGroup>
-                </Grid>
+                {this.props.component.map((g: Goal) => g.dependencies.size >= 2).getOrElse(false) &&
+                    <Grid item xs={12}>
+                        <RadioGroup
+                            name="controlled-radio-buttons-group"
+                            value={this.props.component.map((c: Goal) => PlanOperator.toString(c.operator)).getOrElse("AND")}
+                            onChange={(e) => this.props.onEvent(new OperatorChangeEvent(this.props.component.map(c => c.name).getOrElse(""), PlanOperator.fromString(e.target.value)))}
+                        >
+                            <FormControlLabel value="AND" control={<Radio />} label="AND" />
+                            <FormControlLabel value="OR" control={<Radio />} label="OR" />
+                        </RadioGroup>
+                    </Grid>
+                }
                 <SelectWithLabel
                     width={10}
                     label={"Depends on"}
