@@ -10,6 +10,11 @@ export const loadStructuralSpec: (spec: string) => List<Component> = spec => {
     const orgSpec = convert.xml2js(spec).elements[1].elements
     const elems = converter[orgSpec[0].name](orgSpec[0])
 
+    roleTopography.foreach(r => {
+        r.name = r.name.replace("role_", "")
+        r.extends = option(r.extends).map(e => e.replace("role_", "")).getOrElse(undefined)
+    })
+
     return list(elems[1])
         .appendedAll(
             fromArray<Role>(elems[0]).filter(
@@ -52,8 +57,8 @@ const role = (element: XMLElement, g: Group = undefined) =>
     new ConcreteRole(
         `${option(g)
             .map(o => o.name + separator)
-            .getOrElse("")}${element.attributes["id"]}`,
-        roleTopography.find(rt => rt.name === element.attributes["id"]).map(rt => rt.extends).getOrElse(undefined),
+            .getOrElse("")}${element.attributes["id"]}`.replace("role_", ""),
+        roleTopography.find(rt => rt.name === element.attributes["id"]).map((rt: Role) => rt.extends?.replace("role_", "")).getOrElse(undefined),
         option(parseInt(element.attributes["min"])).getOrElse(0),
         option(parseInt(element.attributes["max"])).getOrElse(Number.MAX_VALUE)
     )
@@ -72,8 +77,6 @@ const roles = (element: XMLElement, g: Group) =>
     element.elements
         .map(e => converter[e.name](e, g))
         .forEach(r => {
-            console.log(r)
-
             g.addRole(r)
         })
 
