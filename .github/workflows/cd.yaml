@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Semantic Versioning
-        uses: anitvam/conventionalcommit-semantic-releasing@v0.3.6
+        uses: anitvam/conventionalcommit-semantic-releasing@v0.4.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
