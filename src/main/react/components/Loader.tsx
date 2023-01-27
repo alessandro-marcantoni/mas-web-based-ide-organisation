@@ -33,6 +33,9 @@ const Loader = (p: LoaderProps) => {
             }).then(() => {
                 p.setOrg(state.organizationName, list(), list())
                 navigate("/structural")
+            }).catch(() => {
+                p.setOrg(state.organizationName, list(), list())
+                navigate("/structural")
             })
         } else {
             axios.get(`${config.BACKEND_URL}/specifications/${state.organizationName}`).then(response => {
