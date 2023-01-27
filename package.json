@@ -1,6 +1,6 @@
 {
   "name": "mas-web-based-ide-organisation",
-  "version": "0.0.1",
+  "version": "v0.1.0",
   "description": "This repository is intended as an extension of the [intelliot-hypermas-explorer](https://github.com/Interactions-HSG/intelliot-hypermas-explorer) web-based IDE that brings the possibility to specify organisations in Hypermedia Multi-Agent Systems.",
   "scripts": {
     "start": "sudo react-scripts start",
