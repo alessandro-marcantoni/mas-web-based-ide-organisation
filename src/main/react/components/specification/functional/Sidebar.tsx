@@ -90,7 +90,7 @@ const Sidebar = (p: SidebarProps) => {
                     }}>
                     Back
                 </Button>
-                <Button
+                {/* <Button
                     fullWidth
                     variant="contained"
                     sx={{ mb: 2 }}
@@ -99,7 +99,7 @@ const Sidebar = (p: SidebarProps) => {
                         navigate("/entity")
                     }}>
                     Deploy
-                </Button>
+                </Button> */}
             </Box>
         </Drawer>
     )
