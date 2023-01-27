@@ -3,7 +3,7 @@
   "version": "v0.1.0",
   "description": "This repository is intended as an extension of the [intelliot-hypermas-explorer](https://github.com/Interactions-HSG/intelliot-hypermas-explorer) web-based IDE that brings the possibility to specify organisations in Hypermedia Multi-Agent Systems.",
   "scripts": {
-    "start": "sudo react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
