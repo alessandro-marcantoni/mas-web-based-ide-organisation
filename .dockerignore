@@ -9,3 +9,4 @@ renovate.json
 .vscode
 node_modules
 src/test
+.env
