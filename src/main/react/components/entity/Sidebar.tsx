@@ -1,15 +1,18 @@
-import { Drawer, Grid, Paper, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Drawer, Grid, Paper, Toolbar, Typography } from '@mui/material';
 import React from "react"
 import InputBox from '../common/InputBox';
 import { List, toArray } from 'scala-types/dist/list/list';
 import { Component, DiagramEventHandler } from '../../../typescript/domain/commons';
 import { Group } from '../../../typescript/domain/structural';
 import { EntityGroupAdditionEvent } from '../../../typescript/domain/events/entity';
+import { deployOrganization } from '../../../typescript/io/artifacts';
+import { EntityGroup } from '../../../typescript/domain/entity';
 
 type SidebarProps = {
     name: string
     structural: List<Component>
     onEvent: DiagramEventHandler
+    toDeploy: List<EntityGroup>
 }
 
 type SidebarState = {
@@ -53,6 +56,17 @@ const Sidebar = (p: SidebarProps) => {
                     />
                 </Paper>
             </Grid>
+            <Box sx={{ height: "100%", display: "flex", px: 2, flexDirection: "column", justifyContent: "flex-end" }}>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mb: 2 }}
+                    onClick={() => {
+                        deployOrganization(p.name, p.toDeploy)
+                    }}>
+                    Deploy
+                </Button>
+            </Box>
         </Drawer>
     )
 }

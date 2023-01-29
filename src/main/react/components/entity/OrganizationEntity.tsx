@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Component, DiagramEvent, DiagramEventType } from '../../../typescript/domain/commons';
 import { List, list, toArray } from "scala-types/dist/list/list"
 import Sidebar from "./Sidebar"
@@ -8,7 +8,6 @@ import GroupCard from "./GroupCard"
 import { getAllGroups } from "../../../typescript/utils/utils"
 import { EntityGroupAdditionEvent, PlayerAdditionEvent } from '../../../typescript/domain/events/entity';
 import { EntityGroup } from "../../../typescript/domain/entity";
-import { getAgentsInWorkspace } from '../../../typescript/io/rdf';
 
 type EntityProps = {
     name: string
@@ -25,10 +24,6 @@ const Entity = (p: EntityProps) => {
     const [state, setState] = React.useState<EntityState>({
         groups: list(),
         agents: [],
-    })
-
-    useEffect(() => {
-        getAgentsInWorkspace("102").then(agents => setState({ ...state, agents: agents }))
     })
 
     const onDiagramEvent: (event: DiagramEvent) => void = event => {
@@ -56,7 +51,7 @@ const Entity = (p: EntityProps) => {
 
     return (
         <>
-            <Sidebar name={p.name} structural={p.structural} onEvent={onDiagramEvent} />
+            <Sidebar name={p.name} structural={p.structural} onEvent={onDiagramEvent} toDeploy={state.groups}/>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }} className="diagram">
                 <Toolbar />
                 <Grid container spacing={2}>
