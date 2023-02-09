@@ -39,7 +39,7 @@ export const createComponent: (components: List<Component>, c: Component) => Opt
         case "group":
             if (getAllGroups(components).exists(g => g.name === c.getName())) return none()
             return some(c)
-        case "link":
+        case "constraint":
             const link = c as Compatibility
             if (
                 !getAllRoles(components).exists(r => r.name === link.from) ||
