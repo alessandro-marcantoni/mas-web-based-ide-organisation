@@ -3,9 +3,10 @@ WORKDIR /app
 COPY ./package.json ./package.json
 RUN npm install
 COPY . .
-ENV GENERATE_SOURCEMAP=false
-ENV PORT=80
-ENV PUBLIC_URL=/
+ARG GENERATE_SOURCEMAP
+ARG PORT
+ARG PUBLIC_URL
+ARG REACT_APP_BACKEND_URL
 RUN npm run build
 
 FROM nginx:1.23.2-alpine as runner
