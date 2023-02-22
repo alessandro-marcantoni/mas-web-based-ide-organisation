@@ -33,6 +33,8 @@ const scheme = (element: XMLElement) => {
 }
 
 const goal = (element: XMLElement) => {
+    console.log(element.attributes["id"]);
+    
     if ((element.attributes["id"] as string).includes(OR_TOKEN)) {
         const g = getKey((element.attributes["id"] as string).replace(OR_TOKEN, ""))
         dependencyGraph.set(g, dependencyGraph.get(g) ?? new Set<string>())
@@ -94,7 +96,7 @@ const norm = (element: XMLElement) =>
     })
 
 const getKey: (goalName: string) => Goal =
-    (goalName) => Array.from(dependencyGraph.keys()).find(g => g.getName() === goalName) ?? new Goal(goalName)
+    (goalName) => Array.from(dependencyGraph.keys()).find(g => g.getName().replace("goal_", "") === goalName.replace("goal_", "")) ?? new Goal(goalName)
 
 const converter = {
     "functional-specification": functionalSpecification,

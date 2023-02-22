@@ -17,22 +17,6 @@ class Norm {
 }
 
 export const serializeFunctional: (diagram: List<Component>) => string = diagram => {
-    console.log(formatXml(
-        "<functional-specification>" +
-            '<scheme id="orgScheme">' +
-            '<goal id="orgGoal">' +
-            '<plan operator="parallel">' +
-            toArray(getAllGoals(diagram).map(goal)).join("\n") +
-            "</plan>" +
-            "</goal>" +
-            toArray(getAllGoals(diagram).map(mission)).join("\n") +
-            "</scheme>" +
-            "</functional-specification>" +
-            "<normative-specification>" +
-            norms(getAllGoals(diagram)) +
-            "</normative-specification>"
-    ));
-    
     return formatXml(
         "<functional-specification>" +
             '<scheme id="orgScheme">' +
@@ -54,7 +38,7 @@ const goal: (goal: Goal) => string = goal =>
     goal.operator === PlanOperator.OR && goal.dependencies.size >= 2 ? orGoal(goal) : andGoal(goal)
 
 const mission: (goal: Goal) => string = goal =>
-    '<mission id="' + MISSION_TOKEN + goal.name + '">' + '<goal id="' + "goal_" + goal.name + '"/>' + "</mission>"
+    '<mission id="' + MISSION_TOKEN + goal.name + `" ${goal.responsibles.size > 0 ? "min=\"1\"" : ""}>` + '<goal id="' + "goal_" + goal.name + '"/>' + "</mission>"
 
 const norms: (goals: List<Goal>) => string = goals =>
     toArray(goals)
