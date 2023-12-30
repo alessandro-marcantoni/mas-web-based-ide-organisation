@@ -53,7 +53,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "13.4.0",
-    "@testing-library/user-event": "13.5.0",
+    "@testing-library/user-event": "14.5.2",
     "@types/jest": "29.2.0",
     "@types/react": "18.0.21",
     "@types/react-cytoscapejs": "1.2.2",
